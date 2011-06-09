@@ -1,0 +1,49 @@
+body {
+    margin: 0;
+    font-family: verdana, sans-serif;
+    font-size: 12px;
+}
+
+a {
+    color: #bf6000;
+    text-decoration: none;
+}
+
+.clr {
+    clear: both;
+}
+
+
+#repo-zones-nav {
+    padding: 5px 5px 0 10px;
+    background: #ffdfbf;
+    border-bottom: 1px solid #ff8000;
+}
+
+#repo-zones-nav a {
+    display: block;
+    float: left;
+    padding: 5px 20px 5px 20px;
+    margin-bottom: -1px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0,0,0,0);
+}
+
+#repo-zones-nav .active {
+    background: white;
+    border-color: #ff8000 #ff8000 white #ff8000;
+}
+
+#content {
+    padding: 10px;
+}
+
+
+.errorlist {
+    margin: 0;
+}
+
+.errorlist li {
+    color: red;
+}

@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2011 Fundacja Nowoczesna Polska
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-05-17 12:35+0200\n"
+"PO-Revision-Date: 2011-05-17 12:37+0100\n"
+"Last-Translator: Radek Czajka <radoslaw.czajka@nowoczesnapolska.org.pl>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
+
+#: models.py:15
+#: models.py:32
+msgid "project"
+msgstr "projekt"
+
+#: models.py:16
+msgid "projects"
+msgstr "projekty"
+
+#: models.py:24
+msgid "source file"
+msgstr "plik źródłowy"
+
+#: models.py:26
+msgid "title"
+msgstr "tytuł"
+
+#: models.py:27
+msgid "artist"
+msgstr "lektor"
+
+#: models.py:28
+msgid "arranger"
+msgstr "aranżer"
+
+#: models.py:29
+msgid "encoded by"
+msgstr "przyg. techn."
+
+#: models.py:30
+msgid "date"
+msgstr "data"
+
+#: models.py:33
+msgid "book url"
+msgstr "URL książki"
+
+#: models.py:46
+msgid "audiobook"
+msgstr "audiobook"
+
+#: models.py:47
+msgid "audiobooks"
+msgstr "audiobooki"
+
+#: templates/archive/base.html:7
+msgid "Audiobook repository"
+msgstr "Repozytorium audiobooków"
+
+#: templates/archive/base.html:12
+msgid "New"
+msgstr "Nowe"
+
+#: templates/archive/base.html:13
+msgid "Unpublished"
+msgstr "Nie opublikowane"
+
+#: templates/archive/base.html:14
+msgid "Published"
+msgstr "Opublikowane"
+
+#: templates/archive/base.html:15
+msgid "Archive"
+msgstr "Archiwum"
+
+#: templates/archive/file_managed.html:6
+msgid "Publishing"
+msgstr "Publikacja"
+
+#: templates/archive/file_managed.html:9
+msgid "Audiobook marked for publishing with tags:"
+msgstr "Audiobook zaznaczony do publikacji z tagami:"
+
+#: templates/archive/file_managed.html:18
+msgid "Publishing already in progress."
+msgstr "Publikowanie rozpoczęte."
+
+#: templates/archive/file_managed.html:22
+msgid "Cancel publishing"
+msgstr "Anuluj publikację"
+
+#: templates/archive/file_managed.html:37
+msgid "Publish"
+msgstr "Opublikuj"
+
+#: templates/archive/file_managed.html:50
+msgid "Update tags"
+msgstr "Uaktualnij tagi"
+
+#: templates/archive/file_managed.html:69
+#: templates/archive/file_new.html:19
+msgid "Commit"
+msgstr "Zatwierdź"
+
+#: templates/archive/file_new.html:8
+msgid "Move to archive"
+msgstr "Przenieś do archiwum"
+
+#: templates/archive/file_unmanaged.html:6
+msgid "File with same name already exists!"
+msgstr "Plik o tej nazwie już istnieje!"
+
+#: templates/archive/file_unmanaged.html:28
+msgid "Move to new files"
+msgstr "Przenieś do nowych plików"
+
+#: templates/archive/list_new.html:6
+msgid "New audiobooks"
+msgstr "Nowe audiobooki"
+
+#: templates/archive/list_new.html:11
+msgid "Put source audiobooks in:"
+msgstr "Umieść nowe audiobooki w:"
+
+#: templates/archive/list_published.html:6
+msgid "Published audiobooks"
+msgstr "Opublikowane audiobooki"
+
+#: templates/archive/list_unmanaged.html:5
+msgid "Unmanaged archive"
+msgstr "Audiobooki archiwalne"
+
+#: templates/archive/list_unpublished.html:6
+msgid "Unpublished audiobooks"
+msgstr "Nie opublikowane audiobooki"
+

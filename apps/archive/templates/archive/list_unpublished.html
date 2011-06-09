@@ -1,0 +1,20 @@
+{% extends "archive/list.html" %}
+{% load i18n %}
+
+
+{% block file-list-title %}
+    {% trans "Unpublished audiobooks" %}
+{% endblock %}
+
+
+{% block file-list-info %}
+{% endblock %}
+
+
+{% block file-list %}
+    {% for file in objects %}
+        <li>
+            <a href='{% url file file.id %}'>{{ file }}</a></form>
+        </li>
+    {% endfor %}
+{% endblock %}

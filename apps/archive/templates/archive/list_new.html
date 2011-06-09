@@ -1,0 +1,22 @@
+{% extends "archive/list.html" %}
+{% load i18n %}
+
+
+{% block file-list-title %}
+    {% trans "New audiobooks" %}
+{% endblock %}
+
+
+{% block file-list-info %}
+    {% trans "Put source audiobooks in:" %}
+    <span>{{ path }}</span>
+{% endblock %}
+
+
+{% block file-list %}
+    {% for file in objects %}
+        <li>
+            <a href='{% url file_new file %}'>{{ file }}</a>
+        </li>
+    {% endfor %}
+{% endblock %}

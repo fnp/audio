@@ -1,0 +1,19 @@
+{% extends "archive/list.html" %}
+{% load i18n %}
+
+{% block file-list-title %}
+    {% trans "Unmanaged archive" %}
+{% endblock %}
+
+
+{% block file-list-info %}
+{% endblock %}
+
+
+{% block file-list %}
+    {% for file in objects %}
+        <li>
+            <a href='{% url file_unmanaged file %}'>{{ file }}</a>
+        </li>
+    {% endfor %}
+{% endblock %}

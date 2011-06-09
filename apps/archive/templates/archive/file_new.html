@@ -1,0 +1,23 @@
+{% extends "archive/base.html" %}
+{% load i18n tags %}
+
+{% block content %}
+
+<form method="post" action="{% url move_to_archive filename %}">
+    {% csrf_token %}
+    <input type="submit" value="{% trans "Move to archive" %}" />
+</form>
+
+
+{% multiple_tags_table tags %}
+
+
+<form method='post' action='.'>
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+        <td></td><td><input type="submit" value='{% trans "Commit" %}' /></td></td>
+    </table>
+</form>
+
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "archive/base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<h2>{% trans "Publishing" %}</h2>
+
+{% if audiobook.publish_wait %}
+    <p>{% trans "Audiobook marked for publishing with tags:" %}</p>
+
+    <table>
+        {% for t, v in audiobook.publishing_tags.items %}
+            <tr><th>{{ t }}</th><td>{{ v }}</td></tr>
+        {% endfor %}
+    </table>
+
+    {% if audiobook.publishing %}
+        <p>{% trans "Publishing already in progress." %}</p>
+    {% else %}
+        <form method="post" action="{% url cancel_publishing audiobook.id %}">
+            {% csrf_token %}
+            <input type="submit" value="{% trans "Cancel publishing" %}" />
+        </form>
+    {% endif %}
+{% else %}
+    {% if audiobook.published %}
+        Here be currently published version, for comparison.
+    {% endif %}
+
+    <form method="post" action="{% url publish audiobook.id %}">
+    <table>
+        {% for k, v in audiobook.new_publish_tags.items %}
+            <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
+        {% endfor %}
+
+        {% csrf_token %}
+        <tr><th></th><td><input type="submit" value="{% trans "Publish" %}" /></td></tr>
+    </table>
+    </form>
+{% endif %}
+
+
+
+
+<hr />
+
+
+
+
+<h2>{% trans "Update tags" %}</h2>
+
+
+<table class="file_tags">
+    {% for t, v in tags.items %}
+        <tr><th>{{t}}</th><td>
+        {% for x in v %}
+            {{x}}<br />
+        {% endfor %}
+        </td></tr>
+    {% endfor %}
+</table>
+
+
+
+<form method='post' action='.'>
+    {% csrf_token %}
+    <table>
+        {{ form.as_table }}
+        <td></td><td><input type="submit" value='{% trans "Commit" %}' /></td></td>
+    </table>
+</form>
+
+
+
+
+{% endblock %}

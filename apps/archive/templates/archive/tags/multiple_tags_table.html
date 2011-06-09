@@ -1,0 +1,9 @@
+<table>
+    {% for t, v in tags.items %}
+        <tr><th>{{t}}</th><td>
+        {% for x in v %}
+            <div>{{x}}</div>
+        {% endfor %}
+        </td></tr>
+    {% endfor %}
+</table>
