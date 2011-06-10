@@ -5,7 +5,7 @@ from django.conf import settings
 try:
     NEW_PATH = settings.ARCHIVE_NEW_PATH
 except AttributeError:
-    NEW_FILES_PATH = os.path.abspath(os.path.join(settings.MEDIA_ROOT,
+    NEW_PATH = os.path.abspath(os.path.join(settings.MEDIA_ROOT,
                         "archive/new"))
 
 # here the application keeps its managed files
