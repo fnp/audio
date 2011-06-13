@@ -53,7 +53,6 @@ def file_new(request, filename):
                 d[tag] = models.Project.objects.get(name=d[tag]).pk
             except models.Project.DoesNotExist:
                 d[tag] = None
-        print d
 
     if not request.POST:
         form = AudiobookForm(d)
