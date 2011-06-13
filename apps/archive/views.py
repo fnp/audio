@@ -27,7 +27,7 @@ def list_new(request):
 def file_new(request, filename):
     division = 'new'
 
-    filepath = os.path.join(settings.NEW_PATH, filename)
+    filepath = os.path.join(settings.NEW_PATH, filename.encode('utf-8'))
     if request.POST:
         form = AudiobookForm(request.POST)
         if form.is_valid():
