@@ -23,7 +23,10 @@ class AudiobookForm(forms.ModelForm):
             if not os.path.isdir(FILES_PATH):
                 os.makedirs(FILES_PATH)
             # save the file in model
-            m.source_file.save(os.path.basename(path), ExistingFile(path))
+            bn = os.path.basename(path)
+            ef = ExistingFile(path)
+            
+            m.source_file.save(bn, ef)
 
         if commit:
             m.save()
