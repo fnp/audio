@@ -1,6 +1,7 @@
 from django.db import models
 from jsonfield.fields import JSONField
 from django.utils.translation import ugettext_lazy as _
+from archive.settings import FILES_PATH
 
 # Create your models here.
 
@@ -21,7 +22,7 @@ class Project(models.Model):
 
 
 class Audiobook(models.Model):
-    source_file = models.FileField(upload_to='archive/files', verbose_name=_('source file'), editable=False)
+    source_file = models.FileField(upload_to=FILES_PATH, verbose_name=_('source file'), editable=False)
 
     title = models.CharField(max_length=255, verbose_name=_('title'))
     artist = models.CharField(max_length=255, verbose_name=_('artist'))
