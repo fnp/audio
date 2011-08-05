@@ -25,7 +25,8 @@ class Project(models.Model):
 
 
 class Audiobook(models.Model):
-    source_file = models.FileField(upload_to='archive/files', verbose_name=_('source file'), editable=False)
+    source_file = models.FileField(upload_to='archive/files', max_length=255, 
+            verbose_name=_('source file'), editable=False)
     source_sha1 = models.CharField(max_length=40, editable=False)
 
     title = models.CharField(max_length=255, verbose_name=_('title'))
