@@ -31,8 +31,8 @@ class AudioFormatTask(Task):
 
     @classmethod
     def set_status(cls, audiobook, status):
-        setattr(audiobook, '%s_status' % cls.ext, status)
-        audiobook.save()
+        Audiobook.objects.filter(pk=audiobook.pk).update(
+            **{'%s_status' % cls.ext: status})
 
     @staticmethod
     def encode(in_path, out_path):
@@ -54,11 +54,14 @@ class AudioFormatTask(Task):
 
     @classmethod
     def published(cls, audiobook):
-        setattr(audiobook, "%s_published_tags" % cls.ext,
-            getattr(audiobook, "%s_tags" % cls.ext))
-        setattr(audiobook, "%s_tags" % cls.ext, None)
-        setattr(audiobook, "%s_published" % cls.ext, datetime.now())
-        cls.set_status(audiobook, None)
+        kwargs = {
+            "%s_published_tags" % cls.ext: 
+                    getattr(audiobook, "%s_tags" % cls.ext),
+            "%s_tags" % cls.ext: None,
+            "%s_published" % cls.ext: datetime.now(),
+            '%s_status' % cls.ext: None,
+        }
+        Audiobook.objects.filter(pk=audiobook.pk).update(**kwargs)
 
     @classmethod
     def put(cls, audiobook):
@@ -72,7 +75,6 @@ class AudioFormatTask(Task):
             pipes.quote(slug),
             pipes.quote(name)
             )).encode('utf-8')
-        print command
         if UPLOAD_SUDO:
             api.sudo(command, user=UPLOAD_SUDO, shell=False)
         else:
@@ -101,7 +103,6 @@ class AudioFormatTask(Task):
         self.put(audiobook)
 
         self.published(audiobook)
-        audiobook.save()
 
 
 class Mp3Task(AudioFormatTask):
