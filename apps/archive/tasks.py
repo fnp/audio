@@ -19,7 +19,7 @@ import mutagen
 from archive.constants import status
 from archive.models import Audiobook
 from archive.settings import (BUILD_PATH, COVER_IMAGE,
-    UPLOAD_HOST, UPLOAD_USER, UPLOAD_PATH, UPLOAD_CMD, UPLOAD_SUDO)
+    UPLOAD_HOST, UPLOAD_USER, UPLOAD_PASSWORD, UPLOAD_PATH, UPLOAD_CMD, UPLOAD_SUDO)
 from archive.utils import ExistingFile
 
 api.env.host_string = UPLOAD_HOST
