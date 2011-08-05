@@ -47,10 +47,14 @@ class AudioFormatTask(Task):
 
     @classmethod
     def save(cls, audiobook, file_name):
-        getattr(audiobook, "%s_file" % cls.ext).save(
+        field = "%s_file" % cls.ext
+        getattr(audiobook, field).save(
             "%d.%s" % (audiobook.pk, cls.ext),
-            ExistingFile(file_name)
+            ExistingFile(file_name),
+            save=False
             )
+        Audiobook.objects.filter(pk=audiobook.pk).update(
+            **{field: getattr(audiobook, field)})
 
     @classmethod
     def published(cls, audiobook):
