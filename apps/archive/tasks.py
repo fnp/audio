@@ -24,6 +24,7 @@ from archive.utils import ExistingFile
 
 api.env.host_string = UPLOAD_HOST
 api.env.user = UPLOAD_USER
+api.env.password = UPLOAD_PASSWORD
 
 class AudioFormatTask(Task):
     abstract = True

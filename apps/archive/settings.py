@@ -53,6 +53,11 @@ except AttributeError:
     UPLOAD_USER = 'username'
 
 try:
+    UPLOAD_PASSWORD = settings.ARCHIVE_UPLOAD_PASSWORD
+except AttributeError:
+    UPLOAD_PASSWORD = None
+
+try:
     UPLOAD_PATH = settings.ARCHIVE_UPLOAD_PATH
 except AttributeError:
     UPLOAD_PATH = ''
