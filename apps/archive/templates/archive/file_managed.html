@@ -1,42 +1,67 @@
 {% extends "archive/base.html" %}
 {% load i18n %}
+{% load tags %}
 
 {% block content %}
 
 <h2>{% trans "Publishing" %}</h2>
 
-{% if audiobook.publish_wait %}
-    <p>{% trans "Audiobook marked for publishing with tags:" %}</p>
+{% if audiobook.mp3_status or audiobook.ogg_status %}
 
-    <table>
-        {% for t, v in audiobook.publishing_tags.items %}
-            <tr><th>{{ t }}</th><td>{{ v }}</td></tr>
-        {% endfor %}
-    </table>
+<h2>{% trans "Publishing pending" %}</h2>
 
-    {% if audiobook.publishing %}
-        <p>{% trans "Publishing already in progress." %}</p>
-    {% else %}
-        <form method="post" action="{% url cancel_publishing audiobook.id %}">
-            {% csrf_token %}
-            <input type="submit" value="{% trans "Cancel publishing" %}" />
-        </form>
-    {% endif %}
+<form method="post" action="{% url cancel_publishing audiobook.id %}">
+    {% csrf_token %}
+    <input type="submit" value="{% trans "Cancel publishing" %}" />
+</form>
+
+
+{% if audiobook.mp3_status %}
+    <hr/>
+    <h2>MP3</h2>
+
+    {% tags_table audiobook.mp3_tags.tags %}
+
+    <p>Status: <b>{{ audiobook.get_mp3_status_display }}</b></p>
+{% endif %}
+
+{% if audiobook.ogg_status %}
+    <hr/>
+    <h2>Ogg Vorbis</h2>
+
+    {% tags_table audiobook.ogg_tags.tags %}
+
+    <p>Status: <b>{{ audiobook.get_ogg_status_display }}</b></p>
+{% endif %}
+
+
+
+
 {% else %}
-    {% if audiobook.published %}
-        Here be currently published version, for comparison.
-    {% endif %}
-
     <form method="post" action="{% url publish audiobook.id %}">
-    <table>
-        {% for k, v in audiobook.new_publish_tags.items %}
-            <tr><th>{{ k }}</th><td>{{ v }}</td></tr>
-        {% endfor %}
+    <table class='tags'>
+        {% tags_table audiobook.new_publish_tags 0 %}
 
         {% csrf_token %}
         <tr><th></th><td><input type="submit" value="{% trans "Publish" %}" /></td></tr>
     </table>
     </form>
+{% endif %}
+
+<hr/>
+{% if audiobook.mp3_published %}
+    <h2>Published MP3</h2>
+    <a href="{{ audiobook.mp3_file.url }}">{{ audiobook.mp3_published }}</a>
+    {% tags_table audiobook.mp3_published_tags.tags %}
+{% else %}<p>MP3 file hasn't been published yet.</p>
+{% endif %}
+
+<hr/>
+{% if audiobook.ogg_published %}
+    <h2>Published Ogg Vorbis</h2>
+    <a href="{{ audiobook.ogg_file.url }}">{{ audiobook.ogg_published }}</a>
+    {% tags_table audiobook.ogg_published_tags.tags %}
+{% else %}Ogg Vorbis file hasn't been published yet.
 {% endif %}
 
 
@@ -49,16 +74,9 @@
 
 <h2>{% trans "Update tags" %}</h2>
 
+Last modified: {{ audiobook.modified }}
 
-<table class="file_tags">
-    {% for t, v in tags.items %}
-        <tr><th>{{t}}</th><td>
-        {% for x in v %}
-            {{x}}<br />
-        {% endfor %}
-        </td></tr>
-    {% endfor %}
-</table>
+{% multiple_tags_table tags %}
 
 
 

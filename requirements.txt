@@ -2,4 +2,9 @@ django>=1.3
 django-jsonfield
 South>=0.7
 
+django-celery
+django-kombu
+
+paramiko>=1.7.7.1 # fabric dependency with http://code.fabfile.org/issues/show/214 fixed
+fabric
 mutagen

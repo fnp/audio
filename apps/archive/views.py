@@ -5,17 +5,23 @@ import os
 import os.path
 
 from archive import settings
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
 import mutagen
 
+from archive.constants import status
 from archive import models
 from archive.forms import AudiobookForm
+from archive import tasks
 
 
+@login_required
 def list_new(request):
     division = 'new'
 
@@ -24,6 +30,7 @@ def list_new(request):
     return render(request, "archive/list_new.html", locals())
 
 
+@login_required
 def file_new(request, filename):
     division = 'new'
 
@@ -60,6 +67,7 @@ def file_new(request, filename):
 
 
 @require_POST
+@login_required
 def move_to_archive(request, filename):
     """ move a new file to the unmanaged files dir """
 
@@ -84,6 +92,7 @@ def move_to_archive(request, filename):
 
 
 @require_POST
+@login_required
 def move_to_new(request, filename):
     """ move a unmanaged file to new files dir """
 
@@ -106,37 +115,70 @@ def move_to_new(request, filename):
 
     return redirect(list_unmanaged)
 
+
 @require_POST
-def publish(request, id):
+@login_required
+def publish(request, aid):
     """ mark file for publishing """
-    audiobook = get_object_or_404(models.Audiobook, id=id)
-    audiobook.publish_wait = datetime.now()
-    audiobook.publishing_tags = audiobook.new_publish_tags()
+    audiobook = get_object_or_404(models.Audiobook, id=aid)
+    tags = {
+        'name': audiobook.title,
+        'url': audiobook.url,
+        'tags': audiobook.new_publish_tags(),
+        }
+    audiobook.mp3_tags = tags
+    audiobook.ogg_tags = tags
+    audiobook.mp3_status = audiobook.ogg_status = status.WAITING
     audiobook.save()
-    return redirect(file_managed, id)
+    # isn't there a race here?
+    audiobook.mp3_task = tasks.Mp3Task.delay(aid).task_id
+    audiobook.ogg_task = tasks.OggTask.delay(aid).task_id
+    audiobook.save()
+
+    return redirect(file_managed, aid)
+
 
 @require_POST
-def cancel_publishing(request, id):
+@login_required
+def cancel_publishing(request, aid):
     """ cancel scheduled publishing """
-    audiobook = get_object_or_404(models.Audiobook, id=id)
-    if not audiobook.publishing:
-        audiobook.publish_wait = None
-        audiobook.publishing_tags = None
-        audiobook.save()
-    return redirect(file_managed, id)
+    audiobook = get_object_or_404(models.Audiobook, id=aid)
+    # TODO: cancel tasks
+    audiobook.mp3_status = None
+    audiobook.ogg_status = None
+    audiobook.save()
+    return redirect(file_managed, aid)
 
 
+@login_required
 def list_unpublished(request):
     division = 'unpublished'
 
-    objects = models.Audiobook.objects.filter(published=None)
+    objects = models.Audiobook.objects.filter(Q(mp3_published=None) | Q(ogg_published=None))
     return render(request, "archive/list_unpublished.html", locals())
 
 
+@login_required
+def list_published(request):
+    division = 'published'
 
+    objects = models.Audiobook.objects.exclude(Q(mp3_published=None) | Q(ogg_published=None))
+    return render(request, "archive/list_published.html", locals())
+
+
+@login_required
 def file_managed(request, id):
     audiobook = get_object_or_404(models.Audiobook, id=id)
-    division = 'published' if audiobook.published else 'unpublished'
+
+    if request.POST:
+        form = AudiobookForm(request.POST, instance=audiobook)
+        if form.is_valid():
+            try:
+                form.save()
+            except IOError:
+                raise Http404
+
+    division = 'published' if audiobook.published() else 'unpublished'
 
     # for tags update
     tags = mutagen.File(audiobook.source_file.path)
@@ -145,16 +187,7 @@ def file_managed(request, id):
     return render(request, "archive/file_managed.html", locals())
 
 
-
-def list_published(request):
-    division = 'published'
-
-    objects = models.Audiobook.objects.exclude(published=None)
-    return render(request, "archive/list_published.html", locals())
-
-
-
-
+@login_required
 def list_unmanaged(request):
     division = 'unmanaged'
 
@@ -162,6 +195,7 @@ def list_unmanaged(request):
     return render(request, "archive/list_unmanaged.html", locals())
 
 
+@login_required
 def file_unmanaged(request, filename):
     division = 'unmanaged'
 
@@ -169,3 +203,8 @@ def file_unmanaged(request, filename):
     err_exists = request.GET.get('exists')
     return render(request, "archive/file_unmanaged.html", locals())
 
+
+@login_required
+def logout_view(request):
+    logout(request)
+    return redirect(list_new)

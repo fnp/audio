@@ -1,0 +1,7 @@
+{% if table %}<table class='tags'>{% endif %}
+    {% for t, v in tags.items %}
+        <tr><th>{{ t }}</th><td>
+            {{ v|linebreaksbr }}
+        </td></tr>
+    {% endfor %}
+{% if table %}</table>{% endif %}

@@ -14,7 +14,7 @@
 {% block file-list %}
     {% for file in objects %}
         <li>
-            <a href='{% url file file %}'>{{ file }}</a></form>
+            <a href='{% url file file.id %}'>{{ file }}</a></form>
         </li>
     {% endfor %}
 {% endblock %}

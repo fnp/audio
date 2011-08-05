@@ -47,3 +47,13 @@ a {
 .errorlist li {
     color: red;
 }
+
+
+.tags, .multiple_tags {
+    border-collapse: collapse;
+}
+
+.tags td, .tags th, .multiple_tags td, .multiple_tags th {
+    border: 1px solid #ddd;
+    padding: 3px;
+}

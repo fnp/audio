@@ -1,6 +1,6 @@
+from datetime import datetime
 import os
 import os.path
-from datetime import datetime
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -8,7 +8,7 @@ import mutagen
 
 from archive.models import Audiobook
 from archive.settings import FILES_PATH
-from archive.utils import ExistingFile
+from archive.utils import ExistingFile, sha1_file
 
 class AudiobookForm(forms.ModelForm):
     class Meta:
@@ -25,9 +25,12 @@ class AudiobookForm(forms.ModelForm):
             # save the file in model
 
             m.source_file.save(
-                os.path.join(FILES_PATH, os.path.basename(path)),
+                os.path.basename(path),
                 ExistingFile(path))
+
+            f = open(m.source_file.path)
+            m.source_sha1 = sha1_file(f)
+            f.close()
 
         if commit:
             m.save()
-

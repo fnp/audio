@@ -1,9 +1,9 @@
-<table>
+{% if table %}<table class='multiple_tags'>{% endif %}
     {% for t, v in tags.items %}
-        <tr><th>{{t}}</th><td>
+        <tr><th>{{ t }}</th><td>
         {% for x in v %}
-            <div>{{x}}</div>
+            <div>{{ x|linebreaksbr }}</div>
         {% endfor %}
         </td></tr>
     {% endfor %}
-</table>
+{% if table %}</table>{% endif %}
