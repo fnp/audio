@@ -97,7 +97,7 @@ class AudioFormatTask(Task):
         self.save(audiobook, out_file.name)
         self.set_status(audiobook, status.SENDING)
 
-        #self.put(audiobook)
+        self.put(audiobook)
 
         self.published(audiobook)
         audiobook.save()
