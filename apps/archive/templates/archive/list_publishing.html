@@ -9,7 +9,7 @@
 
 
 {% block file-list-wrapper %}
-    {% for k, objects in objects_by_status.items %}
+    {% for k, objects in status_objects %}
         <h2>{{ k.1 }}</h2>
         <ul>
             {% for file in objects %}
