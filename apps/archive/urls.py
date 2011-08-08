@@ -8,6 +8,7 @@ urlpatterns = patterns('',
     url(r'^move_to_archive/([^/]+)/$', 'archive.views.move_to_archive', name="move_to_archive"),
 
     url(r'^unpublished/$', 'archive.views.list_unpublished', name="list_unpublished"),
+    url(r'^publishing/$', 'archive.views.list_publishing', name="list_publishing"),
     url(r'^published/$', 'archive.views.list_published', name="list_published"),
     url(r'^file/(\d+)/$', 'archive.views.file_managed', name="file"),
     url(r'^publish/(\d+)/$', 'archive.views.publish', name="publish"),

@@ -57,3 +57,12 @@ a {
     border: 1px solid #ddd;
     padding: 3px;
 }
+
+
+.list-published-tag, .list-publishing-tag {
+    padding-left: 2em;
+    font-size: .8em;
+}
+.list-publishing-tag {
+    color: #aaa;
+}

@@ -14,7 +14,19 @@
 {% block file-list %}
     {% for file in objects %}
         <li>
-            <a href='{% url file file.id %}'>{{ file }}</a></form>
+            <a href='{% url file file.id %}'>{{ file }}</a>
+
+            {% if file.mp3_published %}
+                <span class="list-published-tag" title="{{ file.mp3_published }}">MP3</span>
+            {% else %}{% if file.mp3_status %}
+                <span class="list-publishing-tag" title="{{ file.get_mp3_status_display }}">MP3</span>
+            {% endif %}{% endif %}
+
+            {% if file.ogg_published %}
+                <span class="list-published-tag" title="{{ file.ogg_published }}">Ogg</span>
+            {% else %}{% if file.ogg_status %}
+                <span class="list-publishing-tag" title="{{ file.get_ogg_status_display }}">Ogg</span>
+            {% endif %}{% endif %}
         </li>
     {% endfor %}
 {% endblock %}

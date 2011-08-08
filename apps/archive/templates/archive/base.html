@@ -4,6 +4,7 @@
 {% block repo-zones-nav %}
     <a {% if division = "new" %}class="active" {% endif %}href="{% url list_new %}">{% trans "New" %}</a>
     <a {% if division = "unpublished" %}class="active" {% endif %}href="{% url list_unpublished %}">{% trans "Unpublished" %}</a>
+    <a {% if division = "publishing" %}class="active" {% endif %}href="{% url list_publishing %}">{% trans "Publishing" %}</a>
     <a {% if division = "published" %}class="active" {% endif %}href="{% url list_published %}">{% trans "Published" %}</a>
     <a {% if division = "unmanaged" %}class="active" {% endif %}href="{% url list_unmanaged %}">{% trans "Archive" %}</a>
     <a href="{% url logout %}" style='float: right;'>{% trans "Logout" %}</a>

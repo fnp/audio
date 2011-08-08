@@ -7,7 +7,9 @@
     <div id="file-list">
         <h1>{% block file-list-title %}{% endblock %}</h1>
         <div>{% block file-list-info %}{% endblock %}</div>
-        <ul>{% block file-list %}{% endblock %}</ul>
+        {% block file-list-wrapper %}
+            <ul>{% block file-list %}{% endblock %}</ul>
+        {% endblock file-list-wrapper %}
     </div>
 
 {% endblock %}

@@ -8,9 +8,10 @@ from archive import settings
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.datastructures import SortedDict
 from django.views.decorators.http import require_POST
 
 import mutagen
@@ -156,6 +157,23 @@ def list_unpublished(request):
 
     objects = models.Audiobook.objects.filter(Q(mp3_published=None) | Q(ogg_published=None))
     return render(request, "archive/list_unpublished.html", locals())
+
+
+@login_required
+def list_publishing(request):
+    division = 'publishing'
+
+    objects = models.Audiobook.objects.exclude(mp3_status=None, ogg_status=None)
+    objects_by_status = SortedDict()
+    for o in objects:
+        if o.mp3_status:
+            k = o.mp3_status, o.get_mp3_status_display()
+            objects_by_status.setdefault(k, []).append(o)
+        if o.ogg_status and o.ogg_status != o.mp3_status:
+            k = o.ogg_status, o.get_ogg_status_display()
+            objects_by_status.setdefault(k, []).append(o)
+
+    return render(request, "archive/list_publishing.html", locals())
 
 
 @login_required
