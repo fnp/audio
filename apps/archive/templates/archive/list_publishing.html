@@ -1,0 +1,23 @@
+{% extends "archive/list.html" %}
+{% load i18n %}
+
+
+{% block file-list-title %}
+    {% trans "Audiobooks being published" %}
+{% endblock %}
+
+
+
+{% block file-list-wrapper %}
+    {% for k, objects in objects_by_status.items %}
+        <h2>{{ k.1 }}</h2>
+        <ul>
+            {% for file in objects %}
+            <li>
+                <a href='{% url file file.id %}'>{{ file }}</a>
+                ({% if file.mp3_status = k.0 %}MP3{% if file.ogg_status = k.0 %}, {% endif %}{% endif %}{% if file.ogg_status = k.0 %}Ogg{% endif %})
+            </li>
+            {% endfor %}
+        </ul>
+    {% endfor %}
+{% endblock %}
