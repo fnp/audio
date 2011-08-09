@@ -11,6 +11,7 @@ from time import sleep
 #from celery.decorators import task
 from celery.task import Task
 from fabric import api
+from fabric.network import disconnect_all
 from mutagen import File
 from mutagen import id3
 
@@ -83,6 +84,7 @@ class AudioFormatTask(Task):
             api.sudo(command, user=UPLOAD_SUDO, shell=False)
         else:
             api.run(command)
+        disconnect_all()
 
     def run(self, aid):
         audiobook = Audiobook.objects.get(id=aid)

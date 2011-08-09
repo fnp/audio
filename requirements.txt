@@ -6,5 +6,5 @@ django-celery
 django-kombu
 
 paramiko>=1.7.7.1 # fabric dependency with http://code.fabfile.org/issues/show/214 fixed
-fabric
+fabric>=1.0
 mutagen
