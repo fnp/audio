@@ -159,11 +159,15 @@ LOGGING = {
 }
 
 
-
+EMAIL_SUBJECT_PREFIX = '[Audio] '
+SERVER_EMAIL = 'no-reply@audio.wolnelektury.pl'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 25
 
 import djcelery
 djcelery.setup_loader()
 
+CELERY_SEND_TASK_ERROR_EMAILS = True
 BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
 BROKER_HOST = "localhost"
 BROKER_PORT = 5672

@@ -5,6 +5,7 @@ from jsonfield.fields import JSONField
 from django.utils.translation import ugettext_lazy as _
 from archive.constants import status
 from archive.settings import FILES_PATH, ADVERT, LICENSE, ORGANIZATION, PROJECT
+from archive.utils import OverwriteStorage
 
 # Create your models here.
 
@@ -43,14 +44,14 @@ class Audiobook(models.Model):
     mp3_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
     mp3_task = models.CharField(max_length=64, null=True, editable=False)
     mp3_tags = JSONField(null=True, editable=False)
-    mp3_file = models.FileField(null=True, upload_to='archive/final', editable=False)
+    mp3_file = models.FileField(null=True, upload_to='archive/final', storage=OverwriteStorage(), editable=False)
     mp3_published_tags = JSONField(null=True, editable=False)
     mp3_published = models.DateTimeField(null=True, editable=False)
 
     ogg_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
     ogg_task = models.CharField(max_length=64, null=True, editable=False)
     ogg_tags = JSONField(null=True, editable=False)
-    ogg_file = models.FileField(null=True, upload_to='archive/final', editable=False)
+    ogg_file = models.FileField(null=True, upload_to='archive/final', storage=OverwriteStorage(), editable=False)
     ogg_published_tags = JSONField(null=True, editable=False)
     ogg_published = models.DateTimeField(null=True, editable=False)
 
@@ -94,4 +95,6 @@ class Audiobook(models.Model):
             'organization': ORGANIZATION,
             'title': title,
             'flac_sha1': self.source_sha1,
+            'project': self.project.name,
+            'funded_by': self.project.sponsors,
         }

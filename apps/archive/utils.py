@@ -1,4 +1,5 @@
 from hashlib import sha1
+from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import UploadedFile
 
 
@@ -13,6 +14,17 @@ class ExistingFile(UploadedFile):
 
     def close(self):
         pass
+
+
+class OverwriteStorage(FileSystemStorage):
+
+    def _save(self, name, content):
+        if self.exists(name):
+            self.delete(name)
+        return super(OverwriteStorage, self)._save(name, content)
+
+    def get_available_name(self, name):
+        return name
 
 
 def sha1_file(f):

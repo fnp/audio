@@ -10,6 +10,7 @@ from time import sleep
 
 #from celery.decorators import task
 from celery.task import Task
+from django.db.models import F
 from fabric import api
 from fabric.network import disconnect_all
 from mutagen import File
@@ -30,14 +31,17 @@ api.env.password = UPLOAD_PASSWORD
 class AudioFormatTask(Task):
     abstract = True
 
+    class RemoteOperationError(BaseException):
+        pass
+
     @classmethod
-    def set_status(cls, audiobook, status):
-        Audiobook.objects.filter(pk=audiobook.pk).update(
+    def set_status(cls, aid, status):
+        Audiobook.objects.filter(pk=aid).update(
             **{'%s_status' % cls.ext: status})
 
     @staticmethod
     def encode(in_path, out_path):
-        pass
+        raise NotImplemented
 
     @classmethod
     def set_tags(cls, audiobook, file_name):
@@ -58,37 +62,39 @@ class AudioFormatTask(Task):
             **{field: getattr(audiobook, field)})
 
     @classmethod
-    def published(cls, audiobook):
+    def published(cls, aid):
         kwargs = {
-            "%s_published_tags" % cls.ext: 
-                    getattr(audiobook, "%s_tags" % cls.ext),
+            "%s_published_tags" % cls.ext: F("%s_tags" % cls.ext),
             "%s_tags" % cls.ext: None,
             "%s_published" % cls.ext: datetime.now(),
             '%s_status' % cls.ext: None,
         }
-        Audiobook.objects.filter(pk=audiobook.pk).update(**kwargs)
+        Audiobook.objects.filter(pk=aid).update(**kwargs)
 
     @classmethod
-    def put(cls, audiobook):
+    def put(cls, audiobook, path):
         tags = getattr(audiobook, "%s_tags" % cls.ext)
         prefix, slug = tags['url'].rstrip('/').rsplit('/', 1)
         name = tags['name']
-        path = getattr(audiobook, "%s_file" % cls.ext).path
-        api.put(path, UPLOAD_PATH)
         command = UPLOAD_CMD + (u' %s %s %s > output.txt' % (
             pipes.quote(os.path.join(UPLOAD_PATH, os.path.basename(path))),
             pipes.quote(slug),
             pipes.quote(name)
             )).encode('utf-8')
-        if UPLOAD_SUDO:
-            api.sudo(command, user=UPLOAD_SUDO, shell=False)
-        else:
-            api.run(command)
-        disconnect_all()
+        try:
+            api.put(path, UPLOAD_PATH)
+            if UPLOAD_SUDO:
+                api.sudo(command, user=UPLOAD_SUDO, shell=False)
+            else:
+                api.run(command)
+            disconnect_all()
+        except SystemExit, e:
+            raise cls.RemoteOperationError
 
     def run(self, aid):
+        aid = int(aid)
         audiobook = Audiobook.objects.get(id=aid)
-        self.set_status(audiobook, status.ENCODING)
+        self.set_status(aid, status.ENCODING)
 
         try:
             os.makedirs(BUILD_PATH)
@@ -98,17 +104,21 @@ class AudioFormatTask(Task):
             else:
                 raise
 
-        out_file = NamedTemporaryFile(delete=False, prefix='audiobook-', suffix='.%s' % self.ext, dir=BUILD_PATH)
+        out_file = NamedTemporaryFile(delete=False, prefix='%d-' % aid, suffix='.%s' % self.ext, dir=BUILD_PATH)
         out_file.close()
         self.encode(audiobook.source_file.path, out_file.name)
-        self.set_status(audiobook, status.TAGGING)
+        self.set_status(aid, status.TAGGING)
         self.set_tags(audiobook, out_file.name)
+        self.set_status(aid, status.SENDING)
+
+        self.put(audiobook, out_file.name)
+
         self.save(audiobook, out_file.name)
-        self.set_status(audiobook, status.SENDING)
+        self.published(aid)
 
-        self.put(audiobook)
-
-        self.published(audiobook)
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        aid = (args[0], kwargs.get('aid'))[0]
+        self.set_status(aid, None)
 
 
 class Mp3Task(AudioFormatTask):
@@ -121,8 +131,8 @@ class Mp3Task(AudioFormatTask):
         return tag(url=text)
     def id3_comment(tag, text, lang=u'pol'):
         return tag(encoding=1, lang=lang, desc=u'', text=text)
-    def id3_sha1(tag, text, what=u''):
-        return tag(owner='http://wolnelektury.pl?%s' % what, data=text)
+    def id3_priv(tag, text, what=u''):
+        return tag(owner='wolnelektury.pl?%s' % what, data=text.encode('utf-8'))
 
     TAG_MAP = {
         'album': (id3_text, id3.TALB),
@@ -138,7 +148,9 @@ class Mp3Task(AudioFormatTask):
         'comment': (id3_comment, id3.COMM, 'pol'),
         'contact': (id3_url, id3.WOAF),
         'license': (id3_url, id3.WCOP),
-        'flac_sha1': (id3_sha1, id3.PRIV, 'flac_sha1'),
+        'flac_sha1': (id3_priv, id3.PRIV, 'flac_sha1'),
+        'project': (id3_priv, id3.PRIV, 'project'),
+        'funded_by': (id3_priv, id3.PRIV, 'funded_by'),
     }
 
     @staticmethod
