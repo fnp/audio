@@ -4,6 +4,10 @@
 
 {% block content %}
 
+<p>Plik źródłowy: <a href='{{ audiobook.source_file.url }}'>{{ path }}</a>
+(sha1: <tt>{{ audiobook.source_sha1 }}</tt>).
+</p>
+
 <h2>{% trans "Publishing" %}</h2>
 
 {% if audiobook.mp3_status or audiobook.ogg_status %}

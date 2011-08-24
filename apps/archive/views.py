@@ -19,6 +19,7 @@ from archive.constants import status
 from archive import models
 from archive.forms import AudiobookForm
 from archive import tasks
+from archive.utils import all_files
 
 
 @login_required
@@ -26,7 +27,7 @@ def list_new(request):
     division = 'new'
 
     path = settings.NEW_PATH
-    objects = sorted(os.listdir(path))
+    objects = sorted(all_files(path))
     return render(request, "archive/list_new.html", locals())
 
 
@@ -34,7 +35,8 @@ def list_new(request):
 def file_new(request, filename):
     division = 'new'
 
-    filepath = os.path.join(settings.NEW_PATH, filename.encode('utf-8'))
+    filepath = filename.encode('utf-8')
+    root_filepath = os.path.join(settings.NEW_PATH, filename.encode('utf-8'))
     if request.POST:
         form = AudiobookForm(request.POST)
         if form.is_valid():
@@ -45,21 +47,22 @@ def file_new(request, filename):
             return redirect(list_new)
 
     try:
-        tags = mutagen.File(filepath)
+        tags = mutagen.File(root_filepath)
     except IOError:
         raise Http404
     d = {}
-    for tag in tags:
-        value = tags[tag]
-        if isinstance(value, list):
-            d[tag] = value[0]
-        else:
-            d[tag] = value
-        if tag == 'project':
-            try:
-                d[tag] = models.Project.objects.get(name=d[tag]).pk
-            except models.Project.DoesNotExist:
-                d[tag] = None
+    if tags:
+        for tag in tags:
+            value = tags[tag]
+            if isinstance(value, list):
+                d[tag] = value[0]
+            else:
+                d[tag] = value
+            if tag == 'project':
+                try:
+                    d[tag] = models.Project.objects.get(name=d[tag]).pk
+                except models.Project.DoesNotExist:
+                    d[tag] = None
 
     if not request.POST:
         form = AudiobookForm(d)
@@ -73,9 +76,10 @@ def move_to_archive(request, filename):
 
     filename_str = filename.encode('utf-8')
     old_path = os.path.join(settings.NEW_PATH, filename_str)
-    if not os.path.isdir(settings.UNMANAGED_PATH):
-        os.makedirs(settings.UNMANAGED_PATH)
     new_path = os.path.join(settings.UNMANAGED_PATH, filename_str)
+    new_dir = os.path.split(new_path)[0]
+    if not os.path.isdir(new_dir):
+        os.makedirs(new_dir)
 
     if not os.path.isfile(old_path):
         raise Http404
@@ -98,9 +102,10 @@ def move_to_new(request, filename):
 
     filename_str = filename.encode('utf-8')
     old_path = os.path.join(settings.UNMANAGED_PATH, filename_str)
-    if not os.path.isdir(settings.NEW_PATH):
-        os.makedirs(settings.NEW_PATH)
     new_path = os.path.join(settings.NEW_PATH, filename_str)
+    new_dir = os.path.split(new_path)[0]
+    if not os.path.isdir(new_dir):
+        os.makedirs(new_dir)
 
     if not os.path.isfile(old_path):
         raise Http404
@@ -197,9 +202,12 @@ def file_managed(request, id):
                 raise Http404
 
     division = 'published' if audiobook.published() else 'unpublished'
+    path = audiobook.source_file.path[len(settings.FILES_PATH):].lstrip('/')
 
     # for tags update
     tags = mutagen.File(audiobook.source_file.path)
+    if not tags:
+        tags = {}
     form = AudiobookForm(instance=audiobook)
 
     return render(request, "archive/file_managed.html", locals())
@@ -209,7 +217,7 @@ def file_managed(request, id):
 def list_unmanaged(request):
     division = 'unmanaged'
 
-    objects = sorted(os.listdir(settings.UNMANAGED_PATH))
+    objects = sorted(all_files(settings.UNMANAGED_PATH))
     return render(request, "archive/list_unmanaged.html", locals())
 
 
@@ -218,6 +226,9 @@ def file_unmanaged(request, filename):
     division = 'unmanaged'
 
     tags = mutagen.File(os.path.join(settings.UNMANAGED_PATH, filename.encode('utf-8')))
+    if not tags:
+        tags = {}
+    
     err_exists = request.GET.get('exists')
     return render(request, "archive/file_unmanaged.html", locals())
 

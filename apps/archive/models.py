@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+import os.path
 
 from django.db import models
 from jsonfield.fields import JSONField
 from django.utils.translation import ugettext_lazy as _
 from archive.constants import status
-from archive.settings import FILES_PATH, ADVERT, LICENSE, ORGANIZATION, PROJECT
+from archive.settings import FILES_SAVE_PATH, ADVERT, LICENSE, ORGANIZATION, PROJECT
 from archive.utils import OverwriteStorage
 
 # Create your models here.
@@ -25,8 +26,12 @@ class Project(models.Model):
         return self.name
 
 
+def source_upload_to(intance, filename):
+    return os.path.join(FILES_SAVE_PATH, filename) # FIXME: what about really long file names?
+
+
 class Audiobook(models.Model):
-    source_file = models.FileField(upload_to='archive/files', max_length=255, 
+    source_file = models.FileField(upload_to=source_upload_to, max_length=255, 
             verbose_name=_('source file'), editable=False)
     source_sha1 = models.CharField(max_length=40, editable=False)
 

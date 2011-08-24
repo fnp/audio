@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 import mutagen
 
 from archive.models import Audiobook
-from archive.settings import FILES_PATH
+from archive.settings import FILES_PATH, NEW_PATH
 from archive.utils import ExistingFile, sha1_file
 
 class AudiobookForm(forms.ModelForm):
@@ -15,6 +15,10 @@ class AudiobookForm(forms.ModelForm):
         model = Audiobook
 
     def save(self, commit=True, path=None):
+        """ Performs normal save, with given file as an source audiobook.
+
+            `path' is relative to NEW_PATH.
+        """
         m = super(AudiobookForm, self).save(commit=False)
         m.modified = datetime.now()
 
@@ -24,9 +28,10 @@ class AudiobookForm(forms.ModelForm):
                 os.makedirs(FILES_PATH)
             # save the file in model
 
+            abs_path = os.path.join(NEW_PATH, path)
             m.source_file.save(
-                os.path.basename(path),
-                ExistingFile(path))
+                path,
+                ExistingFile(abs_path))
 
             f = open(m.source_file.path)
             m.source_sha1 = sha1_file(f)
