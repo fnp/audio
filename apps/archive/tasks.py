@@ -157,13 +157,13 @@ class Mp3Task(AudioFormatTask):
     def encode(in_path, out_path):
         # 44.1kHz 64kbps mono MP3
         subprocess.check_call(['ffmpeg', 
-            '-i', in_path,
+            '-i', in_path.encode('utf-8'),
             '-ar', '44100',
             '-ab', '64k',
             '-ac', '1',
             '-y',
             '-acodec', 'libmp3lame',
-            out_path
+            out_path.encode('utf-8')
             ])
 
     @classmethod
@@ -190,11 +190,11 @@ class OggTask(AudioFormatTask):
     def encode(in_path, out_path):
         # 44.1kHz 64kbps mono Ogg Vorbis
         subprocess.check_call(['ffmpeg', 
-            '-i', in_path,
+            '-i', in_path.encode('utf-8'),
             '-ar', '44100',
             '-ab', '64k',
             '-ac', '1',
             '-y',
             '-acodec', 'libvorbis',
-            out_path
+            out_path.encode('utf-8')
             ])
