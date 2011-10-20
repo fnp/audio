@@ -231,9 +231,3 @@ def file_unmanaged(request, filename):
     
     err_exists = request.GET.get('exists')
     return render(request, "archive/file_unmanaged.html", locals())
-
-
-@login_required
-def logout_view(request):
-    logout(request)
-    return redirect(list_new)
