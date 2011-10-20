@@ -6,7 +6,7 @@ import os.path
 
 from archive import settings
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Max
 from django.http import Http404
@@ -31,7 +31,7 @@ def list_new(request):
     return render(request, "archive/list_new.html", locals())
 
 
-@login_required
+@permission_required('archive.change_audiobook')
 def file_new(request, filename):
     division = 'new'
 
@@ -70,7 +70,7 @@ def file_new(request, filename):
 
 
 @require_POST
-@login_required
+@permission_required('archive.change_audiobook')
 def move_to_archive(request, filename):
     """ move a new file to the unmanaged files dir """
 
@@ -96,7 +96,7 @@ def move_to_archive(request, filename):
 
 
 @require_POST
-@login_required
+@permission_required('archive.change_audiobook')
 def move_to_new(request, filename):
     """ move a unmanaged file to new files dir """
 
@@ -122,7 +122,7 @@ def move_to_new(request, filename):
 
 
 @require_POST
-@login_required
+@permission_required('archive.change_audiobook')
 def publish(request, aid):
     """ mark file for publishing """
     audiobook = get_object_or_404(models.Audiobook, id=aid)
@@ -144,7 +144,7 @@ def publish(request, aid):
 
 
 @require_POST
-@login_required
+@permission_required('archive.change_audiobook')
 def cancel_publishing(request, aid):
     """ cancel scheduled publishing """
     audiobook = get_object_or_404(models.Audiobook, id=aid)
@@ -189,7 +189,7 @@ def list_published(request):
     return render(request, "archive/list_published.html", locals())
 
 
-@login_required
+@permission_required('archive.change_audiobook')
 def file_managed(request, id):
     audiobook = get_object_or_404(models.Audiobook, id=id)
 

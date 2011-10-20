@@ -9,5 +9,6 @@
     <a {% if division = "unmanaged" %}class="active" {% endif %}href="{% url list_unmanaged %}">{% trans "Archive" %}</a>
     <a href="{% url logout %}" style='float: right;'>{% trans "Logout" %}</a>
     <a target='_blank' href='{% url admin:archive_project_changelist %}' style='float: right;'>{% trans "Projects" %}</a>
+    <span style='float: right;'>{{ user }}</span>
     <div class='clr' ></div>
 {% endblock %}

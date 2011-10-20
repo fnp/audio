@@ -105,7 +105,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django_cas.middleware.CASMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'django_cas.backends.CASBackend',
 )
 
 ROOT_URLCONF = 'audiobooks.urls'
@@ -157,6 +163,10 @@ LOGGING = {
         },
     }
 }
+
+#http://logowanie.nowoczesnapolska.org.pl/cas/'
+CAS_SERVER_URL = "http://logowanie.nowoczesnapolska.org.pl/cas/"
+CAS_VERSION = "1"
 
 
 EMAIL_SUBJECT_PREFIX = '[Audio] '

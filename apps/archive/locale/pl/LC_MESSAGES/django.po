@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-17 12:35+0200\n"
-"PO-Revision-Date: 2011-05-17 12:37+0100\n"
+"POT-Creation-Date: 2011-10-20 13:19+0200\n"
+"PO-Revision-Date: 2011-10-20 13:22+0100\n"
 "Last-Translator: Radek Czajka <radoslaw.czajka@nowoczesnapolska.org.pl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -17,96 +17,121 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 
-#: models.py:15
-#: models.py:32
+#: constants.py:10
+msgid "Waiting"
+msgstr "W kolejce"
+
+#: constants.py:11
+msgid "Encoding"
+msgstr "Konwersja"
+
+#: constants.py:12
+msgid "Tagging"
+msgstr "Opisywanie"
+
+#: constants.py:13
+msgid "Sending"
+msgstr "Wysyłanie"
+
+#: models.py:21
+#: models.py:43
 msgid "project"
 msgstr "projekt"
 
-#: models.py:16
+#: models.py:22
 msgid "projects"
 msgstr "projekty"
 
-#: models.py:24
+#: models.py:35
 msgid "source file"
 msgstr "plik źródłowy"
 
-#: models.py:26
+#: models.py:38
 msgid "title"
 msgstr "tytuł"
 
-#: models.py:27
+#: models.py:39
 msgid "artist"
 msgstr "lektor"
 
-#: models.py:28
-msgid "arranger"
-msgstr "aranżer"
+#: models.py:40
+msgid "conductor"
+msgstr "reżyser"
 
-#: models.py:29
+#: models.py:41
 msgid "encoded by"
 msgstr "przyg. techn."
 
-#: models.py:30
+#: models.py:42
 msgid "date"
 msgstr "data"
 
-#: models.py:33
+#: models.py:44
 msgid "book url"
 msgstr "URL książki"
 
-#: models.py:46
+#: models.py:45
+msgid "translator"
+msgstr "tłumacz"
+
+#: models.py:65
 msgid "audiobook"
 msgstr "audiobook"
 
-#: models.py:47
+#: models.py:66
 msgid "audiobooks"
 msgstr "audiobooki"
 
-#: templates/archive/base.html:7
+#: templates/base.html:7
 msgid "Audiobook repository"
 msgstr "Repozytorium audiobooków"
 
-#: templates/archive/base.html:12
+#: templates/archive/base.html:5
 msgid "New"
 msgstr "Nowe"
 
-#: templates/archive/base.html:13
+#: templates/archive/base.html:6
 msgid "Unpublished"
 msgstr "Nie opublikowane"
 
-#: templates/archive/base.html:14
-msgid "Published"
-msgstr "Opublikowane"
-
-#: templates/archive/base.html:15
-msgid "Archive"
-msgstr "Archiwum"
-
-#: templates/archive/file_managed.html:6
+#: templates/archive/base.html:7
+#: templates/archive/file_managed.html:11
 msgid "Publishing"
 msgstr "Publikacja"
 
-#: templates/archive/file_managed.html:9
-msgid "Audiobook marked for publishing with tags:"
-msgstr "Audiobook zaznaczony do publikacji z tagami:"
+#: templates/archive/base.html:8
+msgid "Published"
+msgstr "Opublikowane"
 
-#: templates/archive/file_managed.html:18
-msgid "Publishing already in progress."
-msgstr "Publikowanie rozpoczęte."
+#: templates/archive/base.html:9
+msgid "Archive"
+msgstr "Archiwum"
 
-#: templates/archive/file_managed.html:22
+#: templates/archive/base.html:10
+msgid "Logout"
+msgstr "Wyloguj"
+
+#: templates/archive/base.html:11
+msgid "Projects"
+msgstr "Projekty"
+
+#: templates/archive/file_managed.html:15
+msgid "Publishing pending"
+msgstr "Czeka na publikację"
+
+#: templates/archive/file_managed.html:19
 msgid "Cancel publishing"
 msgstr "Anuluj publikację"
 
-#: templates/archive/file_managed.html:37
+#: templates/archive/file_managed.html:50
 msgid "Publish"
 msgstr "Opublikuj"
 
-#: templates/archive/file_managed.html:50
+#: templates/archive/file_managed.html:79
 msgid "Update tags"
 msgstr "Uaktualnij tagi"
 
-#: templates/archive/file_managed.html:69
+#: templates/archive/file_managed.html:91
 #: templates/archive/file_new.html:19
 msgid "Commit"
 msgstr "Zatwierdź"
@@ -135,6 +160,10 @@ msgstr "Umieść nowe audiobooki w:"
 msgid "Published audiobooks"
 msgstr "Opublikowane audiobooki"
 
+#: templates/archive/list_publishing.html:6
+msgid "Audiobooks being published"
+msgstr "Aktualnie publikowane audiobooki"
+
 #: templates/archive/list_unmanaged.html:5
 msgid "Unmanaged archive"
 msgstr "Audiobooki archiwalne"
@@ -143,3 +172,15 @@ msgstr "Audiobooki archiwalne"
 msgid "Unpublished audiobooks"
 msgstr "Nie opublikowane audiobooki"
 
+#: templates/registration/login.html:9
+msgid "Login"
+msgstr "Zaloguj"
+
+#~ msgid "arranger"
+#~ msgstr "aranżer"
+
+#~ msgid "Audiobook marked for publishing with tags:"
+#~ msgstr "Audiobook zaznaczony do publikacji z tagami:"
+
+#~ msgid "Publishing already in progress."
+#~ msgstr "Publikowanie rozpoczęte."
