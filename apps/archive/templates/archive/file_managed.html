@@ -98,7 +98,8 @@ Last modified: {{ audiobook.modified }}
 
 
 
-<form method="post" action="{% url remove_to_archive audiobook.id %}">
+<form method="post" action="{% url remove_to_archive audiobook.id %}"
+    onsubmit='return confirm("{% trans "Are you sure you want to move this audiobook to archive?" %}")'>
     {% csrf_token %}
     <input type="submit" value="{% trans "Remove to archive" %}" />
 </form>
