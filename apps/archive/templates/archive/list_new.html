@@ -16,7 +16,7 @@
 {% block file-list %}
     {% for file in objects %}
         <li>
-            <a href='{% url file_new file %}'>{{ file }}</a>
+            <a href='{% url file_new file|urlencode %}'>{{ file }}</a>
         </li>
     {% endfor %}
 {% endblock %}

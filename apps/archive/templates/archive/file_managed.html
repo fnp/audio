@@ -94,5 +94,15 @@ Last modified: {{ audiobook.modified }}
 
 
 
+<hr />
+
+
+
+<form method="post" action="{% url remove_to_archive audiobook.id %}">
+    {% csrf_token %}
+    <input type="submit" value="{% trans "Remove to archive" %}" />
+</form>
+
+
 
 {% endblock %}

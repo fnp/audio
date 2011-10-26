@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-20 13:19+0200\n"
-"PO-Revision-Date: 2011-10-20 13:22+0100\n"
+"POT-Creation-Date: 2011-10-26 12:43+0200\n"
+"PO-Revision-Date: 2011-10-26 12:44+0100\n"
 "Last-Translator: Radek Czajka <radoslaw.czajka@nowoczesnapolska.org.pl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -135,6 +135,10 @@ msgstr "Uaktualnij tagi"
 #: templates/archive/file_new.html:19
 msgid "Commit"
 msgstr "Zatwierdź"
+
+#: templates/archive/file_managed.html:103
+msgid "Remove to archive"
+msgstr "Usuń do archiwum"
 
 #: templates/archive/file_new.html:8
 msgid "Move to archive"

@@ -97,6 +97,34 @@ def move_to_archive(request, filename):
 
 @require_POST
 @permission_required('archive.change_audiobook')
+def remove_to_archive(request, aid):
+    """ move a managed file to the unmanaged files dir """
+
+    audiobook = get_object_or_404(models.Audiobook, id=aid)
+    old_path = audiobook.source_file.path
+    new_path = os.path.join(settings.UNMANAGED_PATH,
+        str(audiobook.source_file)[len(settings.FILES_SAVE_PATH):].lstrip('/'))
+    new_dir = os.path.split(new_path)[0]
+    if not os.path.isdir(new_dir):
+        os.makedirs(new_dir)
+
+    if not os.path.isfile(old_path):
+        raise Http404
+
+    try:
+        os.link(old_path, new_path)
+    except OSError:
+        # destination file exists, don't overwrite it
+        # TODO: this should probably be more informative
+        return redirect(file_new, filename)
+    else:
+        os.unlink(old_path)
+        audiobook.delete()
+
+    return redirect(list_unmanaged)
+
+@require_POST
+@permission_required('archive.change_audiobook')
 def move_to_new(request, filename):
     """ move a unmanaged file to new files dir """
 

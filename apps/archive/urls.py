@@ -13,6 +13,7 @@ urlpatterns = patterns('',
     url(r'^file/(\d+)/$', 'archive.views.file_managed', name="file"),
     url(r'^publish/(\d+)/$', 'archive.views.publish', name="publish"),
     url(r'^cancel/(\d+)/$', 'archive.views.cancel_publishing', name="cancel_publishing"),
+    url(r'^remove_to_archive/(\d+)/$', 'archive.views.remove_to_archive', name="remove_to_archive"),
 
     url(r'^unmanaged/$', 'archive.views.list_unmanaged', name="list_unmanaged"),
     url(r'^unmanaged/(.+)/$', 'archive.views.file_unmanaged', name="file_unmanaged"),
