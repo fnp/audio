@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-26 12:43+0200\n"
-"PO-Revision-Date: 2011-10-26 12:44+0100\n"
+"POT-Creation-Date: 2011-10-26 12:47+0200\n"
+"PO-Revision-Date: 2011-10-26 12:47+0100\n"
 "Last-Translator: Radek Czajka <radoslaw.czajka@nowoczesnapolska.org.pl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -107,13 +107,17 @@ msgstr "Opublikowane"
 msgid "Archive"
 msgstr "Archiwum"
 
-#: templates/archive/base.html:10
-msgid "Logout"
-msgstr "Wyloguj"
-
 #: templates/archive/base.html:11
 msgid "Projects"
 msgstr "Projekty"
+
+#: templates/archive/base.html:13
+msgid "Logout"
+msgstr "Wyloguj"
+
+#: templates/archive/base.html:15
+msgid "Administration"
+msgstr "Administracja"
 
 #: templates/archive/file_managed.html:15
 msgid "Publishing pending"
