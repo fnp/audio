@@ -3,13 +3,14 @@
 from datetime import datetime
 import os
 import os.path
+from urllib import quote
 
 from archive import settings
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Max
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
@@ -181,6 +182,22 @@ def cancel_publishing(request, aid):
     audiobook.ogg_status = None
     audiobook.save()
     return redirect(file_managed, aid)
+
+
+def download(request, aid, which="source"):
+    if which not in ("source", "mp3", "ogg"):
+        raise Http404
+    audiobook = get_object_or_404(models.Audiobook, id=aid)
+    file_ = getattr(audiobook, "%s_file" % which)
+    if not file_:
+        raise Http404
+    ext = file_.path.rsplit('.', 1)[-1]
+    response = HttpResponse(mimetype='application/force-download')
+    
+    response['Content-Disposition'] = "attachment; filename*=UTF-8''%s.%s" % (
+        quote(audiobook.title.encode('utf-8'), safe=''), ext)
+    response['X-Sendfile'] = file_.path.encode('utf-8')
+    return response
 
 
 @login_required

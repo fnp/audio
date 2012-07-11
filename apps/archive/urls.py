@@ -13,6 +13,8 @@ urlpatterns = patterns('',
     url(r'^file/(\d+)/$', 'archive.views.file_managed', name="file"),
     url(r'^publish/(\d+)/$', 'archive.views.publish', name="publish"),
     url(r'^convert/(\d+)/$', 'archive.views.publish', {'publish': False}, name="convert"),
+    url(r'^download/(\d+)/$', 'archive.views.download', name="download"),
+    url(r'^download/(\d+)\.(mp3|ogg)$', 'archive.views.download', name="download"),
     url(r'^cancel/(\d+)/$', 'archive.views.cancel_publishing', name="cancel_publishing"),
     url(r'^remove_to_archive/(\d+)/$', 'archive.views.remove_to_archive', name="remove_to_archive"),
 
