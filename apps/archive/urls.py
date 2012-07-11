@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^published/$', 'archive.views.list_published', name="list_published"),
     url(r'^file/(\d+)/$', 'archive.views.file_managed', name="file"),
     url(r'^publish/(\d+)/$', 'archive.views.publish', name="publish"),
+    url(r'^convert/(\d+)/$', 'archive.views.publish', {'publish': False}, name="convert"),
     url(r'^cancel/(\d+)/$', 'archive.views.cancel_publishing', name="cancel_publishing"),
     url(r'^remove_to_archive/(\d+)/$', 'archive.views.remove_to_archive', name="remove_to_archive"),
 

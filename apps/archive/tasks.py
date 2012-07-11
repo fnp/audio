@@ -91,7 +91,7 @@ class AudioFormatTask(Task):
         except SystemExit, e:
             raise cls.RemoteOperationError
 
-    def run(self, aid):
+    def run(self, aid, publish=True):
         aid = int(aid)
         audiobook = Audiobook.objects.get(id=aid)
         self.set_status(aid, status.ENCODING)
@@ -110,11 +110,13 @@ class AudioFormatTask(Task):
         self.set_status(aid, status.TAGGING)
         self.set_tags(audiobook, out_file.name)
         self.set_status(aid, status.SENDING)
-
-        self.put(audiobook, out_file.name)
-
         self.save(audiobook, out_file.name)
-        self.published(aid)
+
+        if publish:
+            self.put(audiobook, out_file.name)
+            self.published(aid)
+        else:
+            self.set_status(aid, None)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         aid = (args[0], kwargs.get('aid'))[0]

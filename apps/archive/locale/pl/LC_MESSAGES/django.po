@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-10-26 12:56+0200\n"
-"PO-Revision-Date: 2011-10-26 12:57+0100\n"
+"POT-Creation-Date: 2012-07-11 15:51+0200\n"
+"PO-Revision-Date: 2012-07-11 15:52+0100\n"
 "Last-Translator: Radek Czajka <radoslaw.czajka@nowoczesnapolska.org.pl>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -127,24 +127,62 @@ msgstr "Czeka na publikację"
 msgid "Cancel publishing"
 msgstr "Anuluj publikację"
 
-#: templates/archive/file_managed.html:50
+#: templates/archive/file_managed.html:51
 msgid "Publish"
 msgstr "Opublikuj"
 
-#: templates/archive/file_managed.html:79
+#: templates/archive/file_managed.html:57
+msgid "Convert without publishing"
+msgstr "Konwertuj bez publikacji"
+
+#: templates/archive/file_managed.html:67
+msgid "MP3 file"
+msgstr "Plik MP3"
+
+#: templates/archive/file_managed.html:68
+msgid "Download MP3 file."
+msgstr "Pobierz plik MP3."
+
+#: templates/archive/file_managed.html:70
+#: templates/archive/file_managed.html:84
+msgid "Published:"
+msgstr "Opublikowano:"
+
+#: templates/archive/file_managed.html:73
+#: templates/archive/file_managed.html:87
+msgid "Not published yet."
+msgstr "Nie opublikowane."
+
+#: templates/archive/file_managed.html:76
+msgid "MP3 file hasn't been generated yet."
+msgstr "Plik MP3 nie został jeszcze wygenerowany."
+
+#: templates/archive/file_managed.html:81
+msgid "Ogg Vorbis file"
+msgstr "Plik Ogg Vorbis"
+
+#: templates/archive/file_managed.html:82
+msgid "Download Ogg Vorbis file."
+msgstr "Pobierz plik Ogg Vorbis."
+
+#: templates/archive/file_managed.html:90
+msgid "Ogg Vorbis file hasn't been generated yet."
+msgstr "Plik Ogg Vorbis nie został jeszcze wygenerowany."
+
+#: templates/archive/file_managed.html:101
 msgid "Update tags"
 msgstr "Uaktualnij tagi"
 
-#: templates/archive/file_managed.html:91
+#: templates/archive/file_managed.html:113
 #: templates/archive/file_new.html:19
 msgid "Commit"
 msgstr "Zatwierdź"
 
-#: templates/archive/file_managed.html:102
+#: templates/archive/file_managed.html:124
 msgid "Are you sure you want to move this audiobook to archive?"
 msgstr "Czy na pewno chcesz przenieść ten plik to archiwum?"
 
-#: templates/archive/file_managed.html:104
+#: templates/archive/file_managed.html:126
 msgid "Remove to archive"
 msgstr "Usuń do archiwum"
 

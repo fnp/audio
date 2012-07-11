@@ -151,7 +151,7 @@ def move_to_new(request, filename):
 
 @require_POST
 @permission_required('archive.change_audiobook')
-def publish(request, aid):
+def publish(request, aid, publish=True):
     """ mark file for publishing """
     audiobook = get_object_or_404(models.Audiobook, id=aid)
     tags = {
@@ -164,8 +164,8 @@ def publish(request, aid):
     audiobook.mp3_status = audiobook.ogg_status = status.WAITING
     audiobook.save()
     # isn't there a race here?
-    audiobook.mp3_task = tasks.Mp3Task.delay(aid).task_id
-    audiobook.ogg_task = tasks.OggTask.delay(aid).task_id
+    audiobook.mp3_task = tasks.Mp3Task.delay(aid, publish).task_id
+    audiobook.ogg_task = tasks.OggTask.delay(aid, publish).task_id
     audiobook.save()
 
     return redirect(file_managed, aid)

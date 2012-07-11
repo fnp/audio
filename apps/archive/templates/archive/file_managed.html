@@ -42,30 +42,52 @@
 
 
 {% else %}
-    <form method="post" action="{% url publish audiobook.id %}">
     <table class='tags'>
         {% tags_table audiobook.new_publish_tags 0 %}
+        <tr><th></th><td>
 
-        {% csrf_token %}
-        <tr><th></th><td><input type="submit" value="{% trans "Publish" %}" /></td></tr>
+            <form method="post" action="{% url publish audiobook.id %}">
+                {% csrf_token %}
+                <input type="submit" value="{% trans "Publish" %}" />
+            </form>
+
+            {% if not audiobook.mp3_published or not audiobook.ogg_published %}
+            <form method="post" action="{% url convert audiobook.id %}">
+                {% csrf_token %}
+                <input type="submit" value="{% trans "Convert without publishing" %}" />
+            </form>
+            {% endif %}
+
+        </td></tr>
     </table>
-    </form>
 {% endif %}
 
 <hr/>
-{% if audiobook.mp3_published %}
-    <h2>Published MP3</h2>
-    <a href="{{ audiobook.mp3_file.url }}">{{ audiobook.mp3_published }}</a>
-    {% tags_table audiobook.mp3_published_tags.tags %}
-{% else %}<p>MP3 file hasn't been published yet.</p>
+{% if audiobook.mp3_file %}
+    <h2>{% trans "MP3 file" %}</h2>
+    <p><a href="{{ audiobook.mp3_file.url }}">{% trans "Download MP3 file." %}</a></p>
+    {% if audiobook.mp3_published %}
+        <p>{% trans "Published:" %} {{ audiobook.mp3_published }}</a></p>
+        {% tags_table audiobook.mp3_published_tags.tags %}
+    {% else %}
+        <p>{% trans "Not published yet." %}</p>
+    {% endif %}
+{% else %}
+    <p>{% trans "MP3 file hasn't been generated yet." %}</p>
 {% endif %}
 
 <hr/>
-{% if audiobook.ogg_published %}
-    <h2>Published Ogg Vorbis</h2>
-    <a href="{{ audiobook.ogg_file.url }}">{{ audiobook.ogg_published }}</a>
-    {% tags_table audiobook.ogg_published_tags.tags %}
-{% else %}Ogg Vorbis file hasn't been published yet.
+{% if audiobook.ogg_file %}
+    <h2>{% trans "Ogg Vorbis file" %}</h2>
+    <p><a href="{{ audiobook.ogg_file.url }}">{% trans "Download Ogg Vorbis file." %}</a></p>
+    {% if audiobook.ogg_published %}
+        <p>{% trans "Published:" %} {{ audiobook.ogg_published }}</a></p>
+        {% tags_table audiobook.ogg_published_tags.tags %}
+    {% else %}
+        <p>{% trans "Not published yet." %}</p>
+    {% endif %}
+{% else %}
+    <p>{% trans "Ogg Vorbis file hasn't been generated yet." %}</p>
 {% endif %}
 
 
