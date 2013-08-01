@@ -1,7 +1,8 @@
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
+from django.views.generic import RedirectView
 
 urlpatterns = patterns('',
-    url(r'^$', 'django.views.generic.simple.redirect_to', {'url': 'new/'}),
+    url(r'^$', RedirectView.as_view(url='new/')),
 
     url(r'^new/$', 'archive.views.list_new', name="list_new"),
     url(r'^new/(.+)/$', 'archive.views.file_new', name="file_new"),

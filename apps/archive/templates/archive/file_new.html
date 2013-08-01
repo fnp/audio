@@ -3,7 +3,7 @@
 
 {% block content %}
 
-<form method="post" action="{% url move_to_archive filename %}">
+<form method="post" action="{% url 'move_to_archive' filename %}">
     {% csrf_token %}
     <input type="submit" value="{% trans "Move to archive" %}" />
 </form>

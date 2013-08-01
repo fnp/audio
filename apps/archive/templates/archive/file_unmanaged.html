@@ -23,7 +23,7 @@
 </ul>
 
 
-<form method="post" action="{% url move_to_new filename %}">
+<form method="post" action="{% url 'move_to_new' filename %}">
     {% csrf_token %}
     <input type="submit" value="{% trans "Move to new files" %}" />
 </form>

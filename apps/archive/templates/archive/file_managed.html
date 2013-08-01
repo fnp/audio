@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<p>Plik źródłowy: <a href='{% url download audiobook.id %}'>{{ path }}</a>
+<p>Plik źródłowy: <a href='{% url "download" audiobook.id %}'>{{ path }}</a>
 (sha1: <tt>{{ audiobook.source_sha1 }}</tt>).
 </p>
 
@@ -14,7 +14,7 @@
 
 <h2>{% trans "Publishing pending" %}</h2>
 
-<form method="post" action="{% url cancel_publishing audiobook.id %}">
+<form method="post" action="{% url 'cancel_publishing' audiobook.id %}">
     {% csrf_token %}
     <input type="submit" value="{% trans "Cancel publishing" %}" />
 </form>
@@ -46,13 +46,13 @@
         {% tags_table audiobook.new_publish_tags 0 %}
         <tr><th></th><td>
 
-            <form method="post" action="{% url publish audiobook.id %}">
+            <form method="post" action="{% url 'publish' audiobook.id %}">
                 {% csrf_token %}
                 <input type="submit" value="{% trans "Publish" %}" />
             </form>
 
             {% if not audiobook.mp3_published or not audiobook.ogg_published %}
-            <form method="post" action="{% url convert audiobook.id %}">
+            <form method="post" action="{% url 'convert' audiobook.id %}">
                 {% csrf_token %}
                 <input type="submit" value="{% trans "Convert without publishing" %}" />
             </form>
@@ -65,7 +65,7 @@
 <hr/>
 {% if audiobook.mp3_file %}
     <h2>{% trans "MP3 file" %}</h2>
-    <p><a href="{% url download audiobook.id 'mp3' %}">{% trans "Download MP3 file." %}</a></p>
+    <p><a href="{% url 'download' audiobook.id 'mp3' %}">{% trans "Download MP3 file." %}</a></p>
     {% if audiobook.mp3_published %}
         <p>{% trans "Published:" %} {{ audiobook.mp3_published }}</a></p>
         {% if audiobook.mp3_published_tags.tags %}
@@ -81,7 +81,7 @@
 <hr/>
 {% if audiobook.ogg_file %}
     <h2>{% trans "Ogg Vorbis file" %}</h2>
-    <p><a href="{% url download audiobook.id 'ogg' %}">{% trans "Download Ogg Vorbis file." %}</a></p>
+    <p><a href="{% url 'download' audiobook.id 'ogg' %}">{% trans "Download Ogg Vorbis file." %}</a></p>
     {% if audiobook.ogg_published %}
         <p>{% trans "Published:" %} {{ audiobook.ogg_published }}</a></p>
         {% if audiobook.ogg_published_tags.tags %}
@@ -124,7 +124,7 @@ Last modified: {{ audiobook.modified }}
 
 
 
-<form method="post" action="{% url remove_to_archive audiobook.id %}"
+<form method="post" action="{% url 'remove_to_archive' audiobook.id %}"
     onsubmit='return confirm("{% trans "Are you sure you want to move this audiobook to archive?" %}")'>
     {% csrf_token %}
     <input type="submit" value="{% trans "Remove to archive" %}" />

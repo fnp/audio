@@ -14,7 +14,7 @@
 {% block file-list %}
     {% for file in objects %}
         <li>
-            <a href='{% url file file.id %}'>{{ file }}</a>
+            <a href='{% url "file" file.id %}'>{{ file }}</a>
 
             {% if file.mp3_published %}
                 <span class="list-published-tag" title="{{ file.mp3_published }}">MP3</span>
