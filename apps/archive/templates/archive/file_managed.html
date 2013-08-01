@@ -68,7 +68,9 @@
     <p><a href="{% url download audiobook.id 'mp3' %}">{% trans "Download MP3 file." %}</a></p>
     {% if audiobook.mp3_published %}
         <p>{% trans "Published:" %} {{ audiobook.mp3_published }}</a></p>
-        {% tags_table audiobook.mp3_published_tags.tags %}
+        {% if audiobook.mp3_published_tags.tags %}
+            {% tags_table audiobook.mp3_published_tags.tags %}
+        {% endif %}
     {% else %}
         <p>{% trans "Not published yet." %}</p>
     {% endif %}
@@ -82,7 +84,9 @@
     <p><a href="{% url download audiobook.id 'ogg' %}">{% trans "Download Ogg Vorbis file." %}</a></p>
     {% if audiobook.ogg_published %}
         <p>{% trans "Published:" %} {{ audiobook.ogg_published }}</a></p>
-        {% tags_table audiobook.ogg_published_tags.tags %}
+        {% if audiobook.ogg_published_tags.tags %}
+            {% tags_table audiobook.ogg_published_tags.tags %}
+        {% endif %}
     {% else %}
         <p>{% trans "Not published yet." %}</p>
     {% endif %}

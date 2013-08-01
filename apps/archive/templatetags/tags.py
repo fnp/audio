@@ -16,4 +16,6 @@ def multiple_tags_table(tags, table=True):
 
 @register.inclusion_tag('archive/tags/tags_table.html')
 def tags_table(tags, table=True):
+    if tags is None:
+        tags = {}
     return locals()

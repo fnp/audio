@@ -4,6 +4,7 @@ import mimetypes
 import os
 import os.path
 import pipes
+import stat
 import subprocess
 from tempfile import NamedTemporaryFile
 from time import sleep
@@ -58,6 +59,7 @@ class AudioFormatTask(Task):
             ExistingFile(file_name),
             save=False
             )
+        os.chmod(getattr(audiobook, field).path, stat.S_IREAD|stat.S_IWRITE|stat.S_IRGRP|stat.S_IROTH)
         Audiobook.objects.filter(pk=audiobook.pk).update(
             **{field: getattr(audiobook, field)})
 
@@ -110,13 +112,14 @@ class AudioFormatTask(Task):
         self.set_status(aid, status.TAGGING)
         self.set_tags(audiobook, out_file.name)
         self.set_status(aid, status.SENDING)
-        self.save(audiobook, out_file.name)
 
         if publish:
             self.put(audiobook, out_file.name)
             self.published(aid)
         else:
             self.set_status(aid, None)
+
+        self.save(audiobook, out_file.name)
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         aid = (args[0], kwargs.get('aid'))[0]

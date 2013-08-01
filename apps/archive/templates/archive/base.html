@@ -10,10 +10,16 @@
     {% if user.is_staff %}
         <a href='{% url admin:archive_project_changelist %}'>{% trans "Projects" %}</a>
     {% endif %}
-    <a href="{% url logout %}" style='float: right;'>{% trans "Logout" %}</a>
+    {% if user.is_authenticated %}
+        <a href="{% url logout %}" style='float: right;'>{% trans "Logout" %}</a>
+    {% else %}
+        <a href="{% url login %}" style='float: right;'>{% trans "Login" %}</a>
+    {% endif %}
     {% if user.is_staff %}
         <a href='{% url admin:index %}' style='float: right;'>{% trans "Administration" %}</a>
     {% endif %}
-    <span style='float: right;'>{{ user }}</span>
+    {% if user.is_authenticated %}
+        <span style='float: right;'>{{ user }}</span>
+    {% endif %}
     <div class='clr' ></div>
 {% endblock %}

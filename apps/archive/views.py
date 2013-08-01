@@ -7,7 +7,7 @@ from urllib import quote
 
 from archive import settings
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Max
 from django.http import Http404, HttpResponse
@@ -23,7 +23,6 @@ from archive import tasks
 from archive.utils import all_files
 
 
-@login_required
 def list_new(request):
     division = 'new'
 
@@ -200,7 +199,6 @@ def download(request, aid, which="source"):
     return response
 
 
-@login_required
 def list_unpublished(request):
     division = 'unpublished'
 
@@ -208,7 +206,6 @@ def list_unpublished(request):
     return render(request, "archive/list_unpublished.html", locals())
 
 
-@login_required
 def list_publishing(request):
     division = 'publishing'
 
@@ -226,7 +223,6 @@ def list_publishing(request):
     return render(request, "archive/list_publishing.html", locals())
 
 
-@login_required
 def list_published(request):
     division = 'published'
 
@@ -258,7 +254,6 @@ def file_managed(request, id):
     return render(request, "archive/file_managed.html", locals())
 
 
-@login_required
 def list_unmanaged(request):
     division = 'unmanaged'
 
@@ -266,7 +261,6 @@ def list_unmanaged(request):
     return render(request, "archive/list_unmanaged.html", locals())
 
 
-@login_required
 def file_unmanaged(request, filename):
     division = 'unmanaged'
 
