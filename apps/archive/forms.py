@@ -5,6 +5,7 @@ import os.path
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 import mutagen
+from django.utils.encoding import force_bytes
 
 from archive.models import Audiobook
 from archive.settings import FILES_PATH, NEW_PATH
@@ -33,9 +34,9 @@ class AudiobookForm(forms.ModelForm):
                 path,
                 ExistingFile(abs_path))
 
-            f = open(m.source_file.path)
-            m.source_sha1 = sha1_file(f)
-            f.close()
+#            f = open(force_bytes(m.source_file.path))
+#            m.source_sha1 = sha1_file(f)
+#            f.close()
 
         if commit:
             m.save()

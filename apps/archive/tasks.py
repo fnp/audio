@@ -46,8 +46,11 @@ class AudioFormatTask(Task):
 
     @classmethod
     def set_tags(cls, audiobook, file_name):
+        tags = getattr(audiobook, "%s_tags" % cls.ext)['tags']
+        if not tags.get('flac_sha1'):
+            tags['flac_sha1'] = audiobook.get_source_sha1()
         audio = File(file_name)
-        for k, v in getattr(audiobook, "%s_tags" % cls.ext)['tags'].items():
+        for k, v in tags.items():
             audio[k] = v
         audio.save()
 
@@ -173,8 +176,11 @@ class Mp3Task(AudioFormatTask):
 
     @classmethod
     def set_tags(cls, audiobook, file_name):
+        mp3_tags = audiobook.mp3_tags['tags']
+        if not mp3_tags.get('flac_sha1'):
+            mp3_tags['flac_sha1'] = audiobook.get_source_sha1()
         audio = id3.ID3(file_name)
-        for k, v in audiobook.mp3_tags['tags'].items():
+        for k, v in mp3_tags.items():
             factory_tuple = cls.TAG_MAP[k]
             factory, tagtype = factory_tuple[:2]
             audio.add(factory(tagtype, v, *factory_tuple[2:]))

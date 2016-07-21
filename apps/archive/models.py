@@ -2,11 +2,13 @@
 import os.path
 
 from django.db import models
+from time import sleep
 from jsonfield.fields import JSONField
+from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 from archive.constants import status
 from archive.settings import FILES_SAVE_PATH, ADVERT, LICENSE, ORGANIZATION, PROJECT
-from archive.utils import OverwriteStorage
+from archive.utils import OverwriteStorage, sha1_file
 
 # Create your models here.
 
@@ -72,6 +74,30 @@ class Audiobook(models.Model):
     def published(self):
         return self.mp3_published and self.ogg_published
 
+    def get_source_sha1(self):
+        source_sha1 = self.source_sha1
+        if self.pk:
+            source_sha1 = type(self).objects.get(pk=self.pk).source_sha1
+            while source_sha1 == 'wait':
+                sleep(10)
+        if not source_sha1:
+            self.source_sha1 = 'wait'
+            if self.pk:
+                type(self).objects.filter(pk=self.pk).update(source_sha1='wait')
+            try:
+                f = open(force_bytes(self.source_file.path))
+                source_sha1 = sha1_file(f)
+                self.source_sha1 = source_sha1
+                if self.pk:
+                    type(self).objects.filter(pk=self.pk).update(source_sha1=source_sha1)
+            except:
+                self.source_sha1 = ''
+                if self.pk:
+                    type(self).objects.filter(pk=self.pk).update(source_sha1='')
+                return None
+        return source_sha1
+
+
     def new_publish_tags(self):
         title = self.title
         if self.translator:
@@ -85,7 +111,7 @@ class Audiobook(models.Model):
                     u" finansowanego przez %s" % self.project.sponsors if self.project.sponsors else "",
                     ADVERT)
 
-        return {
+        tags = {
             'album': PROJECT,
             'albumartist': ORGANIZATION,
             'artist': self.artist,
@@ -99,7 +125,11 @@ class Audiobook(models.Model):
             'license': LICENSE,
             'organization': ORGANIZATION,
             'title': title,
-            'flac_sha1': self.source_sha1,
+            #'flac_sha1': self.get_source_sha1(),
             'project': self.project.name,
             'funded_by': self.project.sponsors,
         }
+        if self.source_sha1 and self.source_sha1 != 'wait':
+            tags['flac_sha1'] = self.source_sha1
+        return tags
+

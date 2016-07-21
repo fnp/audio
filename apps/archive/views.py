@@ -111,15 +111,22 @@ def remove_to_archive(request, aid):
     if not os.path.isfile(old_path):
         raise Http404
 
-    try:
-        os.link(old_path, new_path)
-    except OSError:
-        # destination file exists, don't overwrite it
-        # TODO: this should probably be more informative
-        return redirect(file_new, filename)
-    else:
-        os.unlink(old_path)
-        audiobook.delete()
+    success = False
+    try_new_path = new_path
+    try_number = 0
+    while not success:
+        try:
+            os.link(old_path, try_new_path)
+        except OSError:
+            # destination file exists, don't overwrite it
+            try_number += 1
+            parts = new_path.rsplit('.', 1)
+            parts[0] += '_%d' % try_number
+            try_new_path = ".".join(parts)
+        else:
+            os.unlink(old_path)
+            audiobook.delete()
+            success = True
 
     return redirect(list_unmanaged)
 
@@ -246,7 +253,7 @@ def file_managed(request, id):
     path = audiobook.source_file.path[len(settings.FILES_PATH):].lstrip('/')
 
     # for tags update
-    tags = mutagen.File(audiobook.source_file.path)
+    tags = mutagen.File(audiobook.source_file.path.encode('utf-8'))
     if not tags:
         tags = {}
     form = AudiobookForm(instance=audiobook)
