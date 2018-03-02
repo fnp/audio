@@ -38,6 +38,10 @@ class Audiobook(models.Model):
     source_sha1 = models.CharField(max_length=40, editable=False)
 
     title = models.CharField(max_length=255, verbose_name=_('title'))
+    part_name = models.CharField(max_length=255, verbose_name=_('part name'), help_text=_('eg. chapter in a novel'),
+                                 default='', blank=True)
+    index = models.IntegerField(verbose_name=_('index'), default=0)
+    parts_count = models.IntegerField(verbose_name=_('parts count'), default=1)
     artist = models.CharField(max_length=255, verbose_name=_('artist'))
     conductor = models.CharField(max_length=255, verbose_name=_('conductor'))
     encoded_by = models.CharField(max_length=255, verbose_name=_('encoded by'))

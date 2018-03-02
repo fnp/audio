@@ -1,7 +1,7 @@
 -i https://py.mdrn.pl:8443/simple
 
 django>=1.5,<1.6
-django-jsonfield
+django-jsonfield==0.9.10
 South>=0.7
 django-cas==2.1.1.1
 

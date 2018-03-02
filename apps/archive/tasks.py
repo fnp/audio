@@ -81,10 +81,13 @@ class AudioFormatTask(Task):
         tags = getattr(audiobook, "%s_tags" % cls.ext)
         prefix, slug = tags['url'].rstrip('/').rsplit('/', 1)
         name = tags['name']
-        command = UPLOAD_CMD + (u' %s %s %s > output.txt' % (
+        command = UPLOAD_CMD + (u' %s %s %s %s %s %s > output.txt' % (
             pipes.quote(os.path.join(UPLOAD_PATH, os.path.basename(path))),
             pipes.quote(slug),
-            pipes.quote(name)
+            pipes.quote(name),
+            pipes.quote(audiobook.part_name),
+            audiobook.index,
+            audiobook.parts_count,
             )).encode('utf-8')
         try:
             api.put(path, UPLOAD_PATH)
