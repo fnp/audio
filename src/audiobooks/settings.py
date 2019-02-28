@@ -7,7 +7,6 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -91,12 +90,20 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '8ehk^-+pr(o)k6lh_gl9+ks6gkd9u#fka7fv%ikpk(c%llqa6%'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -114,12 +121,6 @@ AUTHENTICATION_BACKENDS = (
 
 ROOT_URLCONF = 'audiobooks.urls'
 
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -127,15 +128,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 
-    'djcelery',
-    'djkombu',
-
-    'south',
     'archive',
 )
 
@@ -168,29 +164,17 @@ LOGGING = {
     }
 }
 
-#http://logowanie.nowoczesnapolska.org.pl/cas/'
-CAS_SERVER_URL = "http://logowanie.nowoczesnapolska.org.pl/cas/"
+CAS_SERVER_URL = "https://logowanie.nowoczesnapolska.org.pl/cas/"
 CAS_VERSION = "1"
-
 
 EMAIL_SUBJECT_PREFIX = '[Audio] '
 SERVER_EMAIL = 'no-reply@audio.wolnelektury.pl'
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 25
 
-import djcelery
-djcelery.setup_loader()
-
-CELERY_SEND_TASK_ERROR_EMAILS = True
-BROKER_BACKEND = "djkombu.transport.DatabaseTransport"
-BROKER_HOST = "localhost"
-BROKER_PORT = 5672
-BROKER_USER = "guest"
-BROKER_PASSWORD = "guest"
-BROKER_VHOST = "/"
-
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 try:
-    from localsettings import *
+    from .localsettings import *
 except:
     pass

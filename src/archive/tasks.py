@@ -96,7 +96,7 @@ class AudioFormatTask(Task):
             else:
                 api.run(command)
             disconnect_all()
-        except SystemExit, e:
+        except SystemExit as e:
             raise cls.RemoteOperationError
 
     def run(self, aid, publish=True):

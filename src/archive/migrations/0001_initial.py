@@ -1,80 +1,73 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        
-        # Adding model 'Project'
-        db.create_table('archive_project', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=128, db_index=True)),
-            ('sponsors', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('archive', ['Project'])
-
-        # Adding model 'Audiobook'
-        db.create_table('archive_audiobook', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('source_file', self.gf('django.db.models.fields.files.FileField')(max_length=100)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('artist', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('conductor', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('encoded_by', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('date', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['archive.Project'])),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=255)),
-            ('modified', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('published_tags', self.gf('jsonfield.fields.JSONField')(null=True)),
-            ('mp3_file', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True)),
-            ('ogg_file', self.gf('django.db.models.fields.files.FileField')(max_length=100, null=True)),
-            ('publishing_tags', self.gf('jsonfield.fields.JSONField')(null=True)),
-            ('publish_wait', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-            ('publishing', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('published', self.gf('django.db.models.fields.DateTimeField')(null=True)),
-        ))
-        db.send_create_signal('archive', ['Audiobook'])
+from django.db import models, migrations
+import archive.utils
+import jsonfield.fields
+import archive.models
 
 
-    def backwards(self, orm):
-        
-        # Deleting model 'Project'
-        db.delete_table('archive_project')
+class Migration(migrations.Migration):
 
-        # Deleting model 'Audiobook'
-        db.delete_table('archive_audiobook')
+    dependencies = [
+    ]
 
-
-    models = {
-        'archive.audiobook': {
-            'Meta': {'ordering': "('title',)", 'object_name': 'Audiobook'},
-            'artist': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'conductor': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'date': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'encoded_by': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'modified': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
-            'mp3_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True'}),
-            'ogg_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100', 'null': 'True'}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['archive.Project']"}),
-            'publish_wait': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
-            'published': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
-            'published_tags': ('jsonfield.fields.JSONField', [], {'null': 'True'}),
-            'publishing': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'publishing_tags': ('jsonfield.fields.JSONField', [], {'null': 'True'}),
-            'source_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '255'})
-        },
-        'archive.project': {
-            'Meta': {'ordering': "('name',)", 'object_name': 'Project'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '128', 'db_index': 'True'}),
-            'sponsors': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
-        }
-    }
-
-    complete_apps = ['archive']
+    operations = [
+        migrations.CreateModel(
+            name='Audiobook',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('source_file', models.FileField(verbose_name='source file', max_length=255, editable=False, upload_to=archive.models.source_upload_to)),
+                ('source_sha1', models.CharField(max_length=40, editable=False)),
+                ('title', models.CharField(max_length=255, verbose_name='title')),
+                ('part_name', models.CharField(default=b'', help_text='eg. chapter in a novel', max_length=255, verbose_name='part name', blank=True)),
+                ('index', models.IntegerField(default=0, verbose_name='index')),
+                ('parts_count', models.IntegerField(default=1, verbose_name='parts count')),
+                ('artist', models.CharField(max_length=255, verbose_name='artist')),
+                ('conductor', models.CharField(max_length=255, verbose_name='conductor')),
+                ('encoded_by', models.CharField(max_length=255, verbose_name='encoded by')),
+                ('date', models.CharField(max_length=255, verbose_name='date')),
+                ('url', models.URLField(max_length=255, verbose_name='book url')),
+                ('translator', models.CharField(max_length=255, null=True, verbose_name='translator', blank=True)),
+                ('modified', models.DateTimeField(null=True, editable=False)),
+                ('mp3_status', models.SmallIntegerField(null=True, editable=False, choices=[(1, 'Waiting'), (2, 'Encoding'), (3, 'Tagging'), (4, 'Sending')])),
+                ('mp3_task', models.CharField(max_length=64, null=True, editable=False)),
+                ('mp3_tags', jsonfield.fields.JSONField(null=True, editable=False)),
+                ('mp3_file', models.FileField(storage=archive.utils.OverwriteStorage(), upload_to=b'archive/final', null=True, editable=False)),
+                ('mp3_published_tags', jsonfield.fields.JSONField(null=True, editable=False)),
+                ('mp3_published', models.DateTimeField(null=True, editable=False)),
+                ('ogg_status', models.SmallIntegerField(null=True, editable=False, choices=[(1, 'Waiting'), (2, 'Encoding'), (3, 'Tagging'), (4, 'Sending')])),
+                ('ogg_task', models.CharField(max_length=64, null=True, editable=False)),
+                ('ogg_tags', jsonfield.fields.JSONField(null=True, editable=False)),
+                ('ogg_file', models.FileField(storage=archive.utils.OverwriteStorage(), upload_to=b'archive/final', null=True, editable=False)),
+                ('ogg_published_tags', jsonfield.fields.JSONField(null=True, editable=False)),
+                ('ogg_published', models.DateTimeField(null=True, editable=False)),
+            ],
+            options={
+                'ordering': ('title',),
+                'verbose_name': 'audiobook',
+                'verbose_name_plural': 'audiobooks',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Project',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(unique=True, max_length=128, verbose_name=b'Nazwa', db_index=True)),
+                ('sponsors', models.TextField(null=True, verbose_name=b'Sponsorzy', blank=True)),
+            ],
+            options={
+                'ordering': ('name',),
+                'verbose_name': 'project',
+                'verbose_name_plural': 'projects',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='audiobook',
+            name='project',
+            field=models.ForeignKey(verbose_name='project', to='archive.Project'),
+            preserve_default=True,
+        ),
+    ]

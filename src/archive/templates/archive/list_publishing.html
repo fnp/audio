@@ -15,7 +15,7 @@
             {% for file in objects %}
             <li>
                 <a href='{% url "file" file.id %}'>{{ file }}</a>
-                ({% if file.mp3_status = k.0 %}MP3{% if file.ogg_status = k.0 %}, {% endif %}{% endif %}{% if file.ogg_status = k.0 %}Ogg{% endif %})
+                ({% if file.mp3_status == k.0 %}MP3{% if file.ogg_status == k.0 %}, {% endif %}{% endif %}{% if file.ogg_status == k.0 %}Ogg{% endif %})
             </li>
             {% endfor %}
         </ul>

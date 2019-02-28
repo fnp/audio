@@ -25,7 +25,7 @@ class OverwriteStorage(FileSystemStorage):
             self.delete(name)
         return super(OverwriteStorage, self)._save(name, content)
 
-    def get_available_name(self, name):
+    def get_available_name(self, name, max_length):
         return name
 
 
@@ -39,6 +39,6 @@ def sha1_file(f):
 def all_files(root_path):
     root_len = len(root_path)
     for path, dirs, files in os.walk(root_path):
-	for fname in files:
-	    yield os.path.join(path, fname)[root_len:].lstrip('/')
+        for fname in files:
+            yield os.path.join(path, fname)[root_len:].lstrip('/')
 

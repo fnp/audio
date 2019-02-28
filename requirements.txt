@@ -1,13 +1,14 @@
 -i https://py.mdrn.pl:8443/simple
 
-django>=1.5,<1.6
-django-jsonfield==0.9.10
-South>=0.7
+django>=1.11,<2.0
+jsonfield==2.0.2
 django-cas==2.1.1.1
 
-django-celery
-django-kombu
+celery[redis]==4.2
+kombu
+redis
+vine
 
 paramiko>=1.7.7.1 # fabric dependency with http://code.fabfile.org/issues/show/214 fixed
-fabric>=1.0
+fabric>=1.0,<2
 mutagen

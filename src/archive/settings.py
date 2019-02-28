@@ -17,8 +17,9 @@ except AttributeError:
     FILES_PATH = os.path.abspath(os.path.join(settings.MEDIA_ROOT,
                         "archive/files"))
 
-if FILES_PATH.startswith(settings.MEDIA_ROOT):
-    FILES_SAVE_PATH = FILES_PATH[len(settings.MEDIA_ROOT):].lstrip('/')
+_media_root = os.path.abspath(settings.MEDIA_ROOT)
+if FILES_PATH.startswith(_media_root):
+    FILES_SAVE_PATH = FILES_PATH[len(_media_root):].lstrip('/')
 
 
 # here the app keeps the unmanaged (archive) files
