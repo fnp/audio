@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
-PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
-sys.path.insert(0, os.path.join(PROJECT_ROOT, "../apps"))
+PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
 
@@ -53,7 +51,7 @@ USE_L10N = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, '../media')
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, '../media/')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
