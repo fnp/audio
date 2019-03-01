@@ -46,10 +46,14 @@
         {% tags_table audiobook.new_publish_tags 0 %}
         <tr><th></th><td>
 
-            <form method="post" action="{% url 'publish' audiobook.id %}">
-                {% csrf_token %}
-                <input type="submit" value="{% trans "Publish" %}" />
-            </form>
+            {% if user_can_publish %}
+                <form method="post" action="{% url 'publish' audiobook.id %}">
+                    {% csrf_token %}
+                    <input type="submit" value="{% trans "Publish" %}" />
+                </form>
+            {% else %}
+                <a href="{% url 'apiclient_oauth' %}">Podłącz się</a>
+            {% endif %}
 
             {% if not audiobook.mp3_published or not audiobook.ogg_published %}
             <form method="post" action="{% url 'convert' audiobook.id %}">

@@ -10,6 +10,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='archive/', permanent=False)),
     url(r'^archive/', include('archive.urls')),
+    url(r'^publish/', include('apiclient.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/login/$', django_cas.views.login, name='login'),

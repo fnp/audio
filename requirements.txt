@@ -9,6 +9,6 @@ kombu
 redis
 vine
 
-paramiko>=1.7.7.1 # fabric dependency with http://code.fabfile.org/issues/show/214 fixed
-fabric>=1.0,<2
 mutagen
+requests
+requests-oauthlib

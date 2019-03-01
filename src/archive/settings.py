@@ -45,36 +45,11 @@ except AttributeError:
     BUILD_PATH = os.path.abspath(os.path.join(settings.MEDIA_ROOT,
                         "archive/build"))
 
-# upload conf
-try:
-    UPLOAD_HOST = settings.ARCHIVE_UPLOAD_HOST
-except AttributeError:
-    UPLOAD_HOST = 'wolnelektury.pl'
-
-try:
-    UPLOAD_USER = settings.ARCHIVE_UPLOAD_USER
-except AttributeError:
-    UPLOAD_USER = 'username'
-
-try:
-    UPLOAD_PASSWORD = settings.ARCHIVE_UPLOAD_PASSWORD
-except AttributeError:
-    UPLOAD_PASSWORD = None
-
-try:
-    UPLOAD_PATH = settings.ARCHIVE_UPLOAD_PATH
-except AttributeError:
-    UPLOAD_PATH = ''
-
-try:
-    UPLOAD_CMD = settings.ARCHIVE_UPLOAD_CMD
-except AttributeError:
-    UPLOAD_CMD = '/path/to/manage.py savemedia'
-
-try:
-    UPLOAD_SUDO = settings.ARCHIVE_UPLOAD_SUDO
-except AttributeError:
-    UPLOAD_SUDO = None
+UPLOAD_URL = getattr(
+    settings,
+    'ARCHIVE_UPLOAD_URL',
+    'audiobooks/'
+)
 
 
 try:

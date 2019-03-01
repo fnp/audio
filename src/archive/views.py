@@ -171,8 +171,8 @@ def publish(request, aid, publish=True):
     audiobook.mp3_status = audiobook.ogg_status = status.WAITING
     audiobook.save()
     # isn't there a race here?
-    audiobook.mp3_task = tasks.Mp3Task.delay(aid, publish).task_id
-    audiobook.ogg_task = tasks.OggTask.delay(aid, publish).task_id
+    audiobook.mp3_task = tasks.Mp3Task.delay(request.user.id, aid, publish).task_id
+    audiobook.ogg_task = tasks.OggTask.delay(request.user.id, aid, publish).task_id
     audiobook.save()
 
     return redirect(file_managed, aid)
@@ -257,6 +257,10 @@ def file_managed(request, id):
     if not tags:
         tags = {}
     form = AudiobookForm(instance=audiobook)
+
+    user_can_publish = (
+        request.user.is_authenticated and
+        request.user.oauthconnection_set.filter(access=True).exists())
 
     return render(request, "archive/file_managed.html", locals())
 

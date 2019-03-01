@@ -9,25 +9,18 @@ import subprocess
 from tempfile import NamedTemporaryFile
 from time import sleep
 
-#from celery.decorators import task
 from celery.task import Task
 from django.db.models import F
-from fabric import api
-from fabric.network import disconnect_all
+from django.contrib.auth.models import User
 from mutagen import File
 from mutagen import id3
 
-import mutagen
-
+from apiclient import api_call
 from archive.constants import status
 from archive.models import Audiobook
-from archive.settings import (BUILD_PATH, COVER_IMAGE,
-    UPLOAD_HOST, UPLOAD_USER, UPLOAD_PASSWORD, UPLOAD_PATH, UPLOAD_CMD, UPLOAD_SUDO)
+from archive.settings import BUILD_PATH, COVER_IMAGE, UPLOAD_URL
 from archive.utils import ExistingFile
 
-api.env.host_string = UPLOAD_HOST
-api.env.user = UPLOAD_USER
-api.env.password = UPLOAD_PASSWORD
 
 class AudioFormatTask(Task):
     abstract = True
@@ -77,32 +70,27 @@ class AudioFormatTask(Task):
         Audiobook.objects.filter(pk=aid).update(**kwargs)
 
     @classmethod
-    def put(cls, audiobook, path):
+    def put(cls, user, audiobook, path):
         tags = getattr(audiobook, "%s_tags" % cls.ext)
-        prefix, slug = tags['url'].rstrip('/').rsplit('/', 1)
-        name = tags['name']
-        command = UPLOAD_CMD + (u' %s %s %s %s %s %s > output.txt' % (
-            pipes.quote(os.path.join(UPLOAD_PATH, os.path.basename(path))),
-            pipes.quote(slug),
-            pipes.quote(name),
-            pipes.quote(audiobook.part_name),
-            audiobook.index,
-            audiobook.parts_count,
-            )).encode('utf-8')
-        try:
-            api.put(path, UPLOAD_PATH)
-            if UPLOAD_SUDO:
-                api.sudo(command, user=UPLOAD_SUDO, shell=False)
-            else:
-                api.run(command)
-            disconnect_all()
-        except SystemExit as e:
-            raise cls.RemoteOperationError
+        data = {
+            'book': tags['url'],
+            'type': cls.ext,
+            'name': tags['name'],
+            'part_name': audiobook.part_name,
+            'part_index': audiobook.index,
+            'parts_count': audiobook.parts_count,
+            'source_sha1': audiobook.source_sha1,
+        }
+        api_call(user, UPLOAD_URL, data=data, files={
+            "file": open(path, 'rb'),
+        })
 
-    def run(self, aid, publish=True):
+    def run(self, uid, aid, publish=True):
         aid = int(aid)
         audiobook = Audiobook.objects.get(id=aid)
         self.set_status(aid, status.ENCODING)
+
+        user = User.objects.get(id=uid)
 
         try:
             os.makedirs(BUILD_PATH)
@@ -120,7 +108,7 @@ class AudioFormatTask(Task):
         self.set_status(aid, status.SENDING)
 
         if publish:
-            self.put(audiobook, out_file.name)
+            self.put(user, audiobook, out_file.name)
             self.published(aid)
         else:
             self.set_status(aid, None)
