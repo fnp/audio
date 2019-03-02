@@ -3,6 +3,7 @@
 django>=1.11,<2.0
 jsonfield==2.0.2
 django-cas==2.1.1.1
+django-bootstrap4
 
 celery[redis]==4.2
 kombu
