@@ -1,5 +1,6 @@
 {% extends "archive/base.html" %}
 {% load i18n %}
+{% load tags %}
 
 {% block messages %}
     {% if err_exists %}
@@ -10,22 +11,19 @@
 
 {% block content %}
 
+<div class="card mt-4">
+  <div class="card-header">
+    <h1>{{ filename }}</h1>
+  </div>
+  <div class="card-body">
+    {% multiple_tags_table tags %}
 
-<ul id="tags">
-    {% for t, v in tags.items %}
-        <li>{{t}}
-        <ul>
-        {% for x in v %}
-            <li>{{x}}</li>
-        {% endfor %}
-        </ul></li>
-    {% endfor %}
-</ul>
+    <form method="post" action="{% url 'move_to_new' filename %}">
+      {% csrf_token %}
+      <input class="btn btn-primary" type="submit" value="{% trans "Move to new files" %}" />
+    </form>
+  </div>
+</div>
 
-
-<form method="post" action="{% url 'move_to_new' filename %}">
-    {% csrf_token %}
-    <input type="submit" value="{% trans "Move to new files" %}" />
-</form>
 
 {% endblock %}

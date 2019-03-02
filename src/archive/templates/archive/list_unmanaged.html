@@ -12,8 +12,10 @@
 
 {% block file-list %}
     {% for file in objects %}
-        <li>
+    <tr>
+	    <td>
             <a href='{% url "file_unmanaged" file %}'>{{ file }}</a>
-        </li>
+	    </td>
+    </tr>
     {% endfor %}
 {% endblock %}

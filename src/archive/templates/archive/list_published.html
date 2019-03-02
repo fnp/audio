@@ -12,9 +12,11 @@
 
 
 {% block file-list %}
-    {% for file in objects %}
-        <li>
-            <a href='{% url "file" file.id %}'>{{ file }}</a>
-        </li>
-    {% endfor %}
+  {% for file in objects %}
+    <tr>
+      <td>
+        <a href='{% url "file" file.id %}'>{{ file }}</a>
+      </td>
+    </tr>
+  {% endfor %}
 {% endblock %}

@@ -65,7 +65,7 @@ def file_new(request, filename):
                     d[tag] = None
 
     if not request.POST:
-        form = AudiobookForm(d)
+        form = AudiobookForm(initial=d)
     return render(request, "archive/file_new.html", locals())
 
 

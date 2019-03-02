@@ -9,14 +9,16 @@
 
 {% block file-list-info %}
     {% trans "Put source audiobooks in:" %}
-    <span>{{ path }}</span>
+    <tt>{{ path }}</tt>
 {% endblock %}
 
 
 {% block file-list %}
-    {% for file in objects %}
-        <li>
-            <a href='{% url "file_new" file %}'>{{ file }}</a>
-        </li>
-    {% endfor %}
+  {% for file in objects %}
+    <tr>
+      <td>
+        <a href='{% url "file_new" file %}'>{{ file }}</a>
+      </td>
+    </tr>
+  {% endfor %}
 {% endblock %}

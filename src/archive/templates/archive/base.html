@@ -2,24 +2,28 @@
 {% load i18n %}
 
 {% block repo-zones-nav %}
-    <a {% if division == "new" %}class="active" {% endif %}href="{% url 'list_new' %}">{% trans "New" %}</a>
-    <a {% if division == "unpublished" %}class="active" {% endif %}href="{% url 'list_unpublished' %}">{% trans "Unpublished" %}</a>
-    <a {% if division == "publishing" %}class="active" {% endif %}href="{% url 'list_publishing' %}">{% trans "Publishing" %}</a>
-    <a {% if division == "published" %}class="active" {% endif %}href="{% url 'list_published' %}">{% trans "Published" %}</a>
-    <a {% if division == "unmanaged" %}class="active" {% endif %}href="{% url 'list_unmanaged' %}">{% trans "Archive" %}</a>
+  <ul class="nav nav-pills">
+    <li class="nav-item"><a class="nav-link{% if division == "new" %} active{% endif %}" href="{% url 'list_new' %}">{% trans "New" %}</a></li>
+    <li class="nav-item"><a class="nav-link{% if division == "unpublished" %} active{% endif %}" href="{% url 'list_unpublished' %}">{% trans "Unpublished" %}</a></li>
+    <li class="nav-item"><a class="nav-link{% if division == "publishing" %} active{% endif %}" href="{% url 'list_publishing' %}">{% trans "Publishing" %}</a></li>
+    <li class="nav-item"><a class="nav-link{% if division == "published" %} active{% endif %}" href="{% url 'list_published' %}">{% trans "Published" %}</a></li>
+    <li class="nav-item"><a class="nav-link{% if division == "unmanaged" %} active{% endif %}" href="{% url 'list_unmanaged' %}">{% trans "Archive" %}</a></li>
+  </ul>
+
+  <ul class="nav">
     {% if user.is_staff %}
-        <a href='{% url "admin:archive_project_changelist" %}'>{% trans "Projects" %}</a>
+      <li class="nav-item"><a class="nav-link" href='{% url "admin:archive_project_changelist" %}'>{% trans "Projects" %}</a></li>
     {% endif %}
     {% if user.is_authenticated %}
-        <a href="{% url 'logout' %}" style='float: right;'>{% trans "Logout" %}</a>
+      <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
     {% else %}
-        <a href="{% url 'login' %}" style='float: right;'>{% trans "Login" %}</a>
+      <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">{% trans "Login" %}</a></li>
     {% endif %}
     {% if user.is_staff %}
-        <a href='{% url "admin:index" %}' style='float: right;'>{% trans "Administration" %}</a>
+      <li class="nav-item"><a class="nav-link" href='{% url "admin:index" %}'>{% trans "Administration" %}</a></li>
     {% endif %}
     {% if user.is_authenticated %}
-        <span style='float: right;'>{{ user }}</span>
+      <li class="nav-item navbar-text">{{ user }}</li>
     {% endif %}
-    <div class='clr' ></div>
+</ul>
 {% endblock %}

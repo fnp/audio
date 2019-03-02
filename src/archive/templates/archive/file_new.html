@@ -1,23 +1,31 @@
 {% extends "archive/base.html" %}
-{% load i18n tags %}
+{% load i18n tags bootstrap4 %}
 
 {% block content %}
 
-<form method="post" action="{% url 'move_to_archive' filename %}">
-    {% csrf_token %}
-    <input type="submit" value="{% trans "Move to archive" %}" />
-</form>
+<div class="card mt-4">
+  <div class="card-header">
+    <h1>{{ filename }}</h1>
+  </div>
+  <div class="card-body">
+    <form method="post" action="{% url 'move_to_archive' filename %}">
+      {% csrf_token %}
+      <input class="btn btn-danger" type="submit" value="{% trans "Move to archive" %}" />
+    </form>
 
+    <hr>
 
-{% multiple_tags_table tags %}
+    {% multiple_tags_table tags %}
 
+    <hr>
 
-<form method='post' action='.'>
-    {% csrf_token %}
-    <table>
-        {{ form.as_table }}
-        <td></td><td><input type="submit" value='{% trans "Commit" %}' /></td></td>
-    </table>
-</form>
+    <form method='post' action='.'>
+      {% csrf_token %}
+      {% bootstrap_form form %}
+      <input class="btn btn-primary" type="submit" value='{% trans "Commit" %}' />
+    </form>
+  </div>
+</div>
+
 
 {% endblock %}

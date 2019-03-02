@@ -1,22 +1,27 @@
-{% load i18n static %}
 <!DOCTYPE html>
+{% load i18n static %}
+
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
     <link rel="stylesheet" type="text/css" href="{% static 'style.css' %}" />
     <title>{% trans "Audiobook repository" %}</title>
 </head>
 <body>
 
-<div id="repo-zones-nav">
+<header class="navbar bg-light">
     {% block repo-zones-nav %}&nbsp;{% endblock %}
-</div>
+</header>
 
-<div id="messages">
+
+<div>
 {% block messages %}{% endblock %}
 </div>
 
-<div id="content">
+<div class="container">
 {% block content %}{% endblock %}
 </div>
 

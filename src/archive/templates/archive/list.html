@@ -4,12 +4,20 @@
 
 {% block content %}
 
-    <div id="file-list">
-        <h1>{% block file-list-title %}{% endblock %}</h1>
-        <div>{% block file-list-info %}{% endblock %}</div>
-        {% block file-list-wrapper %}
-            <ul>{% block file-list %}{% endblock %}</ul>
-        {% endblock file-list-wrapper %}
+<div class="card mt-4">
+  <div class="card-header">
+    <h1>{% block file-list-title %}{% endblock %}</h1>
+  </div>
+  <div class="card-body">
+    <div class="lead">
+	{% block file-list-info %}{% endblock %}
     </div>
+    {% block file-list-wrapper %}
+    <table class="table">
+      {% block file-list %}{% endblock %}
+    </table>
+    {% endblock %}
+  </div>
+</div>
 
 {% endblock %}

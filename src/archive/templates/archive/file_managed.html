@@ -1,139 +1,158 @@
 {% extends "archive/base.html" %}
 {% load i18n %}
 {% load tags %}
+{% load bootstrap4 %}
 
 {% block content %}
 
-<p>Plik źródłowy: <a href='{% url "download" audiobook.id %}'>{{ path }}</a>
-(sha1: <tt>{{ audiobook.source_sha1 }}</tt>).
-</p>
-
-<h2>{% trans "Publishing" %}</h2>
-
-{% if audiobook.mp3_status or audiobook.ogg_status %}
-
-<h2>{% trans "Publishing pending" %}</h2>
-
-<form method="post" action="{% url 'cancel_publishing' audiobook.id %}">
-    {% csrf_token %}
-    <input type="submit" value="{% trans "Cancel publishing" %}" />
-</form>
 
 
-{% if audiobook.mp3_status %}
-    <hr/>
-    <h2>MP3</h2>
+<div class="card mt-4">
+  <div class="card-header">
+    <h2>{% trans "Publishing" %}</h2>
+  </div>
+  <div class="card-body">
+    {% if audiobook.mp3_status or audiobook.ogg_status %}
+      <h2>{% trans "Publishing pending" %}</h2>
+      <form method="post" action="{% url 'cancel_publishing' audiobook.id %}">
+        {% csrf_token %}
+        <input class='btn btn-danger' type="submit" value="{% trans "Cancel publishing" %}" />
+      </form>
 
-    {% tags_table audiobook.mp3_tags.tags %}
+      {% if audiobook.mp3_status %}
+        <hr/>
+        <h2>MP3</h2>
 
-    <p>Status: <b>{{ audiobook.get_mp3_status_display }}</b></p>
-{% endif %}
+        {% tags_table audiobook.mp3_tags.tags %}
 
-{% if audiobook.ogg_status %}
-    <hr/>
-    <h2>Ogg Vorbis</h2>
+        <p>Status: <b>{{ audiobook.get_mp3_status_display }}</b></p>
+      {% endif %}
 
-    {% tags_table audiobook.ogg_tags.tags %}
+      {% if audiobook.ogg_status %}
+        <hr/>
+        <h2>Ogg Vorbis</h2>
 
-    <p>Status: <b>{{ audiobook.get_ogg_status_display }}</b></p>
-{% endif %}
+        {% tags_table audiobook.ogg_tags.tags %}
 
+        <p>Status: <b>{{ audiobook.get_ogg_status_display }}</b></p>
+      {% endif %}
 
+    {% else %}
 
-
-{% else %}
-    <table class='tags'>
+      <table class='table'>
         {% tags_table audiobook.new_publish_tags 0 %}
         <tr><th></th><td>
 
-            {% if user_can_publish %}
-                <form method="post" action="{% url 'publish' audiobook.id %}">
-                    {% csrf_token %}
-                    <input type="submit" value="{% trans "Publish" %}" />
-                </form>
-            {% else %}
-                <a href="{% url 'apiclient_oauth' %}">Podłącz się</a>
-            {% endif %}
+          {% if user_can_publish %}
+            <form method="post" action="{% url 'publish' audiobook.id %}">
+              {% csrf_token %}
+              <input class="btn btn-primary" type="submit" value="{% trans "Publish" %}" />
+            </form>
+          {% else %}
+            <a class="btn btn-primary" href="{% url 'apiclient_oauth' %}">Podłącz się</a>
+          {% endif %}
 
-            {% if not audiobook.mp3_published or not audiobook.ogg_published %}
-            <form method="post" action="{% url 'convert' audiobook.id %}">
-                {% csrf_token %}
-                <input type="submit" value="{% trans "Convert without publishing" %}" />
+          {% if not audiobook.mp3_published or not audiobook.ogg_published %}
+            <form class="mt-3" method="post" action="{% url 'convert' audiobook.id %}">
+              {% csrf_token %}
+              <input class="btn btn-secondary" type="submit" value="{% trans "Convert without publishing" %}" />
             </form>
             {% endif %}
+              </div>
+              </div>
 
         </td></tr>
-    </table>
-{% endif %}
-
-<hr/>
-{% if audiobook.mp3_file %}
-    <h2>{% trans "MP3 file" %}</h2>
-    <p><a href="{% url 'download' audiobook.id 'mp3' %}">{% trans "Download MP3 file." %}</a></p>
-    {% if audiobook.mp3_published %}
-        <p>{% trans "Published:" %} {{ audiobook.mp3_published }}</a></p>
-        {% if audiobook.mp3_published_tags.tags %}
-            {% tags_table audiobook.mp3_published_tags.tags %}
-        {% endif %}
-    {% else %}
-        <p>{% trans "Not published yet." %}</p>
+      </table>
     {% endif %}
-{% else %}
-    <p>{% trans "MP3 file hasn't been generated yet." %}</p>
-{% endif %}
+  </div>
+</div>
 
-<hr/>
-{% if audiobook.ogg_file %}
-    <h2>{% trans "Ogg Vorbis file" %}</h2>
-    <p><a href="{% url 'download' audiobook.id 'ogg' %}">{% trans "Download Ogg Vorbis file." %}</a></p>
-    {% if audiobook.ogg_published %}
-        <p>{% trans "Published:" %} {{ audiobook.ogg_published }}</a></p>
-        {% if audiobook.ogg_published_tags.tags %}
-            {% tags_table audiobook.ogg_published_tags.tags %}
+
+<div class="row">
+  <div class="col-xl-6">
+    <div class="card mt-4">
+      <div class="card-header">
+	<h2>{% trans "MP3 file" %}</h2>
+      </div>
+      <div class="card-body">
+        {% if audiobook.mp3_file %}
+          <p><a href="{% url 'download' audiobook.id 'mp3' %}">{% trans "Download MP3 file." %}</a></p>
+          {% if audiobook.mp3_published %}
+            <p>{% trans "Published:" %} {{ audiobook.mp3_published }}</a></p>
+            {% if audiobook.mp3_published_tags.tags %}
+              {% tags_table audiobook.mp3_published_tags.tags %}
+            {% endif %}
+          {% else %}
+            <p>{% trans "Not published yet." %}</p>
+          {% endif %}
+        {% else %}
+          <p>{% trans "MP3 file hasn't been generated yet." %}</p>
         {% endif %}
-    {% else %}
-        <p>{% trans "Not published yet." %}</p>
-    {% endif %}
-{% else %}
-    <p>{% trans "Ogg Vorbis file hasn't been generated yet." %}</p>
-{% endif %}
+      </div>
+    </div>
+  </div>
 
+  <div class="col-xl-6">
+    <div class="card mt-4">
+      <div class="card-header">
+        <h2>{% trans "Ogg Vorbis file" %}</h2>
+      </div>
+      <div class="card-body">
+        {% if audiobook.ogg_file %}
+          <p><a href="{% url 'download' audiobook.id 'ogg' %}">{% trans "Download Ogg Vorbis file." %}</a></p>
+          {% if audiobook.ogg_published %}
+            <p>{% trans "Published:" %} {{ audiobook.ogg_published }}</a></p>
+            {% if audiobook.ogg_published_tags.tags %}
+              {% tags_table audiobook.ogg_published_tags.tags %}
+            {% endif %}
+          {% else %}
+            <p>{% trans "Not published yet." %}</p>
+          {% endif %}
+        {% else %}
+          <p>{% trans "Ogg Vorbis file hasn't been generated yet." %}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 
+  <div class="col-xl-6">
+    <div class="card mt-4">
+      <div class="card-header">
+	<h2>Plik źródłowy</h2>
+      </div>
+      <div class="card-body">
+        <p>Last modified: {{ audiobook.modified }}</p>
+        <p>Plik źródłowy: <a href='{% url "download" audiobook.id %}'>{{ path }}</a>
+          (sha1: <tt>{{ audiobook.source_sha1 }}</tt>).
+        </p>
+        {% multiple_tags_table tags %}
 
+        <form method="post" action="{% url 'remove_to_archive' audiobook.id %}"
+              onsubmit='return confirm("{% trans "Are you sure you want to move this audiobook to archive?" %}")'>
+          {% csrf_token %}
+          <input class="btn btn-danger" type="submit" value="{% trans "Remove to archive" %}" />
+        </form>
 
-<hr />
+      </div>
+    </div>
+  </div>
 
+  <div class="col-xl-6">
+    <div class="card mt-4 mb-4">
+      <div class="card-header">
+	<h2>{% trans "Update tags" %}</h2>
+      </div>
+      <div class="card-body">
 
+        <form method='post' action='.'>
+          {% csrf_token %}
+	  {% bootstrap_form form %}
+          <input class="btn btn-primary" type="submit" value='{% trans "Commit" %}' />
+        </form>
 
-
-<h2>{% trans "Update tags" %}</h2>
-
-Last modified: {{ audiobook.modified }}
-
-{% multiple_tags_table tags %}
-
-
-
-<form method='post' action='.'>
-    {% csrf_token %}
-    <table>
-        {{ form.as_table }}
-        <td></td><td><input type="submit" value='{% trans "Commit" %}' /></td></td>
-    </table>
-</form>
-
-
-
-<hr />
-
-
-
-<form method="post" action="{% url 'remove_to_archive' audiobook.id %}"
-    onsubmit='return confirm("{% trans "Are you sure you want to move this audiobook to archive?" %}")'>
-    {% csrf_token %}
-    <input type="submit" value="{% trans "Remove to archive" %}" />
-</form>
-
-
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

@@ -9,15 +9,20 @@
 
 
 {% block file-list-wrapper %}
-    {% for k, objects in status_objects %}
-        <h2>{{ k.1 }}</h2>
-        <ul>
-            {% for file in objects %}
-            <li>
-                <a href='{% url "file" file.id %}'>{{ file }}</a>
-                ({% if file.mp3_status == k.0 %}MP3{% if file.ogg_status == k.0 %}, {% endif %}{% endif %}{% if file.ogg_status == k.0 %}Ogg{% endif %})
-            </li>
-            {% endfor %}
-        </ul>
-    {% endfor %}
+  {% for k, objects in status_objects %}
+    <h2>{{ k.1 }}</h2>
+    <table class="table">
+      {% for file in objects %}
+        <tr>
+          <td><a href='{% url "file" file.id %}'>{{ file }}</a></td>
+          <td class="text-warning">
+            {% if file.mp3_status == k.0 %}MP3{% endif %}
+          </td>
+          <td class="text-warning">
+            {% if file.ogg_status == k.0 %}Ogg{% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% endfor %}
 {% endblock %}
