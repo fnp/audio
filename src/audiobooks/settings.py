@@ -110,13 +110,13 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_cas.middleware.CASMiddleware',
+    'django_cas_ng.middleware.CASMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'django_cas.backends.CASBackend',
+    'django_cas_ng.backends.CASBackend',
 )
 
 ROOT_URLCONF = 'audiobooks.urls'
@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'bootstrap4',
+    'django_cas_ng',
 
     'apiclient',
     'archive',
@@ -167,7 +168,7 @@ LOGGING = {
 }
 
 CAS_SERVER_URL = "https://logowanie.nowoczesnapolska.org.pl/cas/"
-CAS_VERSION = "1"
+CAS_VERSION = "2"
 
 EMAIL_SUBJECT_PREFIX = '[Audio] '
 SERVER_EMAIL = 'no-reply@audio.wolnelektury.pl'
