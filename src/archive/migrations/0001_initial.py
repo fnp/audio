@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from django.db import models, migrations
 import archive.utils
-import jsonfield.fields
 import archive.models
 
 
@@ -32,15 +31,15 @@ class Migration(migrations.Migration):
                 ('modified', models.DateTimeField(null=True, editable=False)),
                 ('mp3_status', models.SmallIntegerField(null=True, editable=False, choices=[(1, 'Waiting'), (2, 'Encoding'), (3, 'Tagging'), (4, 'Sending')])),
                 ('mp3_task', models.CharField(max_length=64, null=True, editable=False)),
-                ('mp3_tags', jsonfield.fields.JSONField(null=True, editable=False)),
+                ('mp3_tags', models.TextField(null=True, editable=False)),
                 ('mp3_file', models.FileField(storage=archive.utils.OverwriteStorage(), upload_to=b'archive/final', null=True, editable=False)),
-                ('mp3_published_tags', jsonfield.fields.JSONField(null=True, editable=False)),
+                ('mp3_published_tags', models.TextField(null=True, editable=False)),
                 ('mp3_published', models.DateTimeField(null=True, editable=False)),
                 ('ogg_status', models.SmallIntegerField(null=True, editable=False, choices=[(1, 'Waiting'), (2, 'Encoding'), (3, 'Tagging'), (4, 'Sending')])),
                 ('ogg_task', models.CharField(max_length=64, null=True, editable=False)),
-                ('ogg_tags', jsonfield.fields.JSONField(null=True, editable=False)),
+                ('ogg_tags', models.TextField(null=True, editable=False)),
                 ('ogg_file', models.FileField(storage=archive.utils.OverwriteStorage(), upload_to=b'archive/final', null=True, editable=False)),
-                ('ogg_published_tags', jsonfield.fields.JSONField(null=True, editable=False)),
+                ('ogg_published_tags', models.TextField(null=True, editable=False)),
                 ('ogg_published', models.DateTimeField(null=True, editable=False)),
             ],
             options={

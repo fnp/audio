@@ -3,7 +3,6 @@ import os.path
 
 from django.db import models
 from time import sleep
-from jsonfield.fields import JSONField
 from django.utils.encoding import force_bytes
 from django.utils.translation import ugettext_lazy as _
 from archive.constants import status
@@ -54,18 +53,17 @@ class Audiobook(models.Model):
     # publishing process
     mp3_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
     mp3_task = models.CharField(max_length=64, null=True, editable=False)
-    mp3_tags = JSONField(null=True, editable=False)
+    mp3_tags = models.TextField(null=True, editable=False)
     mp3_file = models.FileField(null=True, upload_to='archive/final', storage=OverwriteStorage(), editable=False)
-    mp3_published_tags = JSONField(null=True, editable=False)
+    mp3_published_tags = models.TextField(null=True, editable=False)
     mp3_published = models.DateTimeField(null=True, editable=False)
 
     ogg_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
     ogg_task = models.CharField(max_length=64, null=True, editable=False)
-    ogg_tags = JSONField(null=True, editable=False)
+    ogg_tags = models.TextField(null=True, editable=False)
     ogg_file = models.FileField(null=True, upload_to='archive/final', storage=OverwriteStorage(), editable=False)
-    ogg_published_tags = JSONField(null=True, editable=False)
+    ogg_published_tags = models.TextField(null=True, editable=False)
     ogg_published = models.DateTimeField(null=True, editable=False)
-
 
     class Meta:
         verbose_name = _("audiobook")
@@ -74,6 +72,13 @@ class Audiobook(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    def get_mp3_tags(self): return json.loads(self.mp3_tags) if self.mp3_tags else None
+    def get_ogg_tags(self): return json.loads(self.ogg_tags) if self.ogg_tags else None
+    def get_mp3_published_tags(self): return json.loads(self.mp3_published_tags) if self.mp3_published_tags else None
+    def get_ogg_published_tags_tags(self): return json.loads(self.ogg_published_tags) if self.ogg_published_tags else None
+    def set_mp3_tags(self, tags): self.mp3_tags = json.dumps(tags)
+    def set_ogg_tags(self, tags): self.ogg_tags = json.dumps(tags)
 
     def published(self):
         return self.mp3_published and self.ogg_published

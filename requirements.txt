@@ -1,15 +1,14 @@
 -i https://py.mdrn.pl:8443/simple
 
 django>=1.11,<2.0
-jsonfield==2.0.2
 django-cas==2.1.1.1
-django-bootstrap4
+django-bootstrap4==0.0.7
 
 celery[redis]==4.2
 kombu
 redis
 vine
 
-mutagen
+mutagen==1.42.0
 requests
 requests-oauthlib

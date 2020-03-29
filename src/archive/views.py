@@ -166,8 +166,8 @@ def publish(request, aid, publish=True):
         'url': audiobook.url,
         'tags': audiobook.new_publish_tags(),
         }
-    audiobook.mp3_tags = tags
-    audiobook.ogg_tags = tags
+    audiobook.set_mp3_tags(tags)
+    audiobook.set_ogg_tags(tags)
     audiobook.mp3_status = audiobook.ogg_status = status.WAITING
     audiobook.save()
     # isn't there a race here?

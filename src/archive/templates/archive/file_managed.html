@@ -23,7 +23,7 @@
         <hr/>
         <h2>MP3</h2>
 
-        {% tags_table audiobook.mp3_tags.tags %}
+        {% tags_table audiobook.get_mp3_tags.tags %}
 
         <p>Status: <b>{{ audiobook.get_mp3_status_display }}</b></p>
       {% endif %}
@@ -32,7 +32,7 @@
         <hr/>
         <h2>Ogg Vorbis</h2>
 
-        {% tags_table audiobook.ogg_tags.tags %}
+        {% tags_table audiobook.get_ogg_tags.tags %}
 
         <p>Status: <b>{{ audiobook.get_ogg_status_display }}</b></p>
       {% endif %}
@@ -79,8 +79,8 @@
           <p><a href="{% url 'download' audiobook.id 'mp3' %}">{% trans "Download MP3 file." %}</a></p>
           {% if audiobook.mp3_published %}
             <p>{% trans "Published:" %} {{ audiobook.mp3_published }}</a></p>
-            {% if audiobook.mp3_published_tags.tags %}
-              {% tags_table audiobook.mp3_published_tags.tags %}
+            {% if audiobook.get_mp3_published_tags.tags %}
+              {% tags_table audiobook.get_mp3_published_tags.tags %}
             {% endif %}
           {% else %}
             <p>{% trans "Not published yet." %}</p>
@@ -102,8 +102,8 @@
           <p><a href="{% url 'download' audiobook.id 'ogg' %}">{% trans "Download Ogg Vorbis file." %}</a></p>
           {% if audiobook.ogg_published %}
             <p>{% trans "Published:" %} {{ audiobook.ogg_published }}</a></p>
-            {% if audiobook.ogg_published_tags.tags %}
-              {% tags_table audiobook.ogg_published_tags.tags %}
+            {% if audiobook.get_ogg_published_tags.tags %}
+              {% tags_table audiobook.get_ogg_published_tags.tags %}
             {% endif %}
           {% else %}
             <p>{% trans "Not published yet." %}</p>
