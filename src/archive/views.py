@@ -3,7 +3,7 @@
 from datetime import datetime
 import os
 import os.path
-from urllib import quote
+from urllib.parse import quote
 
 from archive import settings
 from django.contrib.auth import logout

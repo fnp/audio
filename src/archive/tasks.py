@@ -128,9 +128,9 @@ class Mp3Task(AudioFormatTask):
         return tag(encoding=1, text=text)
     def id3_url(tag, text):
         return tag(url=text)
-    def id3_comment(tag, text, lang=u'pol'):
-        return tag(encoding=1, lang=lang, desc=u'', text=text)
-    def id3_priv(tag, text, what=u''):
+    def id3_comment(tag, text, lang='pol'):
+        return tag(encoding=1, lang=lang, desc='', text=text)
+    def id3_priv(tag, text, what=''):
         return tag(owner='wolnelektury.pl?%s' % what, data=text.encode('utf-8'))
 
     TAG_MAP = {
@@ -179,7 +179,7 @@ class Mp3Task(AudioFormatTask):
         if COVER_IMAGE:
             mime = mimetypes.guess_type(COVER_IMAGE)
             f = open(COVER_IMAGE)
-            audio.add(id3.APIC(encoding=0, mime=mime, type=3, desc=u'', data=f.read()))
+            audio.add(id3.APIC(encoding=0, mime=mime, type=3, desc='', data=f.read()))
             f.close()
 
         audio.save()

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os.path
 
 from django.db import models
@@ -8,8 +7,6 @@ from django.utils.translation import ugettext_lazy as _
 from archive.constants import status
 from archive.settings import FILES_SAVE_PATH, ADVERT, LICENSE, ORGANIZATION, PROJECT
 from archive.utils import OverwriteStorage, sha1_file
-
-# Create your models here.
 
 
 class Project(models.Model):
@@ -23,7 +20,7 @@ class Project(models.Model):
         verbose_name_plural = _("projects")
         ordering = ("name",)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -70,7 +67,7 @@ class Audiobook(models.Model):
         verbose_name_plural = _("audiobooks")
         ordering = ("title",)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     def get_mp3_tags(self): return json.loads(self.mp3_tags) if self.mp3_tags else None
@@ -110,14 +107,14 @@ class Audiobook(models.Model):
     def new_publish_tags(self):
         title = self.title
         if self.translator:
-            title += u' (tłum. %s)' % self.translator
+            title += ' (tłum. %s)' % self.translator
 
-        copyright = u"%s %s. Licensed to the public under %s verify at %s" % (
+        copyright = "%s %s. Licensed to the public under %s verify at %s" % (
                 self.date, ORGANIZATION, LICENSE, self.url)
 
-        comment = u"Audiobook nagrany w ramach projektu %s%s.\n%s" % (
+        comment = "Audiobook nagrany w ramach projektu %s%s.\n%s" % (
                     self.project.name,
-                    u" finansowanego przez %s" % self.project.sponsors if self.project.sponsors else "",
+                    " finansowanego przez %s" % self.project.sponsors if self.project.sponsors else "",
                     ADVERT)
 
         tags = {
@@ -129,8 +126,8 @@ class Audiobook(models.Model):
             'contact': self.url,
             'copyright': copyright,
             'date': self.date,
-            'genre': u'Speech',
-            'language': u'pol',
+            'genre': 'Speech',
+            'language': 'pol',
             'license': LICENSE,
             'organization': ORGANIZATION,
             'title': title,

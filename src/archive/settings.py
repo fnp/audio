@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os.path
 from django.conf import settings
 
@@ -55,22 +53,22 @@ UPLOAD_URL = getattr(
 try:
     PROJECT = settings.ARCHIVE_PROJECT
 except AttributeError:
-    PROJECT = u'Wolne Lektury'
+    PROJECT = 'Wolne Lektury'
 
 try:
     LICENSE = settings.ARCHIVE_LICENSE
 except AttributeError:
-    LICENSE = u'http://creativecommons.org/licenses/by-sa/3.0/deed.pl'
+    LICENSE = 'http://creativecommons.org/licenses/by-sa/3.0/deed.pl'
 
 try:
     ORGANIZATION = settings.ARCHIVE_ORGANIZATION
 except AttributeError:
-    ORGANIZATION = u'Fundacja Nowoczesna Polska'
+    ORGANIZATION = 'Fundacja Nowoczesna Polska'
 
 try:
     ADVERT = settings.ARCHIVE_ADVERT
 except AttributeError:
-    ADVERT = u"""
+    ADVERT = """
 Przekaż 1% podatku na rozwój Wolnych Lektur:
 Fundacja Nowoczesna Polska
 KRS 0000070056
