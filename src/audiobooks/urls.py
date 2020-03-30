@@ -12,7 +12,7 @@ urlpatterns = [
     url(r'^archive/', include('archive.urls')),
     url(r'^publish/', include('apiclient.urls')),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^accounts/login/$', django_cas_ng.views.LoginView.as_view(), name='login'),
     url(r'^accounts/logout/$', django_cas_ng.views.LogoutView.as_view(), name='logout'),
 ]

@@ -1,5 +1,3 @@
-# Create your views here.
-
 from datetime import datetime
 import os
 import os.path
@@ -8,7 +6,7 @@ from urllib.parse import quote
 from archive import settings
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import permission_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q, Max
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404

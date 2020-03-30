@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='audiobook',
             name='project',
-            field=models.ForeignKey(verbose_name='project', to='archive.Project'),
+            field=models.ForeignKey(verbose_name='project', to='archive.Project', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

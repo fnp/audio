@@ -3,7 +3,7 @@ import os.path
 
 from django.db import models
 from time import sleep
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_pglocks import advisory_lock
 from archive.constants import status
 from archive.settings import FILES_SAVE_PATH, ADVERT, LICENSE, ORGANIZATION, PROJECT
@@ -43,7 +43,7 @@ class Audiobook(models.Model):
     conductor = models.CharField(max_length=255, verbose_name=_('conductor'))
     encoded_by = models.CharField(max_length=255, verbose_name=_('encoded by'))
     date = models.CharField(max_length=255, verbose_name=_('date'))
-    project = models.ForeignKey(Project, verbose_name=_('project'))
+    project = models.ForeignKey(Project, models.PROTECT, verbose_name=_('project'))
     url = models.URLField(max_length=255, verbose_name=_('book url'))
     translator = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('translator'))
     modified = models.DateTimeField(null=True, editable=False)

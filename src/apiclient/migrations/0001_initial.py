@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
                 ('access', models.BooleanField(default=False)),
                 ('token', models.CharField(max_length=64, null=True, blank=True)),
                 ('token_secret', models.CharField(max_length=64, null=True, blank=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
