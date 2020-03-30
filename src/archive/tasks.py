@@ -81,9 +81,10 @@ class AudioFormatTask(Task):
             'parts_count': audiobook.parts_count,
             'source_sha1': audiobook.source_sha1,
         }
-        api_call(user, UPLOAD_URL, data=data, files={
-            "file": open(path, 'rb'),
-        })
+        with open(path, 'rb') as f:
+            api_call(user, UPLOAD_URL, data=data, files={
+                "file": f,
+            })
 
     def run(self, uid, aid, publish=True):
         aid = int(aid)
@@ -125,11 +126,11 @@ class Mp3Task(AudioFormatTask):
 
     # these shouldn't be staticmethods
     def id3_text(tag, text):
-        return tag(encoding=1, text=text)
+        return tag(encoding=3, text=text)
     def id3_url(tag, text):
         return tag(url=text)
     def id3_comment(tag, text, lang='pol'):
-        return tag(encoding=1, lang=lang, desc='', text=text)
+        return tag(encoding=3, lang=lang, desc='', text=text)
     def id3_priv(tag, text, what=''):
         return tag(owner='wolnelektury.pl?%s' % what, data=text.encode('utf-8'))
 
@@ -178,9 +179,8 @@ class Mp3Task(AudioFormatTask):
 
         if COVER_IMAGE:
             mime = mimetypes.guess_type(COVER_IMAGE)
-            f = open(COVER_IMAGE)
-            audio.add(id3.APIC(encoding=0, mime=mime, type=3, desc='', data=f.read()))
-            f.close()
+            with open(COVER_IMAGE, 'rb') as f:
+                audio.add(id3.APIC(encoding=0, mime=mime, type=3, desc='', data=f.read()))
 
         audio.save()
 

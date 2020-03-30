@@ -31,7 +31,7 @@ class OverwriteStorage(FileSystemStorage):
 
 def sha1_file(f):
     sha = sha1()
-    for piece in iter(lambda: f.read(1024*1024), ''):
+    for piece in iter(lambda: f.read(1024*1024), b''):
         sha.update(piece)
     return sha.hexdigest()
 

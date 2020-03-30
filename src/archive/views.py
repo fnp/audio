@@ -198,7 +198,7 @@ def download(request, aid, which="source"):
     if not file_:
         raise Http404
     ext = file_.path.rsplit('.', 1)[-1]
-    response = HttpResponse(mimetype='application/force-download')
+    response = HttpResponse(content_type='application/force-download')
     
     response['Content-Disposition'] = "attachment; filename*=UTF-8''%s.%s" % (
         quote(audiobook.title.encode('utf-8'), safe=''), ext)
