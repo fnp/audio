@@ -31,7 +31,7 @@ class AudioFormatTask(Task):
     @classmethod
     def set_status(cls, aid, status):
         Audiobook.objects.filter(pk=aid).update(
-            **{'%s_status' % cls.ext: status})
+            **{'%s_status' % cls.prefix: status})
 
     @staticmethod
     def encode(in_path, out_path):
@@ -39,7 +39,7 @@ class AudioFormatTask(Task):
 
     @classmethod
     def set_tags(cls, audiobook, file_name):
-        tags = getattr(audiobook, "get_%s_tags" % cls.ext)()['tags']
+        tags = getattr(audiobook, "get_%s_tags" % cls.prefix)()['tags']
         if not tags.get('flac_sha1'):
             tags['flac_sha1'] = audiobook.get_source_sha1()
         audio = File(file_name)
@@ -49,7 +49,7 @@ class AudioFormatTask(Task):
 
     @classmethod
     def save(cls, audiobook, file_name):
-        field = "%s_file" % cls.ext
+        field = "%s_file" % cls.prefix
         getattr(audiobook, field).save(
             "%d.%s" % (audiobook.pk, cls.ext),
             ExistingFile(file_name),
@@ -62,16 +62,16 @@ class AudioFormatTask(Task):
     @classmethod
     def published(cls, aid):
         kwargs = {
-            "%s_published_tags" % cls.ext: F("%s_tags" % cls.ext),
-            "%s_tags" % cls.ext: None,
-            "%s_published" % cls.ext: datetime.now(),
-            '%s_status' % cls.ext: None,
+            "%s_published_tags" % cls.prefix: F("%s_tags" % cls.prefix),
+            "%s_tags" % cls.prefix: None,
+            "%s_published" % cls.prefix: datetime.now(),
+            '%s_status' % cls.prefix: None,
         }
         Audiobook.objects.filter(pk=aid).update(**kwargs)
 
     @classmethod
     def put(cls, user, audiobook, path):
-        tags = getattr(audiobook, "get_%s_tags" % cls.ext)()
+        tags = getattr(audiobook, "get_%s_tags" % cls.prefix)()
         data = {
             'book': tags['url'],
             'type': cls.ext,
@@ -122,7 +122,7 @@ class AudioFormatTask(Task):
 
 
 class Mp3Task(AudioFormatTask):
-    ext = 'mp3'
+    prefix = ext = 'mp3'
 
     # these shouldn't be staticmethods
     def id3_text(tag, text):
@@ -186,7 +186,7 @@ class Mp3Task(AudioFormatTask):
 
 
 class OggTask(AudioFormatTask):
-    ext = 'ogg'
+    prefix = ext = 'ogg'
 
     @staticmethod
     def encode(in_path, out_path):

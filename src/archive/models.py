@@ -63,6 +63,14 @@ class Audiobook(models.Model):
     ogg_published_tags = models.TextField(null=True, editable=False)
     ogg_published = models.DateTimeField(null=True, editable=False)
 
+    youtube_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
+    youtube_task = models.CharField(max_length=64, null=True, editable=False)
+    youtube_tags = models.TextField(null=True, editable=False)
+    youtube_file = models.FileField(null=True, upload_to='archive/final', storage=OverwriteStorage(), editable=False)
+    youtube_published_tags = models.TextField(null=True, editable=False)
+    youtube_published = models.DateTimeField(null=True, editable=False)
+    youtube_id = models.CharField(max_length=255, blank=True, default='')
+
     class Meta:
         verbose_name = _("audiobook")
         verbose_name_plural = _("audiobooks")

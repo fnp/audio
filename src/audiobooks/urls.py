@@ -10,6 +10,7 @@ admin.autodiscover()
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url='archive/', permanent=False)),
     url(r'^archive/', include('archive.urls')),
+    url(r'^youtube/', include('youtube.urls')),
     url(r'^publish/', include('apiclient.urls')),
 
     url(r'^admin/', admin.site.urls),

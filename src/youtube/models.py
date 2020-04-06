@@ -1,0 +1,123 @@
+from os import unlink
+from tempfile import NamedTemporaryFile
+from django.db import models
+from django.utils.translation import gettext_lazy as _
+from django.template import Template, Context
+from apiclient import youtube_call
+from .utils import (
+    video_from_image,
+    cut_video,
+    concat_videos,
+    get_duration,
+    get_framerate,
+    mux,
+)
+
+
+class YouTube(models.Model):
+    title_template = models.CharField(max_length=1024, blank=True)
+    description_template = models.TextField(blank=True)
+    category = models.IntegerField(null=True, blank=True)  # get categories
+    intro_card = models.FileField(blank=True)
+    intro_card_duration = models.FloatField(null=True, blank=True)
+    card = models.FileField(blank=True)
+    loop_video = models.FileField(blank=True)
+    outro_card = models.FileField(blank=True)
+    outro_card_duration = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("YouTube configuration")
+        verbose_name_plural = _("YouTube configurations")
+
+    def publish(self, audiobook, path):
+        ctx = Context(dict(audiobook=audiobook))
+        description = Template(self.description_template).render(ctx)
+        title = Template(self.title_template).render(ctx)
+        privacy = 'private'
+
+        data = dict(
+            snippet=dict(
+                title=title,
+                description=description,
+                # tags=tags,
+                # categoryId=category,
+                # defaultLanguage
+            ),
+            status=dict(
+                privacyStatus=privacy,
+                # license
+                # selfDeclaredMadeForKids
+            ),
+            # recordingDetails=dict(
+            # recordingDate
+            # ),
+        )
+        part = ",".join(data.keys())
+
+        with open(path, "rb") as f:
+            response = youtube_call(
+                "POST",
+                "https://www.googleapis.com/upload/youtube/v3/videos",
+                params={'part': part},
+                data=data,
+                media_data=f.read(),
+            )
+        data = response.json()
+        audiobook.youtube_id = data['id']
+        audiobook.save(update_fields=['youtube_id'])
+        return response
+
+    def prepare_file(self, input_path, output_path=None):
+        duration = get_duration(input_path)
+        video = self.prepare_video(duration)
+        output = mux([video, input_path], output_path=output_path)
+        unlink(video)
+        return output
+
+    def prepare_video(self, duration):
+        concat = []
+        delete = []
+
+        if self.loop_video:
+            fps = get_framerate(self.loop_video.path)
+        else:
+            fps = 25
+
+        loop_duration = duration
+        if self.intro_card and self.intro_card_duration:
+            loop_duration -= self.intro_card_duration
+            intro = video_from_image(
+                self.intro_card.path, self.intro_card_duration, fps=fps
+            )
+            concat.append(intro)
+            delete.append(intro)
+
+        if self.outro_card and self.outro_card_duration:
+            loop_duration -= self.outro_card_duration
+            outro = video_from_image(
+                self.outro_card.path, self.outro_card_duration, fps=fps
+            )
+            concat.append(outro)
+            delete.append(outro)
+
+        if self.loop_video:
+            loop_video_duration = get_duration(self.loop_video.path)
+            times_loop = int(loop_duration // loop_video_duration)
+
+            leftover_duration = loop_duration % loop_video_duration
+            leftover = cut_video(self.loop_video.path, leftover_duration)
+            concat[1:1] = [self.loop_video.path] * times_loop + [leftover]
+            delete.append(leftover)
+        else:
+            leftover = video_from_image(self.card.path, loop_duration)
+            concat.insert(1, video_from_image(self.card.path, loop_duration, fps=fps))
+            delete.append(leftover)
+
+        output = concat_videos(concat)
+        for p in delete:
+            unlink(p)
+        return output
+
+    # tags
+    # license
+    # selfDeclaredMadeForKids

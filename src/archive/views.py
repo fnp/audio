@@ -184,15 +184,19 @@ def cancel_publishing(request, aid):
     # TODO: cancel tasks
     audiobook.mp3_status = None
     audiobook.ogg_status = None
+    audiobook.youtube_status = None
     audiobook.save()
     return redirect(file_managed, aid)
 
 
 def download(request, aid, which="source"):
-    if which not in ("source", "mp3", "ogg"):
+    if which not in ("source", "mp3", "ogg", 'mkv'):
         raise Http404
     audiobook = get_object_or_404(models.Audiobook, id=aid)
-    file_ = getattr(audiobook, "%s_file" % which)
+    field = which
+    if which == 'mkv':
+        field = 'youtube'
+    file_ = getattr(audiobook, "%s_file" % field)
     if not file_:
         raise Http404
     ext = file_.path.rsplit('.', 1)[-1]
@@ -200,7 +204,9 @@ def download(request, aid, which="source"):
     
     response['Content-Disposition'] = "attachment; filename*=UTF-8''%s.%s" % (
         quote(audiobook.title.encode('utf-8'), safe=''), ext)
-    response['X-Sendfile'] = file_.path.encode('utf-8')
+    with open(file_.path, 'rb') as f:
+        response.write(f.read())
+    #response['X-Sendfile'] = file_.path.encode('utf-8')
     return response
 
 

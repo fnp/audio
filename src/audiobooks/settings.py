@@ -131,6 +131,7 @@ INSTALLED_APPS = (
 
     'apiclient',
     'archive',
+    'youtube',
 )
 
 # A sample logging configuration. The only tangible logging

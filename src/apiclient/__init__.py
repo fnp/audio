@@ -32,3 +32,8 @@ def api_call(user, path, method='POST', data=None, files=None):
     else:
         raise ApiError("WL API call error %s, path: %s" % (r.status_code, path))
 
+
+def youtube_call(method, url, params=None, data=None, media_data=None):
+    from .models import YouTubeToken
+    yt = YouTubeToken.objects.first()
+    return yt.call(method, url, params=params, data=data, media_data=media_data)

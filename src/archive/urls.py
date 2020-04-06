@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^publish/(\d+)/$', views.publish, name="publish"),
     url(r'^convert/(\d+)/$', views.publish, {'publish': False}, name="convert"),
     url(r'^download/(\d+)/$', views.download, name="download"),
-    url(r'^download/(\d+)\.(mp3|ogg)$', views.download, name="download"),
+    url(r'^download/(\d+)\.(mp3|ogg|mkv)$', views.download, name="download"),
     url(r'^cancel/(\d+)/$', views.cancel_publishing, name="cancel_publishing"),
     url(r'^remove_to_archive/(\d+)/$', views.remove_to_archive, name="remove_to_archive"),
 

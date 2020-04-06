@@ -12,7 +12,7 @@
     <h2>{% trans "Publishing" %}</h2>
   </div>
   <div class="card-body">
-    {% if audiobook.mp3_status or audiobook.ogg_status %}
+    {% if audiobook.mp3_status or audiobook.ogg_status or audiobook.youtube_status %}
       <h2>{% trans "Publishing pending" %}</h2>
       <form method="post" action="{% url 'cancel_publishing' audiobook.id %}">
         {% csrf_token %}
@@ -37,30 +37,50 @@
         <p>Status: <b>{{ audiobook.get_ogg_status_display }}</b></p>
       {% endif %}
 
+      {% if audiobook.youtube_status %}
+        <hr/>
+        <h2>YouTube</h2>
+
+        <p>Status: <b>{{ audiobook.get_youtube_status_display }}</b></p>
+      {% endif %}
+
     {% else %}
 
       <table class='table'>
         {% tags_table audiobook.new_publish_tags 0 %}
         <tr><th></th><td>
 
-          {% if user_can_publish %}
-            <form method="post" action="{% url 'publish' audiobook.id %}">
-              {% csrf_token %}
-              <input class="btn btn-primary" type="submit" value="{% trans "Publish" %}" />
-            </form>
-          {% else %}
-            <a class="btn btn-primary" href="{% url 'apiclient_oauth' %}">Podłącz się</a>
-          {% endif %}
+          <div class="row">
+            <div class="col-md-6">
+              {% if user_can_publish %}
+                <form method="post" action="{% url 'publish' audiobook.id %}">
+                  {% csrf_token %}
+                  <input class="btn btn-primary" type="submit" value="{% trans "Publish" %}" />
+                </form>
+              {% else %}
+                <a class="btn btn-primary" href="{% url 'apiclient_oauth' %}">Podłącz się</a>
+              {% endif %}
 
-          {% if not audiobook.mp3_published or not audiobook.ogg_published %}
-            <form class="mt-3" method="post" action="{% url 'convert' audiobook.id %}">
-              {% csrf_token %}
-              <input class="btn btn-secondary" type="submit" value="{% trans "Convert without publishing" %}" />
-            </form>
-            {% endif %}
-              </div>
-              </div>
+              {% if not audiobook.mp3_published or not audiobook.ogg_published %}
+                <form class="mt-3" method="post" action="{% url 'convert' audiobook.id %}">
+                  {% csrf_token %}
+                  <input class="btn btn-secondary" type="submit" value="{% trans "Convert without publishing" %}" />
+                </form>
+              {% endif %}
+            </div>
+            <div class="col-md-6">
+              <form method="post" action="{% url 'youtube_publish' audiobook.id %}">
+                {% csrf_token %}
+                <input class="btn btn-primary" type="submit" value="{% trans "Publish on YouTube" %}" />
+              </form>
 
+              <form class="mt-3" method="post" action="{% url 'youtube_convert' audiobook.id %}">
+                {% csrf_token %}
+                <input class="btn btn-secondary" type="submit" value="{% trans "Convert without publishing" %}" />
+              </form>
+
+            </div>
+          </div>
         </td></tr>
       </table>
     {% endif %}
@@ -69,7 +89,7 @@
 
 
 <div class="row">
-  <div class="col-xl-6">
+  <div class="col-xl-4">
     <div class="card mt-4">
       <div class="card-header">
 	<h2>{% trans "MP3 file" %}</h2>
@@ -92,7 +112,7 @@
     </div>
   </div>
 
-  <div class="col-xl-6">
+  <div class="col-xl-4">
     <div class="card mt-4">
       <div class="card-header">
         <h2>{% trans "Ogg Vorbis file" %}</h2>
@@ -110,6 +130,29 @@
           {% endif %}
         {% else %}
           <p>{% trans "Ogg Vorbis file hasn't been generated yet." %}</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-4">
+    <div class="card mt-4">
+      <div class="card-header">
+        <h2>{% trans "YouTube" %}</h2>
+      </div>
+      <div class="card-body">
+        {% if audiobook.youtube_file %}
+          <p><a href="{% url 'download' audiobook.id 'mkv' %}">{% trans "Download YouTube file." %}</a></p>
+          {% if audiobook.youtube_published %}
+            <p>{% trans "Published:" %} {{ audiobook.youtube_published }}</a></p>
+            {% if audiobook.get_youtube_published_tags.tags %}
+              {% tags_table audiobook.get_youtube_published_tags.tags %}
+            {% endif %}
+          {% else %}
+            <p>{% trans "Not published yet." %}</p>
+          {% endif %}
+        {% else %}
+          <p>{% trans "YouTube file hasn't been generated yet." %}</p>
         {% endif %}
       </div>
     </div>
