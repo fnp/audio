@@ -25,6 +25,16 @@ class Project(models.Model):
         return self.name
 
 
+class Piece(models.Model):
+    name = models.CharField(max_length=255)
+    source_file = models.FileField(upload_to='piece')
+    is_outro = models.BooleanField(default=False)
+    min_audiobook_duration = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.name
+
+
 def source_upload_to(intance, filename):
     return os.path.join(FILES_SAVE_PATH, filename) # FIXME: what about really long file names?
 

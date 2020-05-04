@@ -18,12 +18,14 @@ class YouTube(models.Model):
     title_template = models.CharField(max_length=1024, blank=True)
     description_template = models.TextField(blank=True)
     category = models.IntegerField(null=True, blank=True)  # get categories
-    intro_card = models.FileField(blank=True)
+    intro_card = models.FileField(upload_to='youtube/intro_card', blank=True)
     intro_card_duration = models.FloatField(null=True, blank=True)
-    card = models.FileField(blank=True)
-    loop_video = models.FileField(blank=True)
-    outro_card = models.FileField(blank=True)
+    card = models.FileField(upload_to='youtube/card', blank=True)
+    loop_video = models.FileField(upload_to='youtube/loop_video', blank=True)
+    outro_card = models.FileField(upload_to='youtube/outro_card', blank=True)
     outro_card_duration = models.FloatField(null=True, blank=True)
+    thumbnail_template = models.FileField(upload_to='youtube/thumbnail', blank=True)
+    genres = models.CharField(max_length=2048, blank=True)
 
     class Meta:
         verbose_name = _("YouTube configuration")
