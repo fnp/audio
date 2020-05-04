@@ -4,7 +4,6 @@ import os.path
 from urllib.parse import quote
 
 from archive import settings
-from django.contrib.auth import logout
 from django.contrib.auth.decorators import permission_required
 from django.urls import reverse
 from django.db.models import Q, Max

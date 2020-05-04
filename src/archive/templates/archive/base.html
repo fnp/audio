@@ -15,9 +15,9 @@
       <li class="nav-item"><a class="nav-link" href='{% url "admin:archive_project_changelist" %}'>{% trans "Projects" %}</a></li>
     {% endif %}
     {% if user.is_authenticated %}
-      <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">{% trans "Logout" %}</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'cas_ng_logout' %}">{% trans "Logout" %}</a></li>
     {% else %}
-      <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">{% trans "Login" %}</a></li>
+      <li class="nav-item"><a class="nav-link" href="{% url 'cas_ng_login' %}">{% trans "Login" %}</a></li>
     {% endif %}
     {% if user.is_staff %}
       <li class="nav-item"><a class="nav-link" href='{% url "admin:index" %}'>{% trans "Administration" %}</a></li>
