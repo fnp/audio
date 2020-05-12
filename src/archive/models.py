@@ -15,6 +15,7 @@ class Project(models.Model):
 
     name = models.CharField(max_length=128, unique=True, db_index=True, verbose_name="Nazwa")
     sponsors = models.TextField(blank=True, null=True, verbose_name="Sponsorzy")
+    description = models.TextField(blank=True, verbose_name="Opis")
 
     class Meta:
         verbose_name = _("project")
@@ -23,6 +24,14 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_description(self):
+        if self.description:
+            return self.description
+        return "Audiobook nagrany w ramach projektu %s%s." % (
+            self.name,
+            " finansowanego przez %s" % self.sponsors if self.sponsors else "",
+        )
 
 
 class Piece(models.Model):
@@ -116,10 +125,10 @@ class Audiobook(models.Model):
         copyright = "%s %s. Licensed to the public under %s verify at %s" % (
                 self.date, ORGANIZATION, LICENSE, self.url)
 
-        comment = "Audiobook nagrany w ramach projektu %s%s.\n%s" % (
-                    self.project.name,
-                    " finansowanego przez %s" % self.project.sponsors if self.project.sponsors else "",
-                    ADVERT)
+        comment = "\n".join((
+            self.project.get_description(),
+            ADVERT
+        ))
 
         tags = {
             'album': PROJECT,
@@ -136,8 +145,10 @@ class Audiobook(models.Model):
             'organization': ORGANIZATION,
             'title': title,
             'project': self.project.name,
-            'funded_by': self.project.sponsors,
         }
+        if self.project.sponsors:
+            tags['funded_by'] = self.project.sponsors
+
         if self.source_sha1:
             tags['flac_sha1'] = self.source_sha1
         return tags
