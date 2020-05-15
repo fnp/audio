@@ -1,3 +1,4 @@
+import io
 from os import unlink
 from tempfile import NamedTemporaryFile
 from django.db import models
@@ -12,6 +13,7 @@ from .utils import (
     get_framerate,
     mux,
 )
+from .thumbnail import create_thumbnail
 
 
 class YouTube(models.Model):
@@ -64,6 +66,8 @@ class YouTube(models.Model):
         data = response.json()
         audiobook.youtube_id = data['id']
         audiobook.save(update_fields=['youtube_id'])
+
+        self.update_thumbnail(audiobook)
         return response
 
     def prepare_file(self, input_path, output_path=None):
@@ -115,6 +119,26 @@ class YouTube(models.Model):
     # license
     # selfDeclaredMadeForKids
 
+    def update_thumbnail(self, audiobook):
+        thumbnail = self.prepare_thumbnail(audiobook)
+        response = youtube_call(
+            "POST",
+            "https://www.googleapis.com/upload/youtube/v3/thumbnails/set",
+            params={'videoId': audiobook.youtube_id},
+            media_data=buf.read(),  # Or just data?
+        )
+
+    def prepare_thumbnail(self, audiobook):
+        img = create_thumbnail(
+            self.thumbnail_template.path,
+            self.thumbnail_definition,
+            {}, # TODO proper context
+            lambda name: Font.objects.get(name=name).truetype.path
+        )
+        buf = io.BytesIO()
+        img.save(buf, format='PNG')
+        return buf
+        
 
 class Card(models.Model):
     youtube = models.ForeignKey(YouTube, models.CASCADE)
@@ -124,3 +148,11 @@ class Card(models.Model):
 
     class Meta:
         ordering = ('order', )
+
+
+class Font(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    truetype = models.FileField(upload_to='youtube/font')
+
+    def __str__(self):
+        return self.name
