@@ -2,4 +2,12 @@ from django.contrib import admin
 from . import models
 
 
-admin.site.register(models.YouTube)
+class CardInline(admin.TabularInline):
+    model = models.Card
+
+
+class YouTubeAdmin(admin.ModelAdmin):
+    inlines = [CardInline]
+
+
+admin.site.register(models.YouTube, YouTubeAdmin)

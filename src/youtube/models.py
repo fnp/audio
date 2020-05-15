@@ -18,13 +18,10 @@ class YouTube(models.Model):
     title_template = models.CharField(max_length=1024, blank=True)
     description_template = models.TextField(blank=True)
     category = models.IntegerField(null=True, blank=True)  # get categories
-    intro_card = models.FileField(upload_to='youtube/intro_card', blank=True)
-    intro_card_duration = models.FloatField(null=True, blank=True)
-    card = models.FileField(upload_to='youtube/card', blank=True)
+    loop_card = models.FileField(upload_to='youtube/card', blank=True)
     loop_video = models.FileField(upload_to='youtube/loop_video', blank=True)
-    outro_card = models.FileField(upload_to='youtube/outro_card', blank=True)
-    outro_card_duration = models.FloatField(null=True, blank=True)
     thumbnail_template = models.FileField(upload_to='youtube/thumbnail', blank=True)
+    thumbnail_definition = models.TextField(blank=True)
     genres = models.CharField(max_length=2048, blank=True)
 
     class Meta:
@@ -78,6 +75,7 @@ class YouTube(models.Model):
 
     def prepare_video(self, duration):
         concat = []
+        outro = []
         delete = []
 
         if self.loop_video:
@@ -86,21 +84,13 @@ class YouTube(models.Model):
             fps = 25
 
         loop_duration = duration
-        if self.intro_card and self.intro_card_duration:
-            loop_duration -= self.intro_card_duration
-            intro = video_from_image(
-                self.intro_card.path, self.intro_card_duration, fps=fps
+        for card in self.card_set.filter(order__lt=0, duration__gt=0):
+            loop_duration -= card.duration
+            card_video = video_from_image(
+                card.image.path, card.duration, fps=fps
             )
-            concat.append(intro)
+            (concat if card.order < 0 else outro).append(card_video)
             delete.append(intro)
-
-        if self.outro_card and self.outro_card_duration:
-            loop_duration -= self.outro_card_duration
-            outro = video_from_image(
-                self.outro_card.path, self.outro_card_duration, fps=fps
-            )
-            concat.append(outro)
-            delete.append(outro)
 
         if self.loop_video:
             loop_video_duration = get_duration(self.loop_video.path)
@@ -108,12 +98,13 @@ class YouTube(models.Model):
 
             leftover_duration = loop_duration % loop_video_duration
             leftover = cut_video(self.loop_video.path, leftover_duration)
-            concat[1:1] = [self.loop_video.path] * times_loop + [leftover]
+            concat.extend([self.loop_video.path] * times_loop + [leftover])
             delete.append(leftover)
         else:
-            leftover = video_from_image(self.card.path, loop_duration)
-            concat.insert(1, video_from_image(self.card.path, loop_duration, fps=fps))
+            leftover = video_from_image(self.loop_card.path, loop_duration)
+            concat.append(video_from_image(self.loop_card.path, loop_duration, fps=fps))
             delete.append(leftover)
+        concat.extend(outro)
 
         output = concat_videos(concat)
         for p in delete:
@@ -123,3 +114,13 @@ class YouTube(models.Model):
     # tags
     # license
     # selfDeclaredMadeForKids
+
+
+class Card(models.Model):
+    youtube = models.ForeignKey(YouTube, models.CASCADE)
+    order = models.SmallIntegerField()
+    image = models.FileField(upload_to='youtube/card')
+    duration = models.FloatField()
+
+    class Meta:
+        ordering = ('order', )
