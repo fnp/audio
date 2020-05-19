@@ -29,7 +29,7 @@ def ffmpeg_concat(paths, suffix):
     output.close()
         
     subprocess.run(
-        ['ffmpeg', '-y', '-safe', '0', '-f', 'concat', '-i', filelist.name, '-c', 'copy', output.name],
+        ['ffmpeg', '-y', '-safe', '0', '-f', 'concat', '-i', filelist.name, output.name],
         check=True)
 
     filelist.close()
