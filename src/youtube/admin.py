@@ -11,3 +11,6 @@ class YouTubeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(models.YouTube, YouTubeAdmin)
+
+
+admin.site.register(models.Font)

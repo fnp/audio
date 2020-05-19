@@ -4,14 +4,17 @@ from tempfile import NamedTemporaryFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.template import Template, Context
+import requests
 from apiclient import youtube_call
 from .utils import (
-    video_from_image,
-    cut_video,
+    concat_audio,
     concat_videos,
+    cut_video,
     get_duration,
     get_framerate,
     mux,
+    standardize_video,
+    video_from_image,
 )
 from .thumbnail import create_thumbnail
 
@@ -20,6 +23,8 @@ class YouTube(models.Model):
     title_template = models.CharField(max_length=1024, blank=True)
     description_template = models.TextField(blank=True)
     category = models.IntegerField(null=True, blank=True)  # get categories
+    intro_flac = models.FileField(upload_to='youtube/intro_flac', blank=True)
+    outro_flac = models.FileField(upload_to='youtube/outro_flac', blank=True)
     loop_card = models.FileField(upload_to='youtube/card', blank=True)
     loop_video = models.FileField(upload_to='youtube/loop_video', blank=True)
     thumbnail_template = models.FileField(upload_to='youtube/thumbnail', blank=True)
@@ -60,8 +65,8 @@ class YouTube(models.Model):
                 "POST",
                 "https://www.googleapis.com/upload/youtube/v3/videos",
                 params={'part': part},
-                data=data,
-                media_data=f.read(),
+                json=data,
+                resumable_data=f.read(),
             )
         data = response.json()
         audiobook.youtube_id = data['id']
@@ -71,12 +76,31 @@ class YouTube(models.Model):
         return response
 
     def prepare_file(self, input_path, output_path=None):
-        duration = get_duration(input_path)
+        audio = self.prepare_audio(input_path)
+        duration = self.get_duration(input_path)
         video = self.prepare_video(duration)
-        output = mux([video, input_path], output_path=output_path)
+        output = mux([video, audio], output_path=output_path)
+        unlink(audio)
         unlink(video)
         return output
 
+    def get_duration(self, input_path):
+        d = get_duration(input_path)
+        if self.intro_flac:
+            d += get_duration(self.intro_flac.path)
+        if self.outro_flac:
+            d += get_duration(self.outro_flac.path)
+        return d
+    
+    def prepare_audio(self, input_path):
+        files = []
+        if self.intro_flac:
+            files.append(self.intro_flac.path)
+        files.append(input_path)
+        if self.outro_flac:
+            files.append(self.outro_flac.path)
+        return concat_audio(files)
+    
     def prepare_video(self, duration):
         concat = []
         outro = []
@@ -84,25 +108,26 @@ class YouTube(models.Model):
 
         if self.loop_video:
             fps = get_framerate(self.loop_video.path)
+            loop_video = standardize_video(self.loop_video.path)
         else:
             fps = 25
 
         loop_duration = duration
-        for card in self.card_set.filter(order__lt=0, duration__gt=0):
+        for card in self.card_set.filter(duration__gt=0):
             loop_duration -= card.duration
             card_video = video_from_image(
                 card.image.path, card.duration, fps=fps
             )
             (concat if card.order < 0 else outro).append(card_video)
-            delete.append(intro)
+            delete.append(card_video)
 
         if self.loop_video:
-            loop_video_duration = get_duration(self.loop_video.path)
+            loop_video_duration = get_duration(loop_video)
             times_loop = int(loop_duration // loop_video_duration)
 
             leftover_duration = loop_duration % loop_video_duration
-            leftover = cut_video(self.loop_video.path, leftover_duration)
-            concat.extend([self.loop_video.path] * times_loop + [leftover])
+            leftover = cut_video(loop_video, leftover_duration)
+            concat.extend([loop_video] * times_loop + [leftover])
             delete.append(leftover)
         else:
             leftover = video_from_image(self.loop_card.path, loop_duration)
@@ -113,6 +138,7 @@ class YouTube(models.Model):
         output = concat_videos(concat)
         for p in delete:
             unlink(p)
+        unlink(loop_video)
         return output
 
     # tags
@@ -125,14 +151,19 @@ class YouTube(models.Model):
             "POST",
             "https://www.googleapis.com/upload/youtube/v3/thumbnails/set",
             params={'videoId': audiobook.youtube_id},
-            media_data=buf.read(),  # Or just data?
+            data=thumbnail.getvalue(),
         )
 
     def prepare_thumbnail(self, audiobook):
+        slug = audiobook.url.rstrip('/').rsplit('/', 1)[-1]
+        apidata = requests.get(f'https://wolnelektury.pl/api/books/{slug}/').json()
         img = create_thumbnail(
             self.thumbnail_template.path,
             self.thumbnail_definition,
-            {}, # TODO proper context
+            {
+                "author": ', '.join((a['name'] for a in apidata['authors'])),
+                "title": apidata['title'],
+            },
             lambda name: Font.objects.get(name=name).truetype.path
         )
         buf = io.BytesIO()

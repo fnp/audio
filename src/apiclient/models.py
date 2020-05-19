@@ -37,24 +37,27 @@ class YouTubeToken(models.Model):
             token_updater=self.token_updater
         )
 
-    def call(self, method, url, params=None, data=None, media_data=None):
+    def call(self, method, url, params=None, json=None, data=None, resumable_data=None):
         params = params or {}
-        params['uploadType'] = 'resumable'
+        if resumable_data:
+            params['uploadType'] = 'resumable'
 
         session = self.get_session()
         response = session.request(
             method=method,
             url=url,
-            json=data,
+            json=json,
+            data=data,
             params=params,
             headers={
-                'X-Upload-Content-Length': str(len(media_data)),
+                'X-Upload-Content-Length': str(len(resumable_data)),
                 'x-upload-content-type': 'application/octet-stream',
-            }
+            } if resumable_data else {}
         )
-        location = response.headers['Location']
-        return session.put(
-            url=location,
-            data=media_data,
-            headers={"Content-Type": "application/octet-stream"},
-        )
+        if resumable_data:
+            location = response.headers['Location']
+            return session.put(
+                url=location,
+                data=resumable_data,
+                headers={"Content-Type": "application/octet-stream"},
+            )
