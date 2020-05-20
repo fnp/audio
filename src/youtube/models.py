@@ -56,7 +56,8 @@ class YouTube(models.Model):
                 title=self.get_title(audiobook),
                 description=self.get_description(audiobook),
                 categoryId=self.category,
-                defaultLanguage='pl'
+                defaultLanguage='pl',
+                defaultAudioLanguage='pl',
             ),
             status=dict(
                 privacyStatus=self.privacy_status,
