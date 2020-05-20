@@ -4,7 +4,6 @@ from tempfile import NamedTemporaryFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.template import Template, Context
-import requests
 from apiclient import youtube_call
 from .utils import (
     concat_audio,
@@ -22,42 +21,50 @@ from .thumbnail import create_thumbnail
 class YouTube(models.Model):
     title_template = models.CharField(max_length=1024, blank=True)
     description_template = models.TextField(blank=True)
-    category = models.IntegerField(null=True, blank=True)  # get categories
+    category = models.IntegerField(null=True, blank=True, choices=[
+        (27, 'Edukacja'),
+    ])
     intro_flac = models.FileField(upload_to='youtube/intro_flac', blank=True)
     outro_flac = models.FileField(upload_to='youtube/outro_flac', blank=True)
     loop_card = models.FileField(upload_to='youtube/card', blank=True)
     loop_video = models.FileField(upload_to='youtube/loop_video', blank=True)
     thumbnail_template = models.FileField(upload_to='youtube/thumbnail', blank=True)
     thumbnail_definition = models.TextField(blank=True)
+    privacy_status = models.CharField(max_length=16, choices=[
+        ('public', _('public')),
+        ('unlisted', _('unlisted')),
+        ('private', _('private')),
+    ])
     genres = models.CharField(max_length=2048, blank=True)
 
     class Meta:
         verbose_name = _("YouTube configuration")
         verbose_name_plural = _("YouTube configurations")
 
-    def publish(self, audiobook, path):
-        ctx = Context(dict(audiobook=audiobook))
-        description = Template(self.description_template).render(ctx)
-        title = Template(self.title_template).render(ctx)
-        privacy = 'private'
+    def get_context(self, audiobook):
+        return Context(dict(audiobook=audiobook))
 
-        data = dict(
+    def get_description(self, audiobook):
+        return Template(self.description_template).render(self.get_context(audiobook))
+
+    def get_title(self, audiobook):
+        return Template(self.title_template).render(self.get_context(audiobook))
+
+    def get_data(self, audiobook):
+        return dict(
             snippet=dict(
-                title=title,
-                description=description,
-                # tags=tags,
-                # categoryId=category,
-                # defaultLanguage
+                title=self.get_title(audiobook),
+                description=self.get_description(audiobook),
+                categoryId=self.category,
+                defaultLanguage='pl'
             ),
             status=dict(
-                privacyStatus=privacy,
-                # license
-                # selfDeclaredMadeForKids
+                privacyStatus=self.privacy_status,
             ),
-            # recordingDetails=dict(
-            # recordingDate
-            # ),
         )
+
+    def publish(self, audiobook, path):
+        data = self.get_data()
         part = ",".join(data.keys())
 
         with open(path, "rb") as f:
@@ -74,6 +81,17 @@ class YouTube(models.Model):
 
         self.update_thumbnail(audiobook)
         return response
+
+    def update_data(self, audiobook):
+        data = self.get_data()
+        data['id'] = audiobook.youtube_id
+        part = ",".join(data.keys())
+        youtube_call(
+            "PUT",
+            "https://www.googleapis.com/youtube/v3/videos",
+            params={"part": part},
+            json=data
+        )       
 
     def prepare_file(self, input_path, output_path=None):
         audio = self.prepare_audio(input_path)
@@ -155,14 +173,12 @@ class YouTube(models.Model):
         )
 
     def prepare_thumbnail(self, audiobook):
-        slug = audiobook.url.rstrip('/').rsplit('/', 1)[-1]
-        apidata = requests.get(f'https://wolnelektury.pl/api/books/{slug}/').json()
         img = create_thumbnail(
             self.thumbnail_template.path,
             self.thumbnail_definition,
             {
-                "author": ', '.join((a['name'] for a in apidata['authors'])),
-                "title": apidata['title'],
+                "author": ', '.join((a['name'] for a in audiobook.book['authors'])),
+                "title": audiobook.book['title'],
             },
             lambda name: Font.objects.get(name=name).truetype.path
         )

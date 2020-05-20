@@ -3,8 +3,10 @@ import os.path
 
 from django.db import models
 from time import sleep
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 from django_pglocks import advisory_lock
+import requests
 from archive.constants import status
 from archive.settings import FILES_SAVE_PATH, ADVERT, LICENSE, ORGANIZATION, PROJECT
 from archive.utils import OverwriteStorage, sha1_file
@@ -152,4 +154,10 @@ class Audiobook(models.Model):
         if self.source_sha1:
             tags['flac_sha1'] = self.source_sha1
         return tags
+
+    @cached_property
+    def book(self):
+        slug = self.url.rstrip('/').rsplit('/', 1)[-1]
+        apidata = requests.get(f'https://wolnelektury.pl/api/books/{slug}/').json()
+        return apidata
 
