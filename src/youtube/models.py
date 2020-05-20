@@ -64,7 +64,7 @@ class YouTube(models.Model):
         )
 
     def publish(self, audiobook, path):
-        data = self.get_data()
+        data = self.get_data(audiobook)
         part = ",".join(data.keys())
 
         with open(path, "rb") as f:
@@ -83,7 +83,7 @@ class YouTube(models.Model):
         return response
 
     def update_data(self, audiobook):
-        data = self.get_data()
+        data = self.get_data(audiobook)
         data['id'] = audiobook.youtube_id
         part = ",".join(data.keys())
         youtube_call(
