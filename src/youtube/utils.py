@@ -1,84 +1,107 @@
-from os import unlink
+import os
+import shutil
 import subprocess
 from tempfile import NamedTemporaryFile
+from django.conf import settings
 
 
-def video_from_image(img_path, duration, fps=25):
-    tmp = NamedTemporaryFile(prefix='image', suffix='.mkv', delete=False)
-    tmp.close()
-    subprocess.run(
-        ['ffmpeg', '-y', '-loop', '1', '-t', str(duration), '-i', img_path, '-c:v', 'libx264', '-vf', f'fps={fps},format=yuv420p', tmp.name], check=True)
-    return tmp.name
+FILE_CACHE = getattr(settings, 'FILE_CACHE', 'file_cache/')
+
+
+def link_or_copy(src, dst):
+    dstdir = os.path.dirname(dst)
+    if not os.path.exists(dstdir):
+        os.makedirs(dstdir)
+    if os.path.exists(dst):
+        os.unlink(dst)
+        # FIXME: tiny window here when the temp path is not taken.
+    try:
+        os.link(src, dst)
+    except OSError:
+        shutil.copyfile(src, dst)
+
+
+def process_to_file(cmdline, prefix='', suffix='', cache_key=None, output_path=None):
+    if not output_path:
+        tmp = NamedTemporaryFile(prefix=prefix, suffix=suffix, delete=False)
+        tmp.close()
+        output_path = tmp.name
+
+    if cache_key:
+        cache_path = FILE_CACHE + cache_key.replace('/', '__')
+
+    if cache_key and os.path.exists(cache_path):
+        link_or_copy(cache_path, output_path)
+    else:
+        # Actually run the processing.
+        subprocess.run(cmdline + [output_path], check=True)
+        if cache_key:
+            link_or_copy(output_path, cache_path)
+
+    return output_path
+
+
+def video_from_image(img_path, duration, fps=25, cache=True):
+    return process_to_file(
+        ['ffmpeg', '-y', '-loop', '1', '-t', str(duration), '-i', img_path, '-c:v', 'libx264', '-vf', f'fps={fps},format=yuv420p'],
+        'image-',
+        '.mkv',
+        f'video_from_image:{img_path}:{duration}:{fps}.mkv' if cache else None
+    )
 
 
 def cut_video(video_path, duration):
-    tmp = NamedTemporaryFile(prefix='cut', suffix='.mkv', delete=False)
-    tmp.close()
-    subprocess.run(
-        ['ffmpeg', '-y', '-i', video_path, '-t', str(duration), tmp.name], check=True)
-    return tmp.name
+    return process_to_file(
+        ['ffmpeg', '-y', '-i', video_path, '-t', str(duration)],
+        'cut-',
+        '.mkv'
+    )
 
 
 def ffmpeg_concat(paths, suffix):
-    filelist = NamedTemporaryFile(prefix='concat', suffix='.txt')
+    filelist = NamedTemporaryFile(prefix='concat-', suffix='.txt')
     for path in paths:
         filelist.write(f"file '{path}'\n".encode('utf-8'))
     filelist.flush()
 
-    output = NamedTemporaryFile(prefix='concat', suffix=suffix, delete=False)
-    output.close()
-        
-    subprocess.run(
-        ['ffmpeg', '-y', '-safe', '0', '-f', 'concat', '-i', filelist.name, output.name],
-        check=True)
+    outname = process_to_file(
+        ['ffmpeg', '-y', '-safe', '0', '-f', 'concat', '-i', filelist.name],
+        'concat-', suffix
+    )
 
     filelist.close()
-    return output.name
+    return outname
 
 
 def concat_videos(paths):
     return ffmpeg_concat(paths, '.mkv')
 
+
 def concat_audio(paths):
-    std_paths = [
-        standardize_audio(p)
-        for p in paths
-    ]
-    output = ffmpeg_concat(std_paths, '.flac')
-    for p in std_paths:
-        unlink(p)
-    return output
+    return ffmpeg_concat(paths, '.flac')
 
-def standardize_audio(p):
-    output = NamedTemporaryFile(prefix='standarize', suffix='.flac', delete=False)
-    output.close()
-    subprocess.run(
-        ['ffmpeg', '-y', '-i', p, '-sample_fmt', 's16', '-acodec', 'flac', '-ac', '2', '-ar', '44100', output.name],
-        check=True)
-    return output.name
 
-def standardize_video(p):
-    output = NamedTemporaryFile(prefix='standarize', suffix='.mkv', delete=False)
-    output.close()
-    subprocess.run(
-        ['ffmpeg', '-y', '-i', p, output.name],
-        check=True)
-    return output.name
+def standardize_audio(p, cache=True):
+    return process_to_file(
+        ['ffmpeg', '-y', '-i', p, '-sample_fmt', 's16', '-acodec', 'flac', '-ac', '2', '-ar', '44100'],
+        'standardize-', '.flac',
+        f'standardize_audio:{p}.flac' if cache else None
+    )
 
+
+def standardize_video(p, cache=True):
+    return process_to_file(
+        ['ffmpeg', '-y', '-i', p],
+        'standardize-', '.mkv',
+        f'standardize_video:{p}.mkv' if cache else None
+    )
 
 
 def mux(channels, output_path=None):
-    if not output_path:
-        output = NamedTemporaryFile(prefix='concat', suffix='.mkv', delete=False)
-        output.close()
-        output_path = output.name
-    args = ['ffmpeg']
+    args = ['ffmpeg', '-y']
     for c in channels:
         args.extend(['-i', c])
-    args.extend([
-        '-y', output_path])
-    subprocess.run(args, check=True)
-    return output_path
+    return process_to_file(args, 'mux-', '.mkv', output_path=output_path)
 
 
 def get_duration(path):

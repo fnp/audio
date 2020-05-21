@@ -12,5 +12,10 @@ class YouTubeTask(AudioFormatTask):
     def set_tags(self, audiobook, filename):
         pass
 
+    @classmethod
+    def save(cls, audiobook, file_name):
+        """We do not save the video files."""
+        pass
+
     def put(self, user, audiobook, filename):
         YouTube.objects.first().publish(audiobook, filename)

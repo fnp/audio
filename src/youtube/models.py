@@ -13,6 +13,7 @@ from .utils import (
     get_duration,
     get_framerate,
     mux,
+    standardize_audio,
     standardize_video,
     video_from_image,
 )
@@ -118,12 +119,19 @@ class YouTube(models.Model):
     
     def prepare_audio(self, input_path):
         files = []
+        delete = []
         if self.intro_flac:
-            files.append(self.intro_flac.path)
+            files.append(standardize_audio(self.intro_flac.path))
+            delete.append(files[-1])
         files.append(input_path)
         if self.outro_flac:
-            files.append(self.outro_flac.path)
-        return concat_audio(files)
+            files.append(standardize_audio(self.outro_flac.path))
+            delete.append(files[-1])
+        output = concat_audio(files)
+        for d in delete:
+            unlink(d)
+        return output
+
     
     def prepare_video(self, duration):
         concat = []
