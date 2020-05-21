@@ -1,0 +1,27 @@
+{% extends "archive/base.html" %}
+
+
+{% block content %}
+  <div class="card mt-4">
+    <div class="card-header">
+      <h2>
+        <a href="{% url 'file' object.id %}">
+          &larr; {{ object.title }}
+        </a>
+      </h2>
+    </div>
+    <div class="card-body">
+      <img src="{% url 'youtube_thumbnail' object.id %}" style="width:100%">
+    </div>
+  </div>
+
+
+  <div class="card mt-4 mb-4">
+    <div class="card-header">
+      <h2>{{ title }}</h2>
+    </div>
+    <div class="card-body">
+      {{ description|linebreaksbr }}
+    </div>
+  </div>
+{% endblock %}

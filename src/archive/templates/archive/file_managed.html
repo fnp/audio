@@ -69,6 +69,11 @@
               {% endif %}
             </div>
             <div class="col-md-6">
+              <p>
+	        <a href="{% url 'youtube_preview' audiobook.id %}">
+                  {% trans "Preview YouTube metadata" %}
+                </a>
+              </p>
               <form method="post" action="{% url 'youtube_publish' audiobook.id %}">
                 {% csrf_token %}
                 <input class="btn btn-primary" type="submit" value="{% trans "Publish on YouTube" %}" />
@@ -78,7 +83,6 @@
                 {% csrf_token %}
                 <input class="btn btn-secondary" type="submit" value="{% trans "Convert without publishing" %}" />
               </form>
-
             </div>
           </div>
         </td></tr>
@@ -141,8 +145,16 @@
         <h2>{% trans "YouTube" %}</h2>
       </div>
       <div class="card-body">
-        {% if audiobook.youtube_file %}
-          <p><a href="{% url 'download' audiobook.id 'mkv' %}">{% trans "Download YouTube file." %}</a></p>
+        {% if audiobook.youtube_id %}
+          {% if audiobook.youtube_id %}
+            <p>
+              <a href="https://youtu.be/{{ audiobook.youtube_id }}" target="_blank">{% trans "See on YouTube" %}</a>
+            </p>
+            <form method="post" action="{% url 'youtube_update' audiobook.id %}">
+              {% csrf_token %}
+              <input class="btn btn-secondary" type="submit" value="{% trans "Update YouTube metadata" %}">
+            </form>
+          {% endif %}
           {% if audiobook.youtube_published %}
             <p>{% trans "Published:" %} {{ audiobook.youtube_published }}</a></p>
             {% if audiobook.get_youtube_published_tags.tags %}
