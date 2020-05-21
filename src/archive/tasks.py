@@ -93,13 +93,8 @@ class AudioFormatTask(Task):
 
         user = User.objects.get(id=uid)
 
-        try:
+        if not os.path.exists(BUILD_PATH):
             os.makedirs(BUILD_PATH)
-        except OSError as e:
-            if e.errno == errno.EEXIST:
-                pass
-            else:
-                raise
 
         out_file = NamedTemporaryFile(delete=False, prefix='%d-' % aid, suffix='.%s' % self.ext, dir=BUILD_PATH)
         out_file.close()

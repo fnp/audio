@@ -119,16 +119,13 @@ class YouTube(models.Model):
     
     def prepare_audio(self, input_path):
         files = []
-        delete = []
         if self.intro_flac:
             files.append(standardize_audio(self.intro_flac.path))
-            delete.append(files[-1])
-        files.append(input_path)
+        files.append(standardize_audio(input_path, cache=False))
         if self.outro_flac:
             files.append(standardize_audio(self.outro_flac.path))
-            delete.append(files[-1])
         output = concat_audio(files)
-        for d in delete:
+        for d in files:
             unlink(d)
         return output
 
