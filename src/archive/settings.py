@@ -55,10 +55,18 @@ try:
 except AttributeError:
     PROJECT = 'Wolne Lektury'
 
-try:
-    LICENSE = settings.ARCHIVE_LICENSE
-except AttributeError:
-    LICENSE = 'http://creativecommons.org/licenses/by-sa/3.0/deed.pl'
+
+LICENSE = getattr(
+    settings,
+    'ARCHIVE_LICENSE',
+    'http://artlibre.org/licence/lal/pl/'
+)
+
+LICENSE_NAME = getattr(
+    settings, 'ARCHIVE_LICENSE_NAME',
+    'Licencja Wolnej Sztuki 1.3'
+)
+
 
 try:
     ORGANIZATION = settings.ARCHIVE_ORGANIZATION
