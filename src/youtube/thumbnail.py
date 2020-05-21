@@ -53,6 +53,7 @@ def draw_version(img, d, context, get_font_path):
             realheight = draw.textsize(line, font=font)[1]
             if cursor + realheight > newimg.size[1]:
                 return False
+            draw.text((0, cursor), line, font=font, fill=item.get('color'))
             cursor += item['line-height']
 
     img.paste(newimg, (d.get('x', 0), d.get('y', 0)), newimg)
