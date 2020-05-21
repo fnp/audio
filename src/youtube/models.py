@@ -1,11 +1,11 @@
 import io
 from os import unlink
 from tempfile import NamedTemporaryFile
-from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.template import Template, Context
 from apiclient import youtube_call
+from archive.settings import LICENSE, LICENSE_NAME
 from .utils import (
     concat_audio,
     concat_videos,
@@ -45,8 +45,8 @@ class YouTube(models.Model):
     def get_context(self, audiobook):
         return Context(dict(
             audiobook=audiobook,
-            LICENSE=settings.LICENSE,
-            LICENSE_NAME=settings.LICENSE_NAME,
+            LICENSE=LICENSE,
+            LICENSE_NAME=LICENSE_NAME,
         ))
 
     def get_description(self, audiobook):
