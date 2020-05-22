@@ -52,7 +52,7 @@ def video_from_image(img_path, duration, fps=25, cache=True):
 
 def cut_video(video_path, duration):
     return process_to_file(
-        ['ffmpeg', '-y', '-i', video_path, '-t', str(duration)],
+        ['ffmpeg', '-y', '-i', video_path, '-t', str(duration), '-c', 'copy'],
         'cut-',
         '.mkv'
     )
