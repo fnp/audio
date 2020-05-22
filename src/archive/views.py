@@ -219,15 +219,18 @@ def list_unpublished(request):
 def list_publishing(request):
     division = 'publishing'
 
-    objects = models.Audiobook.objects.exclude(mp3_status=None, ogg_status=None)
+    objects = models.Audiobook.objects.exclude(mp3_status=None, ogg_status=None, youtube_status=None)
     objects_by_status = {}
     for o in objects:
+        statuses = set()
         if o.mp3_status:
-            k = o.mp3_status, o.get_mp3_status_display()
-            objects_by_status.setdefault(k, []).append(o)
-        if o.ogg_status and o.ogg_status != o.mp3_status:
-            k = o.ogg_status, o.get_ogg_status_display()
-            objects_by_status.setdefault(k, []).append(o)
+            statuses.add((o.mp3_status, o.get_mp3_status_display()))
+        if o.ogg_status:
+            statuses.add((o.ogg_status, o.get_ogg_status_display()))
+        if o.youtube_status:
+            statuses.add((o.youtube_status, o.get_youtube_status_display()))
+        for status in statuses:
+            objects_by_status.setdefault(status, []).append(o)
     status_objects = sorted(objects_by_status.items(), reverse=True)
 
     return render(request, "archive/list_publishing.html", locals())
