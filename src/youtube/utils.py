@@ -58,23 +58,23 @@ def cut_video(video_path, duration):
     )
 
 
-def ffmpeg_concat(paths, suffix):
+def ffmpeg_concat(paths, suffix, copy=False):
     filelist = NamedTemporaryFile(prefix='concat-', suffix='.txt')
     for path in paths:
         filelist.write(f"file '{path}'\n".encode('utf-8'))
     filelist.flush()
 
-    outname = process_to_file(
-        ['ffmpeg', '-y', '-safe', '0', '-f', 'concat', '-i', filelist.name],
-        'concat-', suffix
-    )
+    args = ['ffmpeg', '-y', '-safe', '0', '-f', 'concat', '-i', filelist.name]
+    if copy:
+        args += ['-c', 'copy']
+    outname = process_to_file(args, 'concat-', suffix)
 
     filelist.close()
     return outname
 
 
 def concat_videos(paths):
-    return ffmpeg_concat(paths, '.mkv')
+    return ffmpeg_concat(paths, '.mkv', copy=True)
 
 
 def concat_audio(paths):
