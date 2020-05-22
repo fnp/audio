@@ -101,6 +101,7 @@ def mux(channels, output_path=None):
     args = ['ffmpeg', '-y']
     for c in channels:
         args.extend(['-i', c])
+    args.extend(['-c', 'copy'])
     return process_to_file(args, 'mux-', '.mkv', output_path=output_path)
 
 
