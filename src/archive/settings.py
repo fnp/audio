@@ -36,13 +36,6 @@ except AttributeError:
                         "archive/final"))
 
 
-# here the app keeps temporary build files
-try:
-    BUILD_PATH = settings.ARCHIVE_BUILD_PATH
-except AttributeError:
-    BUILD_PATH = os.path.abspath(os.path.join(settings.MEDIA_ROOT,
-                        "archive/build"))
-
 UPLOAD_URL = getattr(
     settings,
     'ARCHIVE_UPLOAD_URL',

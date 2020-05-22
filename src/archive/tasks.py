@@ -18,7 +18,7 @@ from mutagen import id3
 from apiclient import api_call
 from archive.constants import status
 from archive.models import Audiobook
-from archive.settings import BUILD_PATH, COVER_IMAGE, UPLOAD_URL
+from archive.settings import COVER_IMAGE, UPLOAD_URL
 from archive.utils import ExistingFile
 
 
@@ -93,10 +93,7 @@ class AudioFormatTask(Task):
 
         user = User.objects.get(id=uid)
 
-        if not os.path.exists(BUILD_PATH):
-            os.makedirs(BUILD_PATH)
-
-        out_file = NamedTemporaryFile(delete=False, prefix='%d-' % aid, suffix='.%s' % self.ext, dir=BUILD_PATH)
+        out_file = NamedTemporaryFile(delete=False, prefix='%d-' % aid, suffix='.%s' % self.ext)
         out_file.close()
         self.encode(audiobook.source_file.path, out_file.name)
         self.set_status(aid, status.TAGGING)
