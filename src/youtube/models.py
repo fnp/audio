@@ -74,14 +74,13 @@ class YouTube(models.Model):
         data = self.get_data(audiobook)
         part = ",".join(data.keys())
 
-        with open(path, "rb") as f:
-            response = youtube_call(
-                "POST",
-                "https://www.googleapis.com/upload/youtube/v3/videos",
-                params={'part': part},
-                json=data,
-                resumable_data=f.read(),
-            )
+        response = youtube_call(
+            "POST",
+            "https://www.googleapis.com/upload/youtube/v3/videos",
+            params={'part': part},
+            json=data,
+            resumable_file_path=path,
+        )
         data = response.json()
         audiobook.youtube_id = data['id']
         audiobook.save(update_fields=['youtube_id'])
