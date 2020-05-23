@@ -9,7 +9,7 @@ def populate_license(apps, schema_editor):
     Audiobook = apps.get_model('archive.Audiobook')
     licenses = {}
     for a in Audiobook.objects.all():
-        if a.mp3_tags:
+        if a.mp3_published_tags:
             tags = json.loads(a.mp3_published_tags)
             uri = tags.get('license')
             if not uri:
