@@ -49,18 +49,6 @@ except AttributeError:
     PROJECT = 'Wolne Lektury'
 
 
-LICENSE = getattr(
-    settings,
-    'ARCHIVE_LICENSE',
-    'http://artlibre.org/licence/lal/pl/'
-)
-
-LICENSE_NAME = getattr(
-    settings, 'ARCHIVE_LICENSE_NAME',
-    'Licencja Wolnej Sztuki 1.3'
-)
-
-
 try:
     ORGANIZATION = settings.ARCHIVE_ORGANIZATION
 except AttributeError:

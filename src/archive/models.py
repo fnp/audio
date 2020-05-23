@@ -8,8 +8,13 @@ from django.utils.translation import gettext_lazy as _
 from django_pglocks import advisory_lock
 import requests
 from archive.constants import status
-from archive.settings import FILES_SAVE_PATH, ADVERT, LICENSE, ORGANIZATION, PROJECT
+from archive.settings import FILES_SAVE_PATH, ADVERT, ORGANIZATION, PROJECT
 from archive.utils import OverwriteStorage, sha1_file
+
+
+class License(models.Model):
+    uri = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
 
 
 class Project(models.Model):
@@ -68,6 +73,7 @@ class Audiobook(models.Model):
     url = models.URLField(max_length=255, verbose_name=_('book url'))
     translator = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('translator'))
     modified = models.DateTimeField(null=True, editable=False)
+    license = models.ForeignKey(License, models.PROTECT, null=True, blank=True, verbose_name=_('license'))
 
     # publishing process
     mp3_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
@@ -124,7 +130,7 @@ class Audiobook(models.Model):
             title += ' (tłum. %s)' % self.translator
 
         copyright = "%s %s. Licensed to the public under %s verify at %s" % (
-                self.date, ORGANIZATION, LICENSE, self.url)
+                self.date, ORGANIZATION, self.license.uri, self.url)
 
         comment = "\n".join((
             self.project.get_description(),
@@ -142,7 +148,7 @@ class Audiobook(models.Model):
             'date': self.date,
             'genre': 'Speech',
             'language': 'pol',
-            'license': LICENSE,
+            'license': self.license.uri,
             'organization': ORGANIZATION,
             'title': title,
             'project': self.project.name,

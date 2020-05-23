@@ -5,7 +5,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.template import Template, Context
 from apiclient import youtube_call
-from archive.settings import LICENSE, LICENSE_NAME
 from .utils import (
     concat_audio,
     concat_videos,
@@ -18,6 +17,9 @@ from .utils import (
     video_from_image,
 )
 from .thumbnail import create_thumbnail
+
+
+YOUTUBE_TITLE_LIMIT = 100
 
 
 class YouTube(models.Model):
@@ -46,15 +48,13 @@ class YouTube(models.Model):
     def get_context(self, audiobook):
         return Context(dict(
             audiobook=audiobook,
-            LICENSE=LICENSE,
-            LICENSE_NAME=LICENSE_NAME,
         ))
 
     def get_description(self, audiobook):
         return Template(self.description_template).render(self.get_context(audiobook))
 
     def get_title(self, audiobook):
-        return Template(self.title_template).render(self.get_context(audiobook))
+        return Template(self.title_template).render(self.get_context(audiobook))[:YOUTUBE_TITLE_LIMIT]
 
     def get_data(self, audiobook):
         return dict(
