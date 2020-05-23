@@ -16,6 +16,9 @@ class License(models.Model):
     uri = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class Project(models.Model):
     """ an audiobook project, needed for specyfing sponsors """
