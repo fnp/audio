@@ -11,7 +11,7 @@ def populate_license(apps, schema_editor):
     for a in Audiobook.objects.all():
         if a.mp3_published_tags:
             tags = json.loads(a.mp3_published_tags)
-            uri = tags.get('license')
+            uri = tags.get('tags', {}).get('license')
             if not uri:
                 continue
             if uri not in licenses:
