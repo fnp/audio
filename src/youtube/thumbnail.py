@@ -44,6 +44,8 @@ def draw_version(img, d, context, get_font_path):
         if item.get('vskip'):
             cursor += item['vskip']
         text = item['text'].format(**context)
+        if not text:
+            continue
         if item.get('uppercase'):
             text = text.upper()
         font = ImageFont.truetype(get_font_path(item['font-family']), item['font-size'])

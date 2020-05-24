@@ -132,8 +132,11 @@ class Audiobook(models.Model):
         if self.translator:
             title += ' (tłum. %s)' % self.translator
 
-        copyright = "%s %s. Licensed to the public under %s verify at %s" % (
-                self.date, ORGANIZATION, self.license.uri, self.url)
+        copyright = "%s %s." % (
+                self.date, ORGANIZATION)
+        if self.license:
+            copyright += " Licensed to the public under %s verify at %s" % (
+                self.license.uri, self.url)
 
         comment = "\n".join((
             self.project.get_description(),
@@ -151,11 +154,12 @@ class Audiobook(models.Model):
             'date': self.date,
             'genre': 'Speech',
             'language': 'pol',
-            'license': self.license.uri,
             'organization': ORGANIZATION,
             'title': title,
             'project': self.project.name,
         }
+        if self.license:
+            tags['license'] = self.license.uri
         if self.project.sponsors:
             tags['funded_by'] = self.project.sponsors
 
