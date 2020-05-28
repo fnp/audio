@@ -1,13 +1,13 @@
 -i https://py.mdrn.pl:8443/simple
 
-Django==3.0.4
+Django==3.0.6
 django-cas-ng==4.1.1
 django-bootstrap4==1.1.1
 django-pglocks==1.0.4
 
-celery[redis]==4.4.0
+celery[redis]==4.4.2
 
-psycopg2-binary==2.8.4
+psycopg2-binary==2.8.5
 mutagen==1.42.0
 requests==2.23.0
 requests-toolbelt==0.9.1
