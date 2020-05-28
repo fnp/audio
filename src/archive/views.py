@@ -268,6 +268,17 @@ def file_managed(request, id):
         request.user.is_authenticated and
         request.user.oauthconnection_set.filter(access=True).exists())
 
+    alerts = []
+    series = models.Audiobook.objects.filter(url=audiobook.url)
+    real = series.count()
+    if real != audiobook.parts_count:
+        alerts.append(_('Parts number inconsitent. Declared number: %(declared)d. Real number: %(real)d') % {"declared": audiobook.parts_count, "real": real})
+    if audiobook.parts_count > 1:
+        if not audiobook.index:
+            alerts.append(_('There is more than one part, but index is not set.'))
+        if set(series.values_list('index', flat=True)) != set(range(1, audiobook.parts_count + 1)):
+            alerts.append(_('Part indexes are not 1..%(parts_count)d.') % {"parts_count": audiobook.parts_count})
+
     return render(request, "archive/file_managed.html", locals())
 
 

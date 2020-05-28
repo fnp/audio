@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-01 14:18+0200\n"
-"PO-Revision-Date: 2020-04-01 14:19+0200\n"
+"POT-Creation-Date: 2020-05-28 13:31+0200\n"
+"PO-Revision-Date: 2020-05-28 13:32+0200\n"
 "Last-Translator: Radek Czajka <radoslaw.czajka@nowoczesnapolska.org.pl>\n"
+"Language-Team: \n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
-"Language-Team: \n"
 "X-Generator: Poedit 2.2.4\n"
 
 #: constants.py:10
@@ -35,67 +35,71 @@ msgstr "Opisywanie"
 msgid "Sending"
 msgstr "Wysyłanie"
 
-#: models.py:20 models.py:46
+#: models.py:31 models.py:75
 msgid "project"
 msgstr "projekt"
 
-#: models.py:21
+#: models.py:32
 msgid "projects"
 msgstr "projekty"
 
-#: models.py:34
+#: models.py:63
 msgid "source file"
 msgstr "plik źródłowy"
 
-#: models.py:37
+#: models.py:66
 msgid "title"
 msgstr "tytuł"
 
-#: models.py:38
+#: models.py:67
 msgid "part name"
 msgstr "nazwa części"
 
-#: models.py:38
+#: models.py:67
 msgid "eg. chapter in a novel"
 msgstr "np. rozdział w powieści"
 
-#: models.py:40
+#: models.py:69
 msgid "index"
 msgstr "numer"
 
-#: models.py:41
+#: models.py:70
 msgid "parts count"
 msgstr "liczba części"
 
-#: models.py:42
+#: models.py:71
 msgid "artist"
 msgstr "lektor"
 
-#: models.py:43
+#: models.py:72
 msgid "conductor"
 msgstr "reżyser"
 
-#: models.py:44
+#: models.py:73
 msgid "encoded by"
 msgstr "przyg. techn."
 
-#: models.py:45
+#: models.py:74
 msgid "date"
 msgstr "data"
 
-#: models.py:47
+#: models.py:76
 msgid "book url"
 msgstr "URL książki"
 
-#: models.py:48
+#: models.py:77
 msgid "translator"
 msgstr "tłumacz"
 
-#: models.py:74
+#: models.py:79
+msgid "license"
+msgstr ""
+
+#: models.py:104
 msgid "audiobook"
 msgstr "audiobook"
 
-#: models.py:75
+#: models.py:105
 msgid "audiobooks"
 msgstr "audiobooki"
 
@@ -107,7 +111,7 @@ msgstr "Nowe"
 msgid "Unpublished"
 msgstr "Nie opublikowane"
 
-#: templates/archive/base.html:8 templates/archive/file_managed.html:12
+#: templates/archive/base.html:8 templates/archive/file_managed.html:16
 msgid "Publishing"
 msgstr "Publikacja"
 
@@ -135,88 +139,95 @@ msgstr "Zaloguj"
 msgid "Administration"
 msgstr "Administracja"
 
-#: templates/archive/file_managed.html:16
+#: templates/archive/file_managed.html:20
 msgid "Publishing pending"
 msgstr "Czeka na publikację"
 
-#: templates/archive/file_managed.html:19
+#: templates/archive/file_managed.html:23
 msgid "Cancel publishing"
 msgstr "Anuluj publikację"
 
-#: templates/archive/file_managed.html:58
+#: templates/archive/file_managed.html:62
 msgid "Publish"
 msgstr "Opublikuj"
 
-#: templates/archive/file_managed.html:67
-#: templates/archive/file_managed.html:79
+#: templates/archive/file_managed.html:71
 msgid "Convert without publishing"
 msgstr "Konwertuj bez publikacji"
 
-#: templates/archive/file_managed.html:74
+#: templates/archive/file_managed.html:78
+msgid "Preview YouTube metadata"
+msgstr ""
+
+#: templates/archive/file_managed.html:83
 msgid "Publish on YouTube"
 msgstr "Opublikuj na YouTube"
 
-#: templates/archive/file_managed.html:95
+#: templates/archive/file_managed.html:89
+msgid "Update YouTube metadata"
+msgstr ""
+
+#: templates/archive/file_managed.html:106
 msgid "MP3 file"
 msgstr "Plik MP3"
 
-#: templates/archive/file_managed.html:99
+#: templates/archive/file_managed.html:110
 msgid "Download MP3 file."
 msgstr "Pobierz plik MP3."
 
-#: templates/archive/file_managed.html:101
-#: templates/archive/file_managed.html:124
-#: templates/archive/file_managed.html:147
+#: templates/archive/file_managed.html:112
+#: templates/archive/file_managed.html:135
+#: templates/archive/file_managed.html:162
 msgid "Published:"
 msgstr "Opublikowano:"
 
-#: templates/archive/file_managed.html:106
-#: templates/archive/file_managed.html:129
-#: templates/archive/file_managed.html:152
+#: templates/archive/file_managed.html:117
+#: templates/archive/file_managed.html:140
+#: templates/archive/file_managed.html:167
 msgid "Not published yet."
 msgstr "Nie opublikowane."
 
-#: templates/archive/file_managed.html:109
+#: templates/archive/file_managed.html:120
 msgid "MP3 file hasn't been generated yet."
 msgstr "Plik MP3 nie został jeszcze wygenerowany."
 
-#: templates/archive/file_managed.html:118
+#: templates/archive/file_managed.html:129
 msgid "Ogg Vorbis file"
 msgstr "Plik Ogg Vorbis"
 
-#: templates/archive/file_managed.html:122
+#: templates/archive/file_managed.html:133
 msgid "Download Ogg Vorbis file."
 msgstr "Pobierz plik Ogg Vorbis."
 
-#: templates/archive/file_managed.html:132
+#: templates/archive/file_managed.html:143
 msgid "Ogg Vorbis file hasn't been generated yet."
 msgstr "Plik Ogg Vorbis nie został jeszcze wygenerowany."
 
-#: templates/archive/file_managed.html:141
+#: templates/archive/file_managed.html:152
 msgid "YouTube"
 msgstr "YouTube"
 
-#: templates/archive/file_managed.html:145
-msgid "Download YouTube file."
-msgstr "Pobierz plik dla YouTube."
+#: templates/archive/file_managed.html:158
+msgid "See on YouTube"
+msgstr "Zobacz na YouTube"
 
-#: templates/archive/file_managed.html:155
+#: templates/archive/file_managed.html:170
 msgid "YouTube file hasn't been generated yet."
 msgstr "Plik dla YouTube nie został jeszcze wygenerowany."
 
-#: templates/archive/file_managed.html:174
+#: templates/archive/file_managed.html:189
 msgid "Are you sure you want to move this audiobook to archive?"
 msgstr "Czy na pewno chcesz przenieść ten plik to archiwum?"
 
-#: templates/archive/file_managed.html:176
+#: templates/archive/file_managed.html:191
 msgid "Remove to archive"
 msgstr "Usuń do archiwum"
 
-#: templates/archive/file_managed.html:186
+#: templates/archive/file_managed.html:201
 msgid "Update tags"
 msgstr "Uaktualnij tagi"
 
-#: templates/archive/file_managed.html:193 templates/archive/file_new.html:25
+#: templates/archive/file_managed.html:208 templates/archive/file_new.html:25
 msgid "Commit"
 msgstr "Zatwierdź"
 
@@ -259,6 +270,27 @@ msgstr "Nie opublikowane audiobooki"
 #: templates/base.html:12
 msgid "Audiobook repository"
 msgstr "Repozytorium audiobooków"
+
+#: views.py:275
+#, python-format
+msgid ""
+"Parts number inconsitent. Declared number: %(declared)d. Real number: "
+"%(real)d"
+msgstr ""
+"Niespójność w liczbie części. Zadeklarowana liczba: %(declared)d. Realna "
+"liczba: %(real)d."
+
+#: views.py:278
+msgid "There is more than one part, but index is not set."
+msgstr "Utwór ma więcej niż jedną część, ale indeks części nie jest ustawiony."
+
+#: views.py:280
+#, python-format
+msgid "Part indexes are not 1..%(parts_count)d."
+msgstr "Indeksy części utworu nie tworzą zakresu 1..%(parts_count)d."
+
+#~ msgid "Download YouTube file."
+#~ msgstr "Pobierz plik dla YouTube."
 
 #~ msgid "arranger"
 #~ msgstr "aranżer"

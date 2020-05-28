@@ -7,6 +7,10 @@
 
 
 
+{% for alert in alerts %}
+  <div class="mt-4 alert alert-warning">{{ alert }}</div>
+{% endfor %}
+
 <div class="card mt-4">
   <div class="card-header">
     <h2>{% trans "Publishing" %}</h2>
