@@ -57,11 +57,14 @@ class YouTubeToken(models.Model):
                 'x-upload-content-type': 'application/octet-stream',
             } if resumable_file_path else {}
         )
+        response.raise_for_status()
         if resumable_file_path:
             location = response.headers['Location']
             with open(resumable_file_path, 'rb') as f:
-                return session.put(
+                response = session.put(
                     url=location,
                     data=StreamingIterator(file_size, f),
                     headers={"Content-Type": "application/octet-stream"},
                 )
+                response.raise_for_status()
+                return response
