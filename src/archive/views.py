@@ -9,6 +9,7 @@ from django.urls import reverse
 from django.db.models import Q, Max
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
 import mutagen
