@@ -91,7 +91,10 @@ class AudioFormatTask(Task):
         audiobook = Audiobook.objects.get(id=aid)
         self.set_status(aid, status.ENCODING)
 
-        user = User.objects.get(id=uid)
+        if uid:
+            user = User.objects.get(id=uid)
+        else:
+            user = None
 
         out_file = NamedTemporaryFile(delete=False, prefix='%d-' % aid, suffix='.%s' % self.ext)
         out_file.close()

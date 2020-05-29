@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.views import View
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView
@@ -17,12 +18,9 @@ from . import models, tasks
 @permission_required('archive.change_audiobook')
 def publish(request, aid, publish=True):
     audiobook = get_object_or_404(Audiobook, id=aid)
-    tags = {}
-    #audiobook.set_youtube_tags(tags)
-    audiobook.youtube_status = status.WAITING
-    audiobook.save(update_fields=['youtube_status'])
-    audiobook.youtube_task = tasks.YouTubeTask.delay(request.user.id, aid, publish).task_id
-    audiobook.save(update_fields=['youtube_task'])
+    audiobook.youtube_status = status.QUEUED
+    audiobook.youtube_queued = now()
+    audiobook.save(update_fields=['youtube_status', 'youtube_queued'])
     return redirect(reverse('file', args=[aid]))
 
 

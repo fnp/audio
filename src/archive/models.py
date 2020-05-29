@@ -66,14 +66,14 @@ class Audiobook(models.Model):
     title = models.CharField(max_length=255, verbose_name=_('title'))
     part_name = models.CharField(max_length=255, verbose_name=_('part name'), help_text=_('eg. chapter in a novel'),
                                  default='', blank=True)
-    index = models.IntegerField(verbose_name=_('index'), default=0)
-    parts_count = models.IntegerField(verbose_name=_('parts count'), default=1)
+    index = models.IntegerField(verbose_name=_('index'), default=0, help_text=_('Ordering of parts of a book.'))
+    youtube_volume = models.CharField(_('Volume name for YouTube'), max_length=1000, blank=True, help_text=_('If set, audiobooks with the save value will be published as single YouTube video.'))
     artist = models.CharField(max_length=255, verbose_name=_('artist'))
     conductor = models.CharField(max_length=255, verbose_name=_('conductor'))
     encoded_by = models.CharField(max_length=255, verbose_name=_('encoded by'))
     date = models.CharField(max_length=255, verbose_name=_('date'))
     project = models.ForeignKey(Project, models.PROTECT, verbose_name=_('project'))
-    url = models.URLField(max_length=255, verbose_name=_('book url'))
+    slug = models.SlugField(max_length=120, help_text=_('WL catalogue slug of the book.'))
     translator = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('translator'))
     modified = models.DateTimeField(null=True, editable=False)
     license = models.ForeignKey(License, models.PROTECT, null=True, blank=True, verbose_name=_('license'))
@@ -99,6 +99,7 @@ class Audiobook(models.Model):
     youtube_published_tags = models.TextField(null=True, editable=False)
     youtube_published = models.DateTimeField(null=True, editable=False)
     youtube_id = models.CharField(max_length=255, blank=True, default='')
+    youtube_queued = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = _("audiobook")
@@ -107,6 +108,34 @@ class Audiobook(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def url(self):
+        return f'https://wolnelektury.pl/katalog/lektura/{self.slug}/'
+
+    @property
+    def parts_count(self):
+        return type(self).objects.filter(slug=self.slug).count()
+
+    @property
+    def youtube_volume_count(self):
+        total = 0
+        prev_volume = None
+        for a in type(self).objects.filter(slug=self.slug).order_by("index"):
+            if not a.youtube_volume or a.youtube_volume != prev_volume:
+                total += 1
+            prev_volume = a.youtube_volume
+        return total
+
+    @property
+    def youtube_volume_index(self):
+        index = 0
+        prev_volume = None
+        for a in type(self).objects.filter(slug=self.slug, index__lte=self.index).order_by("index"):
+            if not a.youtube_volume or a.youtube_volume != prev_volume:
+                index += 1
+            prev_volume = a.youtube_volume
+        return index
 
     def get_mp3_tags(self): return json.loads(self.mp3_tags) if self.mp3_tags else None
     def get_ogg_tags(self): return json.loads(self.ogg_tags) if self.ogg_tags else None
@@ -169,7 +198,6 @@ class Audiobook(models.Model):
 
     @cached_property
     def book(self):
-        slug = self.url.rstrip('/').rsplit('/', 1)[-1]
-        apidata = requests.get(f'https://wolnelektury.pl/api/books/{slug}/').json()
+        apidata = requests.get(f'https://wolnelektury.pl/api/books/{self.slug}/').json()
         return apidata
 

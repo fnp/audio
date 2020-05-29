@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.urls import path
 from django.views.generic import RedirectView
 from . import views
 
@@ -12,6 +13,7 @@ urlpatterns = [
     url(r'^unpublished/$', views.list_unpublished, name="list_unpublished"),
     url(r'^publishing/$', views.list_publishing, name="list_publishing"),
     url(r'^published/$', views.list_published, name="list_published"),
+    path('book/<slug:slug>/', views.BookView.as_view(), name="book"),
     url(r'^file/(\d+)/$', views.file_managed, name="file"),
     url(r'^publish/(\d+)/$', views.publish, name="publish"),
     url(r'^convert/(\d+)/$', views.publish, {'publish': False}, name="convert"),

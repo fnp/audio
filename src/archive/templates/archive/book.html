@@ -1,0 +1,29 @@
+{% extends "archive/base.html" %}
+
+{% block content %}
+  <div class="card mt-4">
+    <div class="card-header">
+      <h2>Audiobooki</h2>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>?x</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for audiobook in object_list %}
+            <tr>
+              <td>{{ audiobook.index }}</td>
+              <td>
+                <a href="{% url 'file' audiobook.id %}">
+                  {{ audiobook.title }}
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}
