@@ -67,7 +67,14 @@ class Audiobook(models.Model):
     part_name = models.CharField(max_length=255, verbose_name=_('part name'), help_text=_('eg. chapter in a novel'),
                                  default='', blank=True)
     index = models.IntegerField(verbose_name=_('index'), default=0, help_text=_('Ordering of parts of a book.'))
-    youtube_volume = models.CharField(_('Volume name for YouTube'), max_length=1000, blank=True, help_text=_('If set, audiobooks with the save value will be published as single YouTube video.'))
+    youtube_volume = models.CharField(
+        _("Volume name for YouTube"),
+        max_length=100,
+        blank=True,
+        help_text=_(
+            "If set, audiobooks with the save value will be published as single YouTube video."
+        ),
+    )
     artist = models.CharField(max_length=255, verbose_name=_('artist'))
     conductor = models.CharField(max_length=255, verbose_name=_('conductor'))
     encoded_by = models.CharField(max_length=255, verbose_name=_('encoded by'))
@@ -137,6 +144,15 @@ class Audiobook(models.Model):
             prev_volume = a.youtube_volume
         return index
 
+    @property
+    def is_youtube_publishable(self):
+        return (
+            not self.youtube_volume
+            or not type(self)
+            .objects.filter(youtube_volume=self.youtube_volume, index__lt=self.index)
+            .exists()
+        )
+
     def get_mp3_tags(self): return json.loads(self.mp3_tags) if self.mp3_tags else None
     def get_ogg_tags(self): return json.loads(self.ogg_tags) if self.ogg_tags else None
     def get_mp3_published_tags(self): return json.loads(self.mp3_published_tags) if self.mp3_published_tags else None
@@ -200,4 +216,3 @@ class Audiobook(models.Model):
     def book(self):
         apidata = requests.get(f'https://wolnelektury.pl/api/books/{self.slug}/').json()
         return apidata
-

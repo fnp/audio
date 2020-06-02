@@ -1,0 +1,44 @@
+- model: archive.Project
+  pk: 1
+  fields:
+    name: A project
+- model: youtube.YouTube
+  pk: 1
+  fields:
+    loop_video: loop.mkv
+    thumbnail_template: "template.jpg"
+  
+- model: archive.Audiobook
+  pk: 1
+  fields:
+    title: A title, part 1
+    slug: a-slug
+    source_file: part1.flac
+    project_id: 1
+    index: 1
+- model: archive.Audiobook
+  pk: 2
+  fields:
+    title: A title, part 2
+    slug: a-slug
+    source_file: part2.flac
+    project_id: 1
+    index: 2
+    youtube_volume: parts 2, 3
+- model: archive.Audiobook
+  pk: 3
+  fields:
+    title: A title, part 3
+    slug: a-slug
+    source_file: part3.flac
+    project_id: 1
+    index: 3
+    youtube_volume: parts 2, 3
+- model: archive.Audiobook
+  pk: 4
+  fields:
+    title: A title, part 4
+    slug: a-slug
+    source_file: part4.flac
+    project_id: 1
+    index: 4

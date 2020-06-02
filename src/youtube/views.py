@@ -18,9 +18,10 @@ from . import models, tasks
 @permission_required('archive.change_audiobook')
 def publish(request, aid, publish=True):
     audiobook = get_object_or_404(Audiobook, id=aid)
-    audiobook.youtube_status = status.QUEUED
-    audiobook.youtube_queued = now()
-    audiobook.save(update_fields=['youtube_status', 'youtube_queued'])
+    if audiobook.is_youtube_publishable:
+        audiobook.youtube_status = status.QUEUED
+        audiobook.youtube_queued = now()
+        audiobook.save(update_fields=['youtube_status', 'youtube_queued'])
     return redirect(reverse('file', args=[aid]))
 
 

@@ -186,6 +186,7 @@ def cancel_publishing(request, aid):
     audiobook.mp3_status = None
     audiobook.ogg_status = None
     audiobook.youtube_status = None
+    audiobook.youtube_queued = None
     audiobook.save()
     return redirect(file_managed, aid)
 
@@ -221,7 +222,9 @@ def list_unpublished(request):
 def list_publishing(request):
     division = 'publishing'
 
-    objects = models.Audiobook.objects.exclude(mp3_status=None, ogg_status=None, youtube_status=None)
+    objects = models.Audiobook.objects.exclude(
+        mp3_status=None, ogg_status=None, youtube_status=None
+    ).order_by("youtube_queued", "title")
     objects_by_status = {}
     for o in objects:
         statuses = set()

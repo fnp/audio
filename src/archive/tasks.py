@@ -98,7 +98,7 @@ class AudioFormatTask(Task):
 
         out_file = NamedTemporaryFile(delete=False, prefix='%d-' % aid, suffix='.%s' % self.ext)
         out_file.close()
-        self.encode(audiobook.source_file.path, out_file.name)
+        self.encode(self.get_source_file_paths(audiobook), out_file.name)
         self.set_status(aid, status.TAGGING)
         self.set_tags(audiobook, out_file.name)
         self.set_status(aid, status.SENDING)
@@ -110,6 +110,9 @@ class AudioFormatTask(Task):
             self.set_status(aid, None)
 
         self.save(audiobook, out_file.name)
+
+    def get_source_file_paths(self, audiobook):
+        return [audiobook.source_file.path]
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         aid = (args[0], kwargs.get('aid'))[0]
@@ -149,7 +152,9 @@ class Mp3Task(AudioFormatTask):
     }
 
     @staticmethod
-    def encode(in_path, out_path):
+    def encode(in_paths, out_path):
+        assert len(in_paths) == 1
+        in_path = in_paths[0]
         # 44.1kHz 64kbps mono MP3
         subprocess.check_call(['ffmpeg', 
             '-i', in_path.encode('utf-8'),
@@ -184,7 +189,9 @@ class OggTask(AudioFormatTask):
     prefix = ext = 'ogg'
 
     @staticmethod
-    def encode(in_path, out_path):
+    def encode(in_paths, out_path):
+        assert len(in_paths) == 1
+        in_path = in_paths[0]
         # 44.1kHz 64kbps mono Ogg Vorbis
         subprocess.check_call(['ffmpeg', 
             '-i', in_path.encode('utf-8'),

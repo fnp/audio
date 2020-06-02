@@ -97,30 +97,33 @@ class YouTube(models.Model):
             "https://www.googleapis.com/youtube/v3/videos",
             params={"part": part},
             json=data
-        )       
+        )
 
-    def prepare_file(self, input_path, output_path=None):
-        audio = self.prepare_audio(input_path)
-        duration = self.get_duration(input_path)
+    def prepare_file(self, input_paths, output_path=None):
+        audio = self.prepare_audio(input_paths)
+        duration = self.get_duration(input_paths)
         video = self.prepare_video(duration)
         output = mux([video, audio], output_path=output_path)
         unlink(audio)
         unlink(video)
         return output
 
-    def get_duration(self, input_path):
-        d = get_duration(input_path)
+    def get_duration(self, input_paths):
+        d = 0
+        for input_path in input_paths:
+            d += get_duration(input_path)
         if self.intro_flac:
             d += get_duration(self.intro_flac.path)
         if self.outro_flac:
             d += get_duration(self.outro_flac.path)
         return d
-    
-    def prepare_audio(self, input_path):
+
+    def prepare_audio(self, input_paths):
         files = []
         if self.intro_flac:
             files.append(standardize_audio(self.intro_flac.path))
-        files.append(standardize_audio(input_path, cache=False))
+        for input_path in input_paths:
+            files.append(standardize_audio(input_path, cache=False))
         if self.outro_flac:
             files.append(standardize_audio(self.outro_flac.path))
         output = concat_audio(files)
@@ -128,7 +131,6 @@ class YouTube(models.Model):
             unlink(d)
         return output
 
-    
     def prepare_video(self, duration):
         concat = []
         outro = []
@@ -196,7 +198,7 @@ class YouTube(models.Model):
         buf = io.BytesIO()
         img.save(buf, format='PNG')
         return buf
-        
+
 
 class Card(models.Model):
     youtube = models.ForeignKey(YouTube, models.CASCADE)
