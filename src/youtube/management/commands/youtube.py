@@ -11,9 +11,11 @@ class Command(BaseCommand):
         parser.add_argument("--limit", type=int, default=6)
 
     def handle(self, *args, **options):
-        for audiobook in Audiobook.objects.exclude(youtube_queued=None).order_by(
-            "youtube_queued"
-        )[: options["limit"]]:
+        for audiobook in (
+            Audiobook.objects.filter(status=status.QUEUED)
+            .exclude(youtube_queued=None)
+            .order_by("youtube_queued")[: options["limit"]]
+        ):
             audiobook.youtube_task = tasks.YouTubeTask.delay(
                 None, audiobook.id, True
             ).task_id
