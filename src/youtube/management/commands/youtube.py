@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for audiobook in (
-            Audiobook.objects.filter(status=status.QUEUED)
+            Audiobook.objects.filter(youtube_status=status.QUEUED)
             .exclude(youtube_queued=None)
             .order_by("youtube_queued")[: options["limit"]]
         ):
