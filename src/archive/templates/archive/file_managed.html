@@ -73,6 +73,7 @@
               {% endif %}
             </div>
             <div class="col-md-6">
+              {% if audiobook.is_youtube_publishable %}
               <p>
 	        <a href="{% url 'youtube_preview' audiobook.id %}">
                   {% trans "Preview YouTube metadata" %}
@@ -83,6 +84,7 @@
                 <input class="btn btn-primary" type="submit" value="{% trans "Publish on YouTube" %}" />
               </form>
               <br>
+              {% endif %}
               {% if audiobook.youtube_id %}
                 <form method="post" action="{% url 'youtube_update' audiobook.id %}">
                   {% csrf_token %}
