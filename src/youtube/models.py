@@ -191,7 +191,7 @@ class YouTube(models.Model):
             {
                 "author": ', '.join((a['name'] for a in audiobook.book['authors'])),
                 "title": audiobook.book['title'],
-                "part": audiobook.youtube_volume or audiobook.part_name,
+                "part": (audiobook.youtube_volume or audiobook.part_name).strip(),
             },
             lambda name: Font.objects.get(name=name).truetype.path
         )
