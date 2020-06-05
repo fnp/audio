@@ -107,6 +107,7 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django_cas_ng.middleware.CASMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    "fnp_django_pagination.middleware.PaginationMiddleware",
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -128,10 +129,10 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'bootstrap4',
     'django_cas_ng',
-
     'apiclient',
     'archive',
     'youtube',
+    "fnp_django_pagination",
 )
 
 # A sample logging configuration. The only tangible logging

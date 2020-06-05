@@ -23,8 +23,6 @@ from archive.utils import all_files
 
 
 def list_new(request):
-    division = 'new'
-
     path = settings.NEW_PATH
     objects = sorted(all_files(path))
     return render(request, "archive/list_new.html", locals())
@@ -32,8 +30,6 @@ def list_new(request):
 
 @permission_required('archive.change_audiobook')
 def file_new(request, filename):
-    division = 'new'
-
     filepath = filename
     root_filepath = os.path.join(settings.NEW_PATH, filename)
     if request.POST:
@@ -212,16 +208,7 @@ def download(request, aid, which="source"):
     return response
 
 
-def list_unpublished(request):
-    division = 'unpublished'
-
-    objects = models.Audiobook.objects.filter(Q(mp3_published=None) | Q(ogg_published=None))
-    return render(request, "archive/list_unpublished.html", locals())
-
-
 def list_publishing(request):
-    division = 'publishing'
-
     objects = models.Audiobook.objects.exclude(
         mp3_status=None, ogg_status=None, youtube_status=None
     ).order_by("youtube_queued", "title")
@@ -241,11 +228,8 @@ def list_publishing(request):
     return render(request, "archive/list_publishing.html", locals())
 
 
-def list_published(request):
-    division = 'published'
-
-    objects = models.Audiobook.objects.exclude(Q(mp3_published=None) | Q(ogg_published=None))
-    return render(request, "archive/list_published.html", locals())
+class AudiobookList(ListView):
+    queryset = models.Audiobook.objects.all()
 
 
 @permission_required('archive.change_audiobook')
@@ -260,7 +244,6 @@ def file_managed(request, id):
             except IOError:
                 raise Http404
 
-    division = 'published' if audiobook.published() else 'unpublished'
     path = audiobook.source_file.path[len(settings.FILES_PATH):].lstrip('/')
 
     # for tags update
@@ -286,15 +269,11 @@ def file_managed(request, id):
 
 
 def list_unmanaged(request):
-    division = 'unmanaged'
-
     objects = sorted(all_files(settings.UNMANAGED_PATH))
     return render(request, "archive/list_unmanaged.html", locals())
 
 
 def file_unmanaged(request, filename):
-    division = 'unmanaged'
-
     tags = mutagen.File(os.path.join(settings.UNMANAGED_PATH, filename.encode('utf-8')))
     if not tags:
         tags = {}
@@ -307,4 +286,6 @@ class BookView(ListView):
     template_name = 'archive/book.html'
 
     def get_queryset(self):
-        return models.Audiobook.objects.filter(slug=self.kwargs['slug'])
+        return models.Audiobook.objects.filter(slug=self.kwargs["slug"]).order_by(
+            "index"
+        )

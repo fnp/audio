@@ -2,6 +2,10 @@
 {% load i18n %}
 {% load tags %}
 
+
+{% block menu-active-unmanaged %}active{% endblock %}
+
+
 {% block messages %}
     {% if err_exists %}
         <p>{% trans "File with same name already exists!" %}</p>

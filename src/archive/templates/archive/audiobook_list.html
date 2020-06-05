@@ -1,0 +1,73 @@
+{% extends "archive/list.html" %}
+{% load i18n %}
+{% load pagination_tags %}
+
+
+{% block menu-active-audiobooks %}active{% endblock %}
+
+
+{% block file-list-title %}
+  {% trans "Audiobooks" %}
+{% endblock %}
+
+
+{% block file-list-info %}
+{% endblock %}
+
+{% block file-list-wrapper %}
+  {% autopaginate object_list 50 %}
+  {{ block.super }}
+  {% paginate %}
+{% endblock %}
+
+
+{% block file-list %}
+  <thead>
+    <tr>
+      <th>Slug</th>
+      <th>{% trans "Title" %}</th>
+      <th>{% trans "YouTube volume" %}</th>
+      <th>MP3</th>
+      <th>Ogg</th>
+      <th>YouTube</th>
+    </tr>
+  </thead>
+  {% for audiobook in object_list %}
+    <tr>
+      <td>
+        {% if audiobook.slug %}
+          <a href="{% url "book" audiobook.slug %}">{{ audiobook.slug }}</a>
+        {% endif %}
+        <td>
+          <a href='{% url "file" audiobook.id %}'>{{ audiobook }}</a>
+        </td>
+        <td>
+          {{ audiobook.youtube_volume }}
+        </td>
+        <td>
+          {% if audiobook.mp3_status %}
+            <span class="badge badge-info">
+              MP3:
+              {{ audiobook.get_mp3_status_display }}
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          {% if audiobooks.ogg_status_display %}
+            <span class="badge badge-info">
+              Ogg:
+              {{ audiobook.get_ogg_status_display }}
+            </span>
+          {% endif %}
+        </td>
+        <td>
+          {% if audiobooks.youtube_status %}
+            <span class="badge badge-info">
+              YT:
+              {{ audiobook.get_youtube_status_display }}
+            </span>
+          {% endif %}
+        </td>
+    </tr>
+  {% endfor %}
+{% endblock %}

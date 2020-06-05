@@ -1,28 +1,70 @@
 {% extends "archive/base.html" %}
+{% load i18n %}
+{% load tags %}
+
+
+{% block menu-active-audiobooks %}active{% endblock %}
+
 
 {% block content %}
   <div class="card mt-4">
     <div class="card-header">
-      <h2>Audiobooki</h2>
+      <h2>{{ object_list.0.book.title }}</h2>
     </div>
     <div class="card-body">
       <table class="table">
         <thead>
           <tr>
-            <th>?x</th>
+            <th>{% trans "Index" %}</th>
+            <th>{% trans "Title" %}</th>
+            <th>MP3</th>
+            <th>Ogg</th>
+            <th colspan="3">YouTube</th>
           </tr>
         </thead>
         <tbody>
-          {% for audiobook in object_list %}
-            <tr>
-              <td>{{ audiobook.index }}</td>
-              <td>
-                <a href="{% url 'file' audiobook.id %}">
-                  {{ audiobook.title }}
-                </a>
-              </td>
-            </tr>
-          {% endfor %}
+          {% with volumes=object_list.0.youtube_volume_count %}
+            {% for audiobook in object_list %}
+              <tr>
+                <td>{{ audiobook.index }}</td>
+                <td>
+                  <a href="{% url 'file' audiobook.id %}">
+                    {% if audiobook.part_name %}
+                      {{ audiobook.part_name }}
+                    {% else %}
+                      <em class="text-warning" title="ddd">
+                        ({{ audiobook }})
+                      </em>
+                      {% endif %}
+                  </a>
+                </td>
+                <td>{% status audiobook "mp3" %}</td>
+                <td>{% status audiobook "ogg" %}</td>
+                {% ifchanged audiobook.youtube_volume_index %}
+                  <td>
+                    {{ audiobook.youtube_volume_index }}/{{ volumes }}
+                  </td>
+                  <td>
+                    {{ audiobook.youtube_volume }}
+                  </td>
+                  <td>
+                    {% status audiobook "youtube" %}
+                  </td>
+                {% else  %}
+                  <td>
+                    –
+                  </td>
+                  <td>
+                    <span class="text-secondary">
+                      {{ audiobook.youtube_volume }}
+                    </span>
+                  </td>
+                  <td>
+                  </td>
+                {% endifchanged %}
+              </tr>
+            {% endfor %}
+          {% endwith %}
         </tbody>
       </table>
     </div>

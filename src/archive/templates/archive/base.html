@@ -3,11 +3,10 @@
 
 {% block repo-zones-nav %}
   <ul class="nav nav-pills">
-    <li class="nav-item"><a class="nav-link{% if division == "new" %} active{% endif %}" href="{% url 'list_new' %}">{% trans "New" %}</a></li>
-    <li class="nav-item"><a class="nav-link{% if division == "unpublished" %} active{% endif %}" href="{% url 'list_unpublished' %}">{% trans "Unpublished" %}</a></li>
-    <li class="nav-item"><a class="nav-link{% if division == "publishing" %} active{% endif %}" href="{% url 'list_publishing' %}">{% trans "Publishing" %}</a></li>
-    <li class="nav-item"><a class="nav-link{% if division == "published" %} active{% endif %}" href="{% url 'list_published' %}">{% trans "Published" %}</a></li>
-    <li class="nav-item"><a class="nav-link{% if division == "unmanaged" %} active{% endif %}" href="{% url 'list_unmanaged' %}">{% trans "Archive" %}</a></li>
+    <li class="nav-item"><a class="nav-link {% block menu-active-audiobooks %}{% endblock %}" href="{% url "list_managed" %}">{% trans "Audiobooks" %}</a></li>
+    <li class="nav-item"><a class="nav-link {% block menu-active-publishing %}{% endblock %}" href="{% url 'list_publishing' %}">{% trans "Publishing" %}</a></li>
+    <li class="nav-item"><a class="nav-link {% block menu-active-new %}{% endblock %}" href="{% url 'list_new' %}">{% trans "New" %}</a></li>
+    <li class="nav-item"><a class="nav-link {% block menu-active-unmanaged %}{% endblock %}" href="{% url 'list_unmanaged' %}">{% trans "Archive" %}</a></li>
   </ul>
 
   <ul class="nav">

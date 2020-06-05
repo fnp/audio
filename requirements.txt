@@ -4,6 +4,7 @@ Django==3.0.6
 django-cas-ng==4.1.1
 django-bootstrap4==1.1.1
 django-pglocks==1.0.4
+fnp-django-pagination==2.2.4
 
 celery[redis]==4.4.2
 

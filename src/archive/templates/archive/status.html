@@ -1,0 +1,21 @@
+{% load i18n %}
+
+{% if published %}
+  {% if link %}
+    <a href="{{ link }}" target="_blank">
+  {% endif %}
+  <span class="badge badge-success" title="{{ format }}: {% trans "Published at" %} {{ published }} %}">
+    {% trans "OK" %}
+  </span>
+  {% if link %}
+    </a>
+  {% endif %}
+{% elif status %}
+  <span class="badge badge-info">
+    {{ status }}
+  </span>
+{% else %}
+  <span class="badge badge-secondary">
+   ––
+  </span>
+{% endif %}

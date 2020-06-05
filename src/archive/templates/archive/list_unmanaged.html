@@ -1,6 +1,10 @@
 {% extends "archive/list.html" %}
 {% load i18n %}
 
+
+{% block menu-active-unmanaged %}active{% endblock %}
+
+
 {% block file-list-title %}
     {% trans "Unmanaged archive" %}
 {% endblock %}
