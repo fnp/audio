@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.template import Template, Context
+import requests
 from apiclient import youtube_call
 from .utils import (
     concat_audio,
@@ -32,8 +33,6 @@ class YouTube(models.Model):
     outro_flac = models.FileField(upload_to='youtube/outro_flac', blank=True)
     loop_card = models.FileField(upload_to='youtube/card', blank=True)
     loop_video = models.FileField(upload_to='youtube/loop_video', blank=True)
-    thumbnail_template = models.FileField(upload_to='youtube/thumbnail', blank=True)
-    thumbnail_definition = models.TextField(blank=True)
     privacy_status = models.CharField(max_length=16, choices=[
         ('public', _('public')),
         ('unlisted', _('unlisted')),
@@ -177,27 +176,21 @@ class YouTube(models.Model):
 
     def update_thumbnail(self, audiobook):
         thumbnail = self.prepare_thumbnail(audiobook)
-        response = youtube_call(
-            "POST",
-            "https://www.googleapis.com/upload/youtube/v3/thumbnails/set",
-            params={'videoId': audiobook.youtube_id},
-            data=thumbnail.getvalue(),
-        )
+        if thumbnail is not None:
+            response = youtube_call(
+                "POST",
+                "https://www.googleapis.com/upload/youtube/v3/thumbnails/set",
+                params={'videoId': audiobook.youtube_id},
+                data=thumbnail.getvalue(),
+            )
 
     def prepare_thumbnail(self, audiobook):
-        img = create_thumbnail(
-            self.thumbnail_template.path,
-            self.thumbnail_definition,
-            {
-                "author": ', '.join((a['name'] for a in audiobook.book['authors'])),
-                "title": audiobook.book['title'],
-                "part": (audiobook.youtube_volume or audiobook.part_name).strip(),
-            },
-            lambda name: Font.objects.get(name=name).truetype.path
-        )
-        buf = io.BytesIO()
-        img.save(buf, format='PNG')
-        return buf
+        for thumbnail_template in ThumbnailTemplate.objects.filter(is_active=True).order_by('order'):
+            if not thumbnail_template.is_for_audiobook(audiobook):
+                continue
+            thumbnail = thumbnail_template.generate(audiobook)
+            if thumbnail is not None:
+                return thumbnail
 
 
 class Card(models.Model):
@@ -216,3 +209,60 @@ class Font(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ThumbnailTemplate(models.Model):
+    order = models.SmallIntegerField()
+    is_active = models.BooleanField()
+    background = models.FileField(upload_to='youtube/thumbnail')
+    definition = models.TextField()
+    genres = models.CharField(max_length=255, blank=True)
+    collections = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        ordering = ('order', )
+
+    def generate(self, audiobook):
+        try:
+            img = create_thumbnail(
+                self.background.path,
+                self.definition,
+                {
+                    "author": ', '.join((a['name'] for a in audiobook.book['authors'])),
+                    "title": audiobook.book['title'],
+                    "part": (audiobook.youtube_volume or audiobook.part_name).strip(),
+                },
+                lambda name: Font.objects.get(name=name).truetype.path
+            )
+        except Exception as e:
+            print(e)
+            return
+        else:
+            buf = io.BytesIO()
+            img.save(buf, format='PNG')
+            return buf
+
+    def is_for_audiobook(self, audiobook):
+        if self.genres:
+            book_genres = set([g['slug'] for g in audiobook.book['genres']])
+            template_genres = set([g.strip() for g in self.genres.split(',')])
+            if not book_genres.intersection(template_genres):
+                return False
+
+        if self.collections:
+            template_collections = set([g.strip() for g in self.collections.split(',')])
+            in_any = False
+            for collection in template_collections:
+                apidata = requests.get(
+                    f'https://wolnelektury.pl/api/collections/{collection}/'
+                ).json()
+                for book in apidata['books']:
+                    if book['slug'] == audiobook.slug:
+                        in_any = True
+                        break
+                if in_any:
+                    break
+            if not in_any:
+                return False
+        
+        return True

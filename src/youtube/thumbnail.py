@@ -2,12 +2,6 @@ import yaml
 from PIL import Image, ImageDraw, ImageFont
 
 
-def drawbox(img, d, context, get_font_path):
-    for version in d['versions']:
-        if draw_version(img, version, context, get_font_path):
-            break
-
-
 def split_to_lines(text, draw, font, max_width):
     words = text.split()
     current = ''
@@ -28,8 +22,7 @@ def split_to_lines(text, draw, font, max_width):
         yield current
 
         
-def draw_version(img, d, context, get_font_path):
-    # todo: do this in a subimg
+def draw_box(img, d, context, get_font_path):
     newimg = Image.new(
         'RGBA',
         (
@@ -48,7 +41,11 @@ def draw_version(img, d, context, get_font_path):
             continue
         if item.get('uppercase'):
             text = text.upper()
-        font = ImageFont.truetype(get_font_path(item['font-family']), item['font-size'])
+        font = ImageFont.truetype(
+            get_font_path(item['font-family']),
+            item['font-size'],
+            layout_engine=ImageFont.LAYOUT_BASIC
+        )
         max_width = item.get('max-width', newimg.size[0])
 
         for line in split_to_lines(text, draw, font, max_width):
@@ -66,5 +63,6 @@ def create_thumbnail(background_path, defn, context, get_font_path):
     img = Image.open(background_path)
     d = yaml.load(defn)
     for boxdef in d['boxes']:
-        drawbox(img, boxdef, context, get_font_path)
+        if not draw_box(img, boxdef, context, get_font_path):
+            raise ValueError()
     return img

@@ -244,12 +244,14 @@ def file_managed(request, id):
             except IOError:
                 raise Http404
 
-    path = audiobook.source_file.path[len(settings.FILES_PATH):].lstrip('/')
+    tags = {}
+    if audiobook.source_file:
+        path = audiobook.source_file.path[len(settings.FILES_PATH):].lstrip('/')
 
-    # for tags update
-    tags = mutagen.File(audiobook.source_file.path.encode('utf-8'))
-    if not tags:
-        tags = {}
+        # for tags update
+        tags = mutagen.File(audiobook.source_file.path.encode('utf-8'))
+        if not tags:
+            tags = {}
     form = AudiobookForm(instance=audiobook)
 
     user_can_publish = (
@@ -265,6 +267,12 @@ def file_managed(request, id):
         if set(series.values_list('index', flat=True)) != set(range(1, parts_count + 1)):
             alerts.append(_('Part indexes are not 1..%(parts_count)d.') % {"parts_count": parts_count})
 
+    from youtube.models import YouTube
+    youtube = YouTube.objects.first()
+    youtube_title = youtube.get_title(audiobook)
+    youtube_description = youtube.get_description(audiobook)
+
+            
     return render(request, "archive/file_managed.html", locals())
 
 

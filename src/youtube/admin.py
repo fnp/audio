@@ -14,3 +14,9 @@ admin.site.register(models.YouTube, YouTubeAdmin)
 
 
 admin.site.register(models.Font)
+
+
+class ThumbnailTemplateAdmin(admin.ModelAdmin):
+    list_display = ['order', 'genres', 'collections']
+
+admin.site.register(models.ThumbnailTemplate, ThumbnailTemplateAdmin)

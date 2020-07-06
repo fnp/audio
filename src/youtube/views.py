@@ -25,11 +25,16 @@ def publish(request, aid, publish=True):
     return redirect(reverse('file', args=[aid]))
 
 
-def thumbnail(request, aid):
+def thumbnail(request, aid, thumbnail_id=None):
     audiobook = get_object_or_404(Audiobook, id=aid)
-    yt = models.YouTube.objects.first()
-    buf = yt.prepare_thumbnail(audiobook)
-    return HttpResponse(buf.getvalue(), content_type='image/png')
+    if thumbnail_id is None:
+        yt = models.YouTube.objects.first()
+        buf = yt.prepare_thumbnail(audiobook)
+    else:
+        template = get_object_or_404(models.ThumbnailTemplate, id=thumbnail_id)
+        buf = template.generate(audiobook)
+    buf = buf.getvalue() if buf is not None else b''
+    return HttpResponse(buf, content_type='image/png')
 
 
 class Preview(DetailView):
@@ -42,6 +47,7 @@ class Preview(DetailView):
         ctx['data'] = yt.get_data(ctx['object'])
         ctx['title'] = yt.get_title(ctx['object'])
         ctx['description'] = yt.get_description(ctx['object'])
+        ctx['templates'] = models.ThumbnailTemplate.objects.all()
         return ctx
 
 
@@ -52,4 +58,14 @@ class Update(SingleObjectMixin, View):
     def post(self, request, pk):
         yt = models.YouTube.objects.first()
         yt.update_data(self.get_object())
+        return redirect(reverse('file', args=[pk]))
+
+
+@method_decorator(permission_required('archive.change_audiobook'), name='dispatch')
+class UpdateThumbnail(SingleObjectMixin, View):
+    model = Audiobook
+
+    def post(self, request, pk):
+        yt = models.YouTube.objects.first()
+        yt.update_thumbnail(self.get_object())
         return redirect(reverse('file', args=[pk]))

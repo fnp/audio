@@ -12,9 +12,18 @@
     </div>
     <div class="card-body">
       <img src="{% url 'youtube_thumbnail' object.id %}" style="width:100%">
-    </div>
+      <div class="row">
+        {% for t in templates %}
+          <div class="col-md-2">
+            <a href="{% url 'youtube_thumbnail' object.id t.id %}">
+              <img src="{% url 'youtube_thumbnail' object.id t.id %}" style="width:100%">
+            </a>
+          </div>
+        {% endfor %}
+      </div>
+      </div>
+      </div>
   </div>
-
 
   <div class="card mt-4 mb-4">
     <div class="card-header">
