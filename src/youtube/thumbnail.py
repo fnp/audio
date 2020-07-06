@@ -22,7 +22,7 @@ def split_to_lines(text, draw, font, max_width):
         yield current
 
         
-def draw_box(img, d, context, get_font_path):
+def draw_box(img, d, context, get_font_path, scale):
     newimg = Image.new(
         'RGBA',
         (
@@ -35,7 +35,7 @@ def draw_box(img, d, context, get_font_path):
     cursor = 0
     for item in d['items']:
         if item.get('vskip'):
-            cursor += item['vskip']
+            cursor += int(round(item['vskip'] * scale))
         text = item['text'].format(**context)
         if not text:
             continue
@@ -43,7 +43,7 @@ def draw_box(img, d, context, get_font_path):
             text = text.upper()
         font = ImageFont.truetype(
             get_font_path(item['font-family']),
-            item['font-size'],
+            int(round(item['font-size'] * scale)),
             layout_engine=ImageFont.LAYOUT_BASIC
         )
         max_width = item.get('max-width', newimg.size[0])
@@ -53,16 +53,25 @@ def draw_box(img, d, context, get_font_path):
             if cursor + realheight > newimg.size[1]:
                 return False
             draw.text((0, cursor), line, font=font, fill=item.get('color'))
-            cursor += item['line-height']
+            cursor += int(round(item['line-height'] * scale))
 
     img.paste(newimg, (d.get('x', 0), d.get('y', 0)), newimg)
     return True
+
+
+def draw_box_with_scaling(img, d, context, get_font_path):
+    scale = 1.0
+    while scale > 0:
+        if draw_box(img, d, context, get_font_path, scale):
+            return True
+        scale -= 0.05
+    
 
 
 def create_thumbnail(background_path, defn, context, get_font_path):
     img = Image.open(background_path)
     d = yaml.load(defn)
     for boxdef in d['boxes']:
-        if not draw_box(img, boxdef, context, get_font_path):
+        if not draw_box_with_scaling(img, boxdef, context, get_font_path):
             raise ValueError()
     return img

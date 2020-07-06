@@ -216,6 +216,9 @@ class ThumbnailTemplate(models.Model):
     is_active = models.BooleanField()
     background = models.FileField(upload_to='youtube/thumbnail')
     definition = models.TextField()
+    authors = models.CharField(max_length=255, blank=True)
+    epochs = models.CharField(max_length=255, blank=True)
+    kinds = models.CharField(max_length=255, blank=True)
     genres = models.CharField(max_length=255, blank=True)
     collections = models.CharField(max_length=255, blank=True)
 
@@ -243,11 +246,12 @@ class ThumbnailTemplate(models.Model):
             return buf
 
     def is_for_audiobook(self, audiobook):
-        if self.genres:
-            book_genres = set([g['slug'] for g in audiobook.book['genres']])
-            template_genres = set([g.strip() for g in self.genres.split(',')])
-            if not book_genres.intersection(template_genres):
-                return False
+        for category in 'authors', 'epochs', 'kinds', 'genres':
+            if getattr(self, category):
+                book_slugs = set([g['slug'] for g in audiobook.book[category]])
+                template_slugs = set([g.strip() for g in getattr(self, category).split(',')])
+                if not book_slugs.intersection(template_slugs):
+                    return False
 
         if self.collections:
             template_collections = set([g.strip() for g in self.collections.split(',')])
