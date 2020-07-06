@@ -17,6 +17,6 @@ admin.site.register(models.Font)
 
 
 class ThumbnailTemplateAdmin(admin.ModelAdmin):
-    list_display = ['order', 'genres', 'collections']
+    list_display = ['order', 'collections', 'authors', 'epochs', 'genres', 'kinds']
 
 admin.site.register(models.ThumbnailTemplate, ThumbnailTemplateAdmin)
