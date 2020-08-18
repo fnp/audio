@@ -13,6 +13,14 @@
 
 
 {% block file-list-info %}
+  <form>
+    <div class="input-group">
+      <input class="form-control" name="s" value="{{ request.GET.s }}">
+      <div class="input-group-append">
+	<button class="btn btn-primary">Szukaj</button>
+      </div>
+    </div>
+  </form>
 {% endblock %}
 
 {% block file-list-wrapper %}

@@ -5,6 +5,7 @@ from urllib.parse import quote
 
 from archive import settings
 from django.contrib.auth.decorators import permission_required
+from django.contrib.postgres.search import SearchVector
 from django.urls import reverse
 from django.db.models import Q, Max
 from django.http import Http404, HttpResponse
@@ -229,7 +230,11 @@ def list_publishing(request):
 
 
 class AudiobookList(ListView):
-    queryset = models.Audiobook.objects.all()
+    def get_queryset(self):
+        qs = models.Audiobook.objects.all()
+        if 's' in self.request.GET:
+            qs = qs.annotate(s=SearchVector('title', 'slug')).filter(s=self.request.GET['s'])
+        return qs
 
 
 @permission_required('archive.change_audiobook')
