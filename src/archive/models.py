@@ -4,6 +4,7 @@ import os.path
 from django.db import models
 from time import sleep
 from django.utils.functional import cached_property
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django_pglocks import advisory_lock
 import requests
@@ -152,6 +153,13 @@ class Audiobook(models.Model):
             .objects.filter(youtube_volume=self.youtube_volume, index__lt=self.index)
             .exists()
         )
+
+    def youtube_publish(self):
+        if not self.is_youtube_publishable:
+            return False
+        self.youtube_status = status.QUEUED
+        self.youtube_queued = now()
+        self.save(update_fields=['youtube_status', 'youtube_queued'])
 
     def get_mp3_tags(self): return json.loads(self.mp3_tags) if self.mp3_tags else None
     def get_ogg_tags(self): return json.loads(self.ogg_tags) if self.ogg_tags else None

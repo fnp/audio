@@ -67,5 +67,11 @@
           {% endwith %}
         </tbody>
       </table>
+      <form method="post" action="{% url 'youtube_book_publish' view.kwargs.slug %}">
+        {% csrf_token %}
+        <button class="btn btn-primary">
+          Opublikuj wszystko na YouTube
+        </button>
+      </form>
     </div>
 {% endblock %}

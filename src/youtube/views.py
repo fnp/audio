@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.utils.timezone import now
 from django.views import View
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView
@@ -19,10 +18,17 @@ from . import models, tasks
 def publish(request, aid, publish=True):
     audiobook = get_object_or_404(Audiobook, id=aid)
     if audiobook.is_youtube_publishable:
-        audiobook.youtube_status = status.QUEUED
-        audiobook.youtube_queued = now()
-        audiobook.save(update_fields=['youtube_status', 'youtube_queued'])
+        audiobook.youtube_publish()
     return redirect(reverse('file', args=[aid]))
+
+
+@require_POST
+@permission_required('archive.change_audiobook')
+def book_publish(request, slug):
+    for audiobook in Audiobook.objects.filter(slug=slug).order_by("index"):
+        if audiobook.is_youtube_publishable:
+            audiobook.youtube_publish()
+    return redirect(reverse('book', args=[slug]))
 
 
 def thumbnail(request, aid, thumbnail_id=None):

@@ -2,8 +2,8 @@ from django.utils.translation import gettext_lazy as _
 
 
 class status:
-    WAITING = 1
-    QUEUED = 10
+    QUEUED = 5
+    WAITING = 10
     ENCODING = 20
     TAGGING = 30
     CONVERTING_AUDIO = 40
@@ -15,8 +15,8 @@ class status:
     SETTING_THUMBNAIL = 110
 
     choices = [
-        (WAITING, _('Waiting')),
         (QUEUED, _("Queued")),
+        (WAITING, _('Waiting')),
         (ENCODING, _('Encoding')),
         (TAGGING, _('Tagging')),
         (CONVERTING_AUDIO, _('Converting audio')),
