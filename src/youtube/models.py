@@ -24,6 +24,7 @@ YOUTUBE_TITLE_LIMIT = 100
 
 
 class YouTube(models.Model):
+    name = models.CharField(max_length=255)
     title_template = models.CharField(max_length=1024, blank=True)
     description_template = models.TextField(blank=True)
     category = models.IntegerField(null=True, blank=True, choices=[
@@ -43,6 +44,9 @@ class YouTube(models.Model):
     class Meta:
         verbose_name = _("YouTube configuration")
         verbose_name_plural = _("YouTube configurations")
+
+    def __str__(self):
+        return self.name
 
     def get_context(self, audiobook):
         return Context(dict(
@@ -212,6 +216,7 @@ class Font(models.Model):
 
 
 class ThumbnailTemplate(models.Model):
+    youtube = models.ForeignKey(YouTube, models.CASCADE)
     order = models.SmallIntegerField()
     is_active = models.BooleanField()
     background = models.FileField(upload_to='youtube/thumbnail')

@@ -8,7 +8,7 @@ class YouTubeTask(AudioFormatTask):
     prefix = 'youtube'
 
     def encode(self, in_paths, out_path):
-        YouTube.objects.first().prepare_file(in_paths, out_path)
+        self.audiobook.project.youtube.prepare_file(in_paths, out_path)
 
     def set_tags(self, audiobook, filename):
         pass
@@ -19,7 +19,7 @@ class YouTubeTask(AudioFormatTask):
         os.unlink(file_name)
 
     def put(self, user, audiobook, filename):
-        YouTube.objects.first().publish(audiobook, filename)
+        audiobook.project.youtube.publish(audiobook, filename)
 
     def get_source_file_paths(self, audiobook):
         if not audiobook.youtube_volume:

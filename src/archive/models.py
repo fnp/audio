@@ -1,3 +1,4 @@
+import io
 import json
 import os.path
 
@@ -27,6 +28,7 @@ class Project(models.Model):
     name = models.CharField(max_length=128, unique=True, db_index=True, verbose_name="Nazwa")
     sponsors = models.TextField(blank=True, null=True, verbose_name="Sponsorzy")
     description = models.TextField(blank=True, verbose_name="Opis")
+    youtube = models.ForeignKey('youtube.YouTube', models.PROTECT)
 
     class Meta:
         verbose_name = _("project")
@@ -81,7 +83,7 @@ class Audiobook(models.Model):
     encoded_by = models.CharField(max_length=255, verbose_name=_('encoded by'))
     date = models.CharField(max_length=255, verbose_name=_('date'))
     project = models.ForeignKey(Project, models.PROTECT, verbose_name=_('project'))
-    slug = models.SlugField(max_length=120, help_text=_('WL catalogue slug of the book.'))
+    slug = models.SlugField(max_length=120, blank=True, help_text=_('WL catalogue slug of the book.'))
     translator = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('translator'))
     modified = models.DateTimeField(null=True, editable=False)
     license = models.ForeignKey(License, models.PROTECT, null=True, blank=True, verbose_name=_('license'))
@@ -222,5 +224,26 @@ class Audiobook(models.Model):
 
     @cached_property
     def book(self):
-        apidata = requests.get(f'https://wolnelektury.pl/api/books/{self.slug}/').json()
+        if self.slug:
+            apidata = requests.get(f'https://wolnelektury.pl/api/books/{self.slug}/').json()
+        else:
+            return {}
         return apidata
+
+    @property
+    def document(self):
+        from librarian.document import WLDocument, parser
+        from lxml import etree
+
+        xml_url = self.book.get('xml', None)
+        if xml_url is None:
+            return None
+
+        return WLDocument(
+                etree.parse(
+                    io.BytesIO(
+                        requests.get(xml_url).content
+                    )
+                    ,parser = parser
+                )
+            )

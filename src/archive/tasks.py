@@ -89,6 +89,7 @@ class AudioFormatTask(Task):
     def run(self, uid, aid, publish=True):
         aid = int(aid)
         audiobook = Audiobook.objects.get(id=aid)
+        self.audiobook = audiobook
         self.set_status(aid, status.ENCODING)
 
         if uid:
