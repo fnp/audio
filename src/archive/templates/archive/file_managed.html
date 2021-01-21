@@ -20,7 +20,7 @@
   <div class="col-xl-7">
     <div class="card mt-4">
       <div class="card-header">
-        <h2><a href="{% url 'book' audiobook.slug %}" %}">{{ audiobook.title }}</a></h2>
+        <h2>{% if audiobook.slug %}<a href="{% url 'book' audiobook.slug %}" %}">{% endif %}{{ audiobook.title }}{% if audiobook.slug %}</a>{% endif %}</h2>
       </div>
       <div class="card-body">
         <form method='post' action='.'>
@@ -219,7 +219,7 @@
   </div>
   <div class="card-body">
     <p>Last modified: {{ audiobook.modified }}</p>
-    <p>Plik źródłowy: <a href='{% url "download" audiobook.id %}'>{{ path }}</a>
+    <p>Plik źródłowy: <a href='{{ audiobook.source_file.url }}'>{{ path }}</a>
       (sha1: <tt>{{ audiobook.source_sha1 }}</tt>).
     </p>
     {% multiple_tags_table tags %}

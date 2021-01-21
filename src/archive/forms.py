@@ -7,6 +7,7 @@ from django.utils.translation import gettext_lazy as _
 import mutagen
 from django.utils.encoding import force_bytes
 
+from youtube.utils import get_duration
 from archive.models import Audiobook
 from archive.settings import FILES_PATH, NEW_PATH
 from archive.utils import ExistingFile, sha1_file
@@ -31,6 +32,7 @@ class AudiobookForm(forms.ModelForm):
             # save the file in model
 
             abs_path = os.path.join(NEW_PATH, path)
+            m.duration = get_duration(abs_path)
             m.source_file.save(
                 path,
                 ExistingFile(abs_path))

@@ -63,6 +63,7 @@ class Audiobook(models.Model):
     source_file = models.FileField(upload_to=source_upload_to, max_length=255, 
             verbose_name=_('source file'), editable=False)
     source_sha1 = models.CharField(max_length=40, editable=False)
+    duration = models.FloatField(null=True, editable=False)
 
     title = models.CharField(max_length=255, verbose_name=_('title'))
     part_name = models.CharField(max_length=255, verbose_name=_('part name'), help_text=_('eg. chapter in a novel'),
