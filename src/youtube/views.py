@@ -34,7 +34,7 @@ def book_publish(request, slug):
 def thumbnail(request, aid, thumbnail_id=None):
     audiobook = get_object_or_404(Audiobook, id=aid)
     if thumbnail_id is None:
-        yt = models.YouTube.objects.first()
+        yt = audiobook.project.youtube
         buf = yt.prepare_thumbnail(audiobook)
     else:
         template = get_object_or_404(models.ThumbnailTemplate, id=thumbnail_id)
@@ -49,7 +49,7 @@ class Preview(DetailView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        yt = models.YouTube.objects.first()
+        yt = ctx['object'].project.youtube
         ctx['data'] = yt.get_data(ctx['object'])
         ctx['title'] = yt.get_title(ctx['object'])
         ctx['description'] = yt.get_description(ctx['object'])
@@ -62,8 +62,9 @@ class Update(SingleObjectMixin, View):
     model = Audiobook
 
     def post(self, request, pk):
-        yt = models.YouTube.objects.first()
-        yt.update_data(self.get_object())
+        obj = self.get_object()
+        yt = obj.project.youtube
+        yt.update_data(obj)
         return redirect(reverse('file', args=[pk]))
 
 
@@ -72,6 +73,7 @@ class UpdateThumbnail(SingleObjectMixin, View):
     model = Audiobook
 
     def post(self, request, pk):
-        yt = models.YouTube.objects.first()
-        yt.update_thumbnail(self.get_object())
+        obj = self.get_object()
+        yt = obj.project.youtube
+        yt.update_thumbnail(obj)
         return redirect(reverse('file', args=[pk]))
