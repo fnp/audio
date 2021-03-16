@@ -232,12 +232,18 @@ class ThumbnailTemplate(models.Model):
 
     def generate(self, audiobook):
         try:
+            title = audiobook.book['title']
+            if audiobook.book.get('parent'):
+                parent_title = audiobook.book['parent']['title']
+                if not title.startswith(parent_title):
+                    title = ", ".join((parent_title, title))
+
             img = create_thumbnail(
                 self.background.path,
                 self.definition,
                 {
                     "author": ', '.join((a['name'] for a in audiobook.book['authors'])),
-                    "title": audiobook.book['title'],
+                    "title": title,
                     "part": (audiobook.youtube_volume or audiobook.part_name).strip(),
                 },
                 lambda name: Font.objects.get(name=name).truetype.path
