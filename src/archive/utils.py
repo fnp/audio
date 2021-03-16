@@ -37,6 +37,6 @@ def sha1_file(f):
 
 def all_files(root_path):
     root_len = len(root_path)
-    for path, dirs, files in os.walk(root_path):
+    for path, dirs, files in os.walk(root_path, followlinks=True):
         for fname in files:
             yield os.path.join(path, fname)[root_len:].lstrip("/")
