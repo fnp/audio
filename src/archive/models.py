@@ -29,6 +29,7 @@ class Project(models.Model):
     sponsors = models.TextField(blank=True, null=True, verbose_name="Sponsorzy")
     description = models.TextField(blank=True, verbose_name="Opis")
     youtube = models.ForeignKey('youtube.YouTube', models.PROTECT)
+    icon = models.FileField(upload_to='archive/project', blank=True, null=True)
 
     class Meta:
         verbose_name = _("project")
@@ -45,16 +46,6 @@ class Project(models.Model):
             self.name,
             " finansowanego przez %s" % self.sponsors if self.sponsors else "",
         )
-
-
-class Piece(models.Model):
-    name = models.CharField(max_length=255)
-    source_file = models.FileField(upload_to='piece')
-    is_outro = models.BooleanField(default=False)
-    min_audiobook_duration = models.IntegerField(default=0)
-
-    def __str__(self):
-        return self.name
 
 
 def source_upload_to(intance, filename):

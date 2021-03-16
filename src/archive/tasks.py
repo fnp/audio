@@ -80,6 +80,11 @@ class AudioFormatTask(Task):
             'part_index': audiobook.index,
             'parts_count': audiobook.parts_count,
             'source_sha1': audiobook.source_sha1,
+
+            'project': {
+                'description': audiobook.project.get_description(),
+                'icon': audiobook.project.icon.url,
+            }
         }
         with open(path, 'rb') as f:
             api_call(user, UPLOAD_URL, data=data, files={
