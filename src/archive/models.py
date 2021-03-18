@@ -1,9 +1,11 @@
 import io
 import json
 import os.path
+from urllib.parse import urljoin
 
 from django.db import models
 from time import sleep
+from django.contrib.sites.models import Site
 from django.utils.functional import cached_property
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -45,6 +47,14 @@ class Project(models.Model):
         return "Audiobook nagrany w ramach projektu %s%s." % (
             self.name,
             " finansowanego przez %s" % self.sponsors if self.sponsors else "",
+        )
+
+    def get_icon_url(self):
+        if not self.icon:
+            return ''
+        return urljoin(
+            'https://' + Site.objects.get_current().domain,
+            self.icon.url
         )
 
 

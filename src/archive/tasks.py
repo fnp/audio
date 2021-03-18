@@ -83,7 +83,7 @@ class AudioFormatTask(Task):
 
             'project': {
                 'description': audiobook.project.get_description(),
-                'icon': audiobook.project.icon.url,
+                'icon': audiobook.project.get_icon_url(),
             }
         }
         with open(path, 'rb') as f:
