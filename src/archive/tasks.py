@@ -81,10 +81,8 @@ class AudioFormatTask(Task):
             'parts_count': audiobook.parts_count,
             'source_sha1': audiobook.source_sha1,
 
-            'project': {
-                'description': audiobook.project.get_description(),
-                'icon': audiobook.project.get_icon_url(),
-            }
+            'project_description': audiobook.project.get_description(),
+            'project_icon': audiobook.project.get_icon_url(),
         }
         with open(path, 'rb') as f:
             api_call(user, UPLOAD_URL, data=data, files={
