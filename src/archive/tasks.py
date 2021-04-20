@@ -10,6 +10,7 @@ from tempfile import NamedTemporaryFile
 from time import sleep
 
 from celery.task import Task
+from django.conf import settings
 from django.db.models import F
 from django.contrib.auth.models import User
 from mutagen import File
@@ -100,7 +101,10 @@ class AudioFormatTask(Task):
         else:
             user = None
 
-        out_file = NamedTemporaryFile(delete=False, prefix='%d-' % aid, suffix='.%s' % self.ext)
+        out_file = NamedTemporaryFile(
+            delete=False, prefix='%d-' % aid, suffix='.%s' % self.ext,
+            dir=settings.FILE_UPLOAD_TEMP_DIR
+        )
         out_file.close()
         self.encode(self.get_source_file_paths(audiobook), out_file.name)
         self.set_status(aid, status.TAGGING)

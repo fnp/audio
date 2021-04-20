@@ -1,6 +1,5 @@
 import io
 from os import unlink
-from tempfile import NamedTemporaryFile
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.template import Template, Context

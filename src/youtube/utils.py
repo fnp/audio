@@ -23,7 +23,10 @@ def link_or_copy(src, dst):
 
 def process_to_file(cmdline, prefix='', suffix='', cache_key=None, output_path=None):
     if not output_path:
-        tmp = NamedTemporaryFile(prefix=prefix, suffix=suffix, delete=False)
+        tmp = NamedTemporaryFile(
+            prefix=prefix, suffix=suffix, delete=False,
+            dir=settings.FILE_UPLOAD_TEMP_DIR
+        )
         tmp.close()
         output_path = tmp.name
 
@@ -59,7 +62,10 @@ def cut_video(video_path, duration):
 
 
 def ffmpeg_concat(paths, suffix, copy=False):
-    filelist = NamedTemporaryFile(prefix='concat-', suffix='.txt')
+    filelist = NamedTemporaryFile(
+        prefix='concat-', suffix='.txt',
+        dir=settings.FILE_UPLOAD_TEMP_DIR
+    )
     for path in paths:
         filelist.write(f"file '{path}'\n".encode('utf-8'))
     filelist.flush()
