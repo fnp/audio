@@ -32,6 +32,7 @@ class Project(models.Model):
     description = models.TextField(blank=True, verbose_name="Opis")
     youtube = models.ForeignKey('youtube.YouTube', models.PROTECT)
     icon = models.FileField(upload_to='archive/project', blank=True, null=True)
+    info_flac = models.FileField(upload_to='archive/info_flac', blank=True)
 
     class Meta:
         verbose_name = _("project")

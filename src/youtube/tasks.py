@@ -23,12 +23,16 @@ class YouTubeTask(AudioFormatTask):
 
     def get_source_file_paths(self, audiobook):
         if not audiobook.youtube_volume:
-            return [audiobook.source_file.path]
-        return [
-            a.source_file.path
-            for a in type(audiobook)
-            .objects.filter(
-                slug=audiobook.slug, youtube_volume=audiobook.youtube_volume
-            )
-            .order_by("index")
-        ]
+            paths = [audiobook.source_file.path]
+        else:
+            paths = [
+                a.source_file.path
+                for a in type(audiobook)
+                .objects.filter(
+                    slug=audiobook.slug, youtube_volume=audiobook.youtube_volume
+                )
+                .order_by("index")
+            ]
+        if audiobook.project.info_flac:
+            paths.append(audiobook.project.info_flac.path)
+        return paths
