@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^move_to_archive/(.+)/$', views.move_to_archive, name="move_to_archive"),
     url(r'^publishing/$', views.list_publishing, name="list_publishing"),
     path('book/<slug:slug>/', views.BookView.as_view(), name="book"),
+    path('book-youtube-volume/<int:aid>/', views.book_youtube_volume, name="book_youtube_volume"),
     url(r'^file/(\d+)/$', views.file_managed, name="file"),
     url(r'^publish/(\d+)/$', views.publish, name="publish"),
     url(r'^convert/(\d+)/$', views.publish, {'publish': False}, name="convert"),

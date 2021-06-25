@@ -299,6 +299,34 @@ class BookView(ListView):
     template_name = 'archive/book.html'
 
     def get_queryset(self):
-        return models.Audiobook.objects.filter(slug=self.kwargs["slug"]).order_by(
+        qs = models.Audiobook.objects.filter(slug=self.kwargs["slug"]).order_by(
             "index"
         )
+        total = 0
+        last_vol = None
+        for b in qs:
+            if last_vol != b.youtube_volume:
+                last_vol = b.youtube_volume
+                total = 0
+            total = b.total = total + b.duration
+        return list(qs)
+
+
+@permission_required('archive.change_audiobook')
+def book_youtube_volume(request, aid):
+    audiobook = get_object_or_404(models.Audiobook, id=aid)
+    slug = audiobook.slug
+    cur_vol = audiobook.youtube_volume
+    new_vol = request.POST.get('volume', '')
+
+    audiobook.youtube_volume = new_vol
+    audiobook.save()
+    
+    for a in models.Audiobook.objects.filter(youtube_volume=cur_vol, index__gt=audiobook.index).order_by('index'):
+        if a.youtube_volume != cur_vol:
+            break
+        a.youtube_volume = new_vol
+        a.save()
+    
+    return redirect('book', audiobook.slug)
+    

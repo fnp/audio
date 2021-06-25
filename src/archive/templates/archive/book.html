@@ -19,7 +19,7 @@
             <th>{% trans "Title" %}</th>
             <th>MP3</th>
             <th>Ogg</th>
-            <th colspan="3">YouTube</th>
+            <th colspan="5">YouTube</th>
           </tr>
         </thead>
         <tbody>
@@ -35,7 +35,7 @@
                       <em class="text-warning" title="ddd">
                         ({{ audiobook }})
                       </em>
-                      {% endif %}
+                    {% endif %}
                   </a>
                 </td>
                 <td>{% status audiobook "mp3" %}</td>
@@ -45,7 +45,16 @@
                     {{ audiobook.youtube_volume_index }}/{{ volumes }}
                   </td>
                   <td>
-                    {{ audiobook.youtube_volume }}
+                    <form method="POST" action="{% url 'book_youtube_volume' audiobook.id %}">
+                      {% csrf_token %}
+                      <input name='volume' value="{{ audiobook.youtube_volume }}" class="form-control">
+                    </form>
+                  </td>
+                  <td>
+                    {{ audiobook.total|duration }}
+                  </td>
+                  <td>
+                    {{ audiobook.duration|duration }}
                   </td>
                   <td>
                     {% status audiobook "youtube" %}
@@ -55,11 +64,16 @@
                     –
                   </td>
                   <td>
-                    <span class="text-secondary">
+                    <span class="text-secondary" class="edit-youtube-volume" data-audiobook="{{ audiobook.id }}">
                       {{ audiobook.youtube_volume }}
                     </span>
                   </td>
                   <td>
+                  </td>
+                  <td>
+                  </td>
+                  <td>
+                    {{ audiobook.duration }}
                   </td>
                 {% endifchanged %}
               </tr>

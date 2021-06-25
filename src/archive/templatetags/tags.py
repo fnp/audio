@@ -34,3 +34,13 @@ def status(audiobook, format):
         "format": format,
         "link": link,
     }
+
+
+
+@register.filter
+def duration(s):
+    h = int(s / 3600)
+    s %= 3600
+    m = int(s / 60)
+    s %= 60
+    return f'{h}:{m:02d}:{s:02.1f}'
