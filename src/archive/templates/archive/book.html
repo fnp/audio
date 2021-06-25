@@ -64,16 +64,19 @@
                     –
                   </td>
                   <td>
-                    <span class="text-secondary" class="edit-youtube-volume" data-audiobook="{{ audiobook.id }}">
-                      {{ audiobook.youtube_volume }}
+                    <span class="text-secondary">
+                      <form method="POST" action="{% url 'book_youtube_volume' audiobook.id %}">
+                        {% csrf_token %}
+                        <input name='volume' value="{{ audiobook.youtube_volume }}" class="form-control">
+                      </form>
                     </span>
                   </td>
                   <td>
+                  </td>                      >
+                  <td class="text-secondary">
+                    {{ audiobook.duration|duration }}
                   </td>
                   <td>
-                  </td>
-                  <td>
-                    {{ audiobook.duration }}
                   </td>
                 {% endifchanged %}
               </tr>

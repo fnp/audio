@@ -302,13 +302,12 @@ class BookView(ListView):
         qs = models.Audiobook.objects.filter(slug=self.kwargs["slug"]).order_by(
             "index"
         )
-        total = 0
         last_vol = None
         for b in qs:
-            if last_vol != b.youtube_volume:
-                last_vol = b.youtube_volume
-                total = 0
-            total = b.total = total + b.duration
+            if last_vol is None or last_vol.youtube_volume != b.youtube_volume:
+                last_vol = b
+                b.total = 0
+            last_vol.total += b.duration
         return list(qs)
 
 
