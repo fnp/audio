@@ -243,7 +243,7 @@ class ThumbnailTemplate(models.Model):
                 {
                     "author": ', '.join((a['name'] for a in audiobook.book['authors'])),
                     "title": title,
-                    "part": (audiobook.youtube_volume or audiobook.part_name).strip(),
+                    "part": (audiobook.youtube_volume or audiobook.part_name).strip() if audiobook.youtube_volume_count > 1 else '',
                 },
                 lambda name: Font.objects.get(name=name).truetype.path
             )
