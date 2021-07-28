@@ -39,7 +39,10 @@ def status(audiobook, format):
 
 @register.filter
 def duration(s):
-    h = int(s / 3600)
+    try:
+        h = int(s / 3600)
+    except:
+        return s
     s %= 3600
     m = int(s / 60)
     s %= 60
