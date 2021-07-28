@@ -1,4 +1,4 @@
--i https://py.mdrn.pl:8443/simple
+-i https://py.mdrn.pl/simple
 
 Django==3.1.8
 django-cas-ng==4.1.1
