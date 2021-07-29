@@ -321,7 +321,7 @@ def book_youtube_volume(request, aid):
     audiobook.youtube_volume = new_vol
     audiobook.save()
     
-    for a in models.Audiobook.objects.filter(youtube_volume=cur_vol, index__gt=audiobook.index).order_by('index'):
+    for a in models.Audiobook.objects.filter(slug=slug, youtube_volume=cur_vol, index__gt=audiobook.index).order_by('index'):
         if a.youtube_volume != cur_vol:
             break
         a.youtube_volume = new_vol
