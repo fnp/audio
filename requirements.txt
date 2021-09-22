@@ -1,6 +1,6 @@
 -i https://py.mdrn.pl:8443/simple
 
-Django==3.1.8
+Django==3.1.13
 django-cas-ng==4.1.1
 django-bootstrap4==2.2.0
 django-pglocks==1.0.4
