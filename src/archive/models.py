@@ -230,12 +230,12 @@ class Audiobook(models.Model):
         self.mp3_status = self.ogg_status = status.WAITING
         self.save()
     
-    def publish(self, user):
+    def publish(self, user, publish=True):
         from . import tasks
         # isn't there a race here?
-        self.mp3_task = tasks.Mp3Task.delay(user.id, self.pk, publish).task_id
-        self.ogg_task = tasks.OggTask.delay(user.id, self.pk, publish).task_id
-        audiobook.save()
+        self.mp3_task = tasks.Mp3Task.delay(user.id, self.pk, publish=publish).task_id
+        self.ogg_task = tasks.OggTask.delay(user.id, self.pk, publish=publish).task_id
+        self.save()
 
     def get_source_sha1(self):
         assert self.pk or self.source_sha1

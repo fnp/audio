@@ -18,7 +18,7 @@ def move_definitions(apps, schema_editor):
     ThumbnailTemplate = apps.get_model('youtube', 'ThumbnailTemplate')
     order = 1
     for youtube in YouTube.objects.all():
-        src_def = yaml.load(youtube.thumbnail_definition)
+        src_def = yaml.safe_load(youtube.thumbnail_definition)
         version_lists = [
             box['versions']
             for box in src_def['boxes']

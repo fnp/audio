@@ -70,7 +70,7 @@ def draw_box_with_scaling(img, d, context, get_font_path):
 
 def create_thumbnail(background_path, defn, context, get_font_path):
     img = Image.open(background_path)
-    d = yaml.load(defn)
+    d = yaml.safe_load(defn)
     for boxdef in d['boxes']:
         if not draw_box_with_scaling(img, boxdef, context, get_font_path):
             raise ValueError()
