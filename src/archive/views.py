@@ -157,20 +157,9 @@ def move_to_new(request, filename):
 def publish(request, aid, publish=True):
     """ mark file for publishing """
     audiobook = get_object_or_404(models.Audiobook, id=aid)
-    tags = {
-        'name': audiobook.title,
-        'url': audiobook.url,
-        'tags': audiobook.new_publish_tags(),
-        }
-    audiobook.set_mp3_tags(tags)
-    audiobook.set_ogg_tags(tags)
-    audiobook.mp3_status = audiobook.ogg_status = status.WAITING
-    audiobook.save()
-    # isn't there a race here?
-    audiobook.mp3_task = tasks.Mp3Task.delay(request.user.id, aid, publish).task_id
-    audiobook.ogg_task = tasks.OggTask.delay(request.user.id, aid, publish).task_id
-    audiobook.save()
-
+    audiobook.prepare_for_publish()
+    if publish:
+        audiobook.publish(request.user)
     return redirect(file_managed, aid)
 
 

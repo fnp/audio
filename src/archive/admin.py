@@ -1,4 +1,4 @@
-from archive.models import Project, Audiobook, License
+from archive.models import Project, Audiobook, License, Config
 from django.contrib import admin
 
 admin.site.register(Project)
@@ -14,3 +14,4 @@ class AudiobookAdmin(admin.ModelAdmin):
 
 admin.site.register(Audiobook, AudiobookAdmin)
 admin.site.register(License)
+admin.site.register(Config)

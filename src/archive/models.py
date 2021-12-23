@@ -1,5 +1,6 @@
 import io
 import json
+from os import unlink
 import os.path
 from urllib.parse import urljoin
 
@@ -14,6 +15,7 @@ import requests
 from archive.constants import status
 from archive.settings import FILES_SAVE_PATH, ADVERT, ORGANIZATION, PROJECT
 from archive.utils import OverwriteStorage, sha1_file
+from youtube.utils import concat_audio, standardize_audio
 
 
 class License(models.Model):
@@ -30,6 +32,7 @@ class Project(models.Model):
     name = models.CharField(max_length=128, unique=True, db_index=True, verbose_name="Nazwa")
     sponsors = models.TextField(blank=True, null=True, verbose_name="Sponsorzy")
     description = models.TextField(blank=True, verbose_name="Opis")
+    config = models.ForeignKey('Config', models.PROTECT)
     youtube = models.ForeignKey('youtube.YouTube', models.PROTECT)
     icon = models.FileField(upload_to='archive/project', blank=True, null=True)
     info_flac = models.FileField(upload_to='archive/info_flac', blank=True)
@@ -57,6 +60,34 @@ class Project(models.Model):
             'https://' + Site.objects.get_current().domain,
             self.icon.url
         )
+
+
+class Config(models.Model):
+    name = models.CharField(max_length=255)
+    intro_flac = models.FileField(upload_to='config/intro_flac', blank=True)
+    intro_min_seconds = models.IntegerField()
+    outro_flac = models.FileField(upload_to='config/outro_flac', blank=True)
+    outro_min_seconds = models.IntegerField()
+
+    class Meta:
+        verbose_name = _("Configuration")
+        verbose_name_plural = _("Configurations")
+
+    def __str__(self):
+        return self.name
+
+    def prepare_audio(self, audiobook):
+        total_duration = audiobook.total_duration
+        files = []
+        if self.intro_flac and total_duration > self.intro_min_seconds and audiobook.is_first:
+            files.append(standardize_audio(self.intro_flac.path))
+        files.append(standardize_audio(audiobook.source_file.path))
+        if self.outro_flac and total_duration > self.outro_min_seconds and audiobook.is_last:
+            files.append(standardize_audio(self.outro_flac.path))
+        output = concat_audio(files)
+        for d in files:
+            unlink(d)
+        return output
 
 
 def source_upload_to(intance, filename):
@@ -131,6 +162,18 @@ class Audiobook(models.Model):
         return type(self).objects.filter(slug=self.slug).count()
 
     @property
+    def total_duration(self):
+        return type(self).objects.filter(slug=self.slug).aggregate(s=models.Sum('duration'))['s']
+
+    @property
+    def is_first(self):
+        return not type(self).objects.filter(slug=self.slug, index__lte=self.index).exclude(pk=self.pk).exists()
+
+    @property
+    def is_last(self):
+        return not type(self).objects.filter(slug=self.slug, index__gte=self.index).exclude(pk=self.pk).exists()
+    
+    @property
     def youtube_volume_count(self):
         total = 0
         prev_volume = None
@@ -175,6 +218,24 @@ class Audiobook(models.Model):
 
     def published(self):
         return self.mp3_published and self.ogg_published
+
+    def prepare_for_publish(self):
+        tags = {
+            'name': self.title,
+            'url': self.url,
+            'tags': self.new_publish_tags(),
+        }
+        self.set_mp3_tags(tags)
+        self.set_ogg_tags(tags)
+        self.mp3_status = self.ogg_status = status.WAITING
+        self.save()
+    
+    def publish(self, user):
+        from . import tasks
+        # isn't there a race here?
+        self.mp3_task = tasks.Mp3Task.delay(user.id, self.pk, publish).task_id
+        self.ogg_task = tasks.OggTask.delay(user.id, self.pk, publish).task_id
+        audiobook.save()
 
     def get_source_sha1(self):
         assert self.pk or self.source_sha1
@@ -225,6 +286,9 @@ class Audiobook(models.Model):
             tags['flac_sha1'] = self.source_sha1
         return tags
 
+    def prepare_audio(self):
+        return self.project.config.prepare_audio(self)
+    
     @cached_property
     def book(self):
         if self.slug:

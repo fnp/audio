@@ -120,7 +120,7 @@ class AudioFormatTask(Task):
         self.save(audiobook, out_file.name)
 
     def get_source_file_paths(self, audiobook):
-        return [audiobook.source_file.path]
+        return [audiobook.prepare_audio()]
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         aid = (args[0], kwargs.get('aid'))[0]
