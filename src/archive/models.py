@@ -198,7 +198,7 @@ class Audiobook(models.Model):
         return (
             not self.youtube_volume
             or not type(self)
-            .objects.filter(youtube_volume=self.youtube_volume, index__lt=self.index)
+            .objects.filter(slug=self.slug, youtube_volume=self.youtube_volume, index__lt=self.index)
             .exists()
         )
 

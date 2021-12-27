@@ -17,7 +17,18 @@
     <table class="table">
       {% for file in objects %}
         <tr>
-          <td><a href='{% url "file" file.id %}'>{{ file }}</a></td>
+          <td>
+            <a href='{% url "file" file.id %}'>
+              {{ file }}
+              {% if file.youtube_status == k.0 and file.youtube_volume %}
+                <br>
+                <small>
+                  ({{ file.youtube_volume_index }}/{{ file.youtube_volume_count }})
+                  {{ file.youtube_volume }}
+                </small>
+              {% endif %}
+            </a>
+          </td>
           <td class="text-warning">
             {% if file.mp3_status == k.0 %}MP3{% endif %}
           </td>

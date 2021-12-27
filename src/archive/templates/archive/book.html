@@ -51,7 +51,11 @@
                     </form>
                   </td>
                   <td>
-                    {{ audiobook.total|duration }}
+                    {% if audiobook.youtube_volume %}
+                      {{ audiobook.total|duration }}
+                    {% else %}
+                      <small class="text-secondary">{{ audiobook.subtotal|duration }}</small>
+                    {% endif %}
                   </td>
                   <td>
                     {{ audiobook.duration|duration }}
@@ -72,6 +76,7 @@
                     </span>
                   </td>
                   <td>
+                    <small class="text-secondary">{{ audiobook.subtotal|duration }}</small>
                   </td>
                   <td class="text-secondary">
                     {{ audiobook.duration|duration }}

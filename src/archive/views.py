@@ -292,11 +292,17 @@ class BookView(ListView):
             "index"
         )
         last_vol = None
+        last_vol_sub = None
         for b in qs:
-            if last_vol is None or last_vol.youtube_volume != b.youtube_volume:
+            if last_vol is None or last_vol.youtube_volume_index != b.youtube_volume_index:
                 last_vol = b
                 b.total = 0
+                if last_vol_sub is None or b.youtube_volume:
+                    last_vol_sub = last_vol
+                    last_vol_sub.total_for_sub = 0
             last_vol.total += b.duration
+            last_vol_sub.total_for_sub += b.duration
+            b.subtotal = last_vol_sub.total_for_sub
         return list(qs)
 
 
