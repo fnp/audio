@@ -70,9 +70,8 @@ def file_new(request, filename):
 def move_to_archive(request, filename):
     """ move a new file to the unmanaged files dir """
 
-    filename_str = filename.encode('utf-8')
-    old_path = os.path.join(settings.NEW_PATH, filename_str)
-    new_path = os.path.join(settings.UNMANAGED_PATH, filename_str)
+    old_path = os.path.join(settings.NEW_PATH, filename)
+    new_path = os.path.join(settings.UNMANAGED_PATH, filename)
     new_dir = os.path.split(new_path)[0]
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
@@ -131,9 +130,8 @@ def remove_to_archive(request, aid):
 def move_to_new(request, filename):
     """ move a unmanaged file to new files dir """
 
-    filename_str = filename.encode('utf-8')
-    old_path = os.path.join(settings.UNMANAGED_PATH, filename_str)
-    new_path = os.path.join(settings.NEW_PATH, filename_str)
+    old_path = os.path.join(settings.UNMANAGED_PATH, filename)
+    new_path = os.path.join(settings.NEW_PATH, filename)
     new_dir = os.path.split(new_path)[0]
     if not os.path.isdir(new_dir):
         os.makedirs(new_dir)
@@ -274,7 +272,7 @@ def list_unmanaged(request):
 
 
 def file_unmanaged(request, filename):
-    tags = mutagen.File(os.path.join(settings.UNMANAGED_PATH, filename.encode('utf-8')))
+    tags = mutagen.File(os.path.join(settings.UNMANAGED_PATH, filename))
     if not tags:
         tags = {}
     

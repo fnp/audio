@@ -1,10 +1,10 @@
-from django.conf.urls import url
+from django.urls import path
 from . import views
 
 
 urlpatterns = [
-    url(r'^oauth/$', views.oauth, name='apiclient_oauth'),
-    url(r'^oauth_callback/$', views.oauth_callback, name='apiclient_oauth_callback'),
-    url(r'^oauth2/$', views.oauth2, name='apiclient_oauth2'),
-    url(r'^oauth2_redirect/$', views.oauth2_redirect, name='apiclient_oauth2_redirect'),
+    path('oauth/', views.oauth, name='apiclient_oauth'),
+    path('auth_callback/', views.oauth_callback, name='apiclient_oauth_callback'),
+    path('oauth2/', views.oauth2, name='apiclient_oauth2'),
+    path('oauth2_redirect/', views.oauth2_redirect, name='apiclient_oauth2_redirect'),
 ]
