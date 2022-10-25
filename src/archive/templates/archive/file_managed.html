@@ -17,7 +17,7 @@
 
 
 <div class="row mt-4">
-  <div class="col-xl-7">
+  <div class="col-xl-12">
     <div class="card mt-4">
       <div class="card-header">
         <h2>{% if audiobook.slug %}<a href="{% url 'book' audiobook.slug %}" %}">{% endif %}{{ audiobook.title }}{% if audiobook.slug %}</a>{% endif %}</h2>
@@ -25,13 +25,102 @@
       <div class="card-body">
         <form method='post' action='.'>
           {% csrf_token %}
-	  {% bootstrap_form form %}
+	  {% bootstrap_form form layout="horizontal" %}
           <input class="btn btn-primary" type="submit" value='{% trans "Commit" %}' />
         </form>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="row">
+
+  <div class="col-xl-4">
+    <div class="card mt-4">
+      <div class="card-header">
+        <h3>
+          YouTube
+          {% if audiobook.youtube_status %}
+            <span class="badge badge-pill badge-primary">{{ audiobook.get_youtube_status_display }}</span>
+          {% endif %}
+        </h3>
+      </div>
+      <div class="card-body">
+        <img src="{% url 'youtube_thumbnail' audiobook.id %}" style="width:100%">
+        <strong>{{ youtube_title }}</strong><br><br>
+        {{ youtube_description|linebreaksbr }}
+
+
+
+        {% if audiobook.is_youtube_publishable %}
+          <br>
+          <p>
+	    <a href="{% url 'youtube_preview' audiobook.id %}">
+              {% trans "Preview YouTube metadata" %}
+            </a>
+          </p>
+
+        {% endif %}
+
+        <div class="
+          {% if audiobook.youtube_id %}
+            <form method="post" action="{% url 'youtube_update_thumbnail' audiobook.id %}">
+              {% csrf_token %}
+              <input class="btn btn-secondary" type="submit" value="{% trans "Update YouTube thumbnail" %}">
+            </form>
+            <br>
+
+            <form method="post" action="{% url 'youtube_update' audiobook.id %}">
+              {% csrf_token %}
+              <input class="btn btn-secondary" type="submit" value="{% trans "Update YouTube metadata" %}">
+            </form>
+          {% endif %}
+          <form method="post" action="{% url 'youtube_publish' audiobook.id %}">
+            {% csrf_token %}
+            <input class="btn btn-primary" type="submit" value="{% trans "Publish on YouTube" %}" />
+          </form>
+        {% endif %}
+
+      </div>
+      <div class="card-footer">
+        {% if audiobook.youtube_id %}
+          <p>
+            <a href="https://youtu.be/{{ audiobook.youtube_id }}" target="_blank" title="{% trans "See on YouTube" %}">
+              <img src="https://i.ytimg.com/vi/{{ audiobook.youtube_id }}/hq720.jpg" style="width: 100%">
+            </a>
+          </p>
+        {% endif %}
+        <p>{% trans "Published:" %} {{ audiobook.youtube_published }}</a></p>
 
       </div>
     </div>
   </div>
+
+  <div class="col-xl-4">
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h3>Metadane dla MP3, Ogg</h3>
+      </div>
+      <div class="card-body">
+        <table class='table'>
+          tagi, które zostałyby zapisane do pliku, gdyby go teraz opublikować
+          {% tags_table audiobook.new_publish_tags 0 %}
+        </table>
+      </div>
+    </div>
+
+  </div>
+
 
   <div class="col-xl-5">
     {% if audiobook.mp3_status or audiobook.ogg_status or audiobook.youtube_status %}
@@ -52,16 +141,12 @@
           <hr/>
           <h2>MP3</h2>
 
-          {% tags_table audiobook.get_mp3_tags.tags %}
-
           <p>Status: <b>{{ audiobook.get_mp3_status_display }}</b></p>
         {% endif %}
 
         {% if audiobook.ogg_status %}
           <hr/>
           <h2>Ogg Vorbis</h2>
-
-          {% tags_table audiobook.get_ogg_tags.tags %}
 
           <p>Status: <b>{{ audiobook.get_ogg_status_display }}</b></p>
         {% endif %}
@@ -71,9 +156,6 @@
           <p><a href="{% url 'download' audiobook.id 'mp3' %}">{% trans "Download MP3 file." %}</a></p>
           {% if audiobook.mp3_published %}
             <p>{% trans "Published:" %} {{ audiobook.mp3_published }}</a></p>
-            {% if audiobook.get_mp3_published_tags.tags %}
-              {% tags_table audiobook.get_mp3_published_tags.tags %}
-            {% endif %}
           {% else %}
             <p>{% trans "Not published yet." %}</p>
           {% endif %}
@@ -85,9 +167,6 @@
           <p><a href="{% url 'download' audiobook.id 'ogg' %}">{% trans "Download Ogg Vorbis file." %}</a></p>
           {% if audiobook.ogg_published %}
             <p>{% trans "Published:" %} {{ audiobook.ogg_published }}</a></p>
-            {% if audiobook.get_ogg_published_tags.tags %}
-              {% tags_table audiobook.get_ogg_published_tags.tags %}
-            {% endif %}
           {% else %}
             <p>{% trans "Not published yet." %}</p>
           {% endif %}
@@ -115,122 +194,51 @@
       </div>
     </div>
 
-    <div class="card mt-4">
-      <div class="card-header">
-        <h3>YouTube</h3>
-      </div>
-      <div class="card-body">
-        {% if audiobook.youtube_status %}
-          <hr/>
-          <h2>YouTube</h2>
-
-          <p>Status: <b>{{ audiobook.get_youtube_status_display }}</b></p>
-        {% endif %}
-
-        {% if audiobook.youtube_id %}
-          {% if audiobook.youtube_id %}
-            <p>
-              <a href="https://youtu.be/{{ audiobook.youtube_id }}" target="_blank" title="{% trans "See on YouTube" %}">
-                <img src="https://i.ytimg.com/vi/{{ audiobook.youtube_id }}/hq720.jpg" style="width: 100%">
-
-              </a>
-            </p>
-          {% endif %}
-          {% if audiobook.youtube_published %}
-            <p>{% trans "Published:" %} {{ audiobook.youtube_published }}</a></p>
-            {% if audiobook.get_youtube_published_tags.tags %}
-              {% tags_table audiobook.get_youtube_published_tags.tags %}
-            {% endif %}
-          {% else %}
-            <p>{% trans "Not published yet." %}</p>
-          {% endif %}
-        {% else %}
-          <p>{% trans "YouTube file hasn't been generated yet." %}</p>
-        {% endif %}
-
-        {% if audiobook.youtube_id %}
-          <form method="post" action="{% url 'youtube_update_thumbnail' audiobook.id %}">
-            {% csrf_token %}
-            <input class="btn btn-secondary" type="submit" value="{% trans "Update YouTube thumbnail" %}">
-          </form>
-          <br>
-
-          <form method="post" action="{% url 'youtube_update' audiobook.id %}">
-            {% csrf_token %}
-            <input class="btn btn-secondary" type="submit" value="{% trans "Update YouTube metadata" %}">
-          </form>
-        {% endif %}
-
-        {% if audiobook.is_youtube_publishable %}
-          <br>
-          <p>
-	    <a href="{% url 'youtube_preview' audiobook.id %}">
-              {% trans "Preview YouTube metadata" %}
-            </a>
-          </p>
-          <form method="post" action="{% url 'youtube_publish' audiobook.id %}">
-            {% csrf_token %}
-            <input class="btn btn-primary" type="submit" value="{% trans "Publish on YouTube" %}" />
-          </form>
-        {% endif %}
-
-      </div>
-    </div>
   </div>
 
 </div>
 
 
 
-<div class="row">
-  <div class="col-xl-6">
-
-    <div class="card mt-4">
-      <div class="card-header">
-        <h3>Metadane dla MP3, Ogg</h3>
-      </div>
-      <div class="card-body">
-        <table class='table'>
-          {% tags_table audiobook.new_publish_tags 0 %}
-        </table>
-      </div>
-    </div>
-
-  </div>
-  <div class="col-xl-6">
-    <div class="card mt-4">
-      <div class="card-header">
-        <h3>Metadane dla YouTube</h3>
-      </div>
-      <div class="card-body">
-        <img src="{% url 'youtube_thumbnail' audiobook.id %}" style="width:100%">
-        <strong>{{ youtube_title }}</strong><br><br>
-        {{ youtube_description|linebreaksbr }}
-      </div>
-    </div>
-  </div>
-
-</div>
 
 
 <div class="card mt-4 mb-4">
   <div class="card-header">
     <h2>Plik źródłowy</h2>
+    (informacje fizycznie ze źródłowego pliku)
   </div>
   <div class="card-body">
-    <p>Last modified: {{ audiobook.modified }}</p>
-    <p>Plik źródłowy: <a href='{{ audiobook.source_file.url }}'>{{ path }}</a>
-      (sha1: <tt>{{ audiobook.source_sha1 }}</tt>).
-    </p>
-    {% multiple_tags_table tags %}
 
-    <form method="post" action="{% url 'remove_to_archive' audiobook.id %}"
-          onsubmit='return confirm("{% trans "Are you sure you want to move this audiobook to archive?" %}")'>
-      {% csrf_token %}
-      <input class="btn btn-danger" type="submit" value="{% trans "Remove to archive" %}" />
-    </form>
+    <div class="row">
+      <div class="col-lg-8">
 
+        <p>Last modified: {{ audiobook.modified }}</p>
+        <p>Plik źródłowy: <a href='{{ audiobook.source_file.url }}'>{{ path }}</a>
+          (sha1: <tt>{{ audiobook.source_sha1 }}</tt>).
+        </p>
+        {% multiple_tags_table tags %}
+      </div>
+
+      <div class="col-xl-4">
+        <div class="card">
+          <div class="card-body">
+            <form method="post" action="{% url 'remove_to_archive' audiobook.id %}"
+                  onsubmit='return confirm("{% trans "Are you sure you want to move this audiobook to archive?" %}")'>
+              {% csrf_token %}
+
+              <p>
+                Jeśli ten plik nie jest potrzebny, możesz usunąć informacje o nim z systemu,
+                zachowując go tylko w postaci samego źródłowego pliku.
+              </p>
+
+              <input class="btn btn-danger" type="submit" value="{% trans "Remove to archive" %}" />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
+
 
 {% endblock %}

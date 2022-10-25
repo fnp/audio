@@ -39,10 +39,7 @@ class AudioFormatTask(Task):
         raise NotImplemented
 
     @classmethod
-    def set_tags(cls, audiobook, file_name):
-        tags = getattr(audiobook, "get_%s_tags" % cls.prefix)()['tags']
-        if not tags.get('flac_sha1'):
-            tags['flac_sha1'] = audiobook.get_source_sha1()
+    def set_tags(cls, tags, file_name):
         audio = File(file_name)
         for k, v in tags.items():
             audio[k] = v
@@ -61,10 +58,8 @@ class AudioFormatTask(Task):
             **{field: getattr(audiobook, field)})
 
     @classmethod
-    def published(cls, aid):
+    def published(cls, aid, tags):
         kwargs = {
-            "%s_published_tags" % cls.prefix: F("%s_tags" % cls.prefix),
-            "%s_tags" % cls.prefix: None,
             "%s_published" % cls.prefix: datetime.now(),
             '%s_status' % cls.prefix: None,
         }
@@ -72,11 +67,10 @@ class AudioFormatTask(Task):
 
     @classmethod
     def put(cls, user, audiobook, path):
-        tags = getattr(audiobook, "get_%s_tags" % cls.prefix)()
         data = {
-            'book': tags['url'],
+            'book': audiobook.url,
             'type': cls.ext,
-            'name': tags['name'],
+            'name': audiobook.title,                ##### IS IT USED?
             'part_name': audiobook.part_name,
             'part_index': audiobook.index,
             'parts_count': audiobook.parts_count,
@@ -108,12 +102,14 @@ class AudioFormatTask(Task):
         out_file.close()
         self.encode(self.get_source_file_paths(audiobook), out_file.name)
         self.set_status(aid, status.TAGGING)
-        self.set_tags(audiobook, out_file.name)
+
+        tags = audiobook.new_publish_tags()
+        self.set_tags(tags, out_file.name)
         self.set_status(aid, status.SENDING)
 
         if publish:
             self.put(user, audiobook, out_file.name)
-            self.published(aid)
+            self.published(aid, tags)
         else:
             self.set_status(aid, None)
 
@@ -175,12 +171,9 @@ class Mp3Task(AudioFormatTask):
             ])
 
     @classmethod
-    def set_tags(cls, audiobook, file_name):
-        mp3_tags = audiobook.get_mp3_tags()['tags']
-        if not mp3_tags.get('flac_sha1'):
-            mp3_tags['flac_sha1'] = audiobook.get_source_sha1()
+    def set_tags(cls, tags, file_name):
         audio = id3.ID3(file_name)
-        for k, v in mp3_tags.items():
+        for k, v in tags.items():
             factory_tuple = cls.TAG_MAP[k]
             factory, tagtype = factory_tuple[:2]
             audio.add(factory(tagtype, v, *factory_tuple[2:]))

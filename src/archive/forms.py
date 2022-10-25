@@ -15,7 +15,9 @@ from archive.utils import ExistingFile, sha1_file
 class AudiobookForm(forms.ModelForm):
     class Meta:
         model = Audiobook
-        exclude = []
+        exclude = [
+            'youtube_id', 'youtube_queued'
+        ]
 
     def save(self, commit=True, path=None):
         """ Performs normal save, with given file as an source audiobook.

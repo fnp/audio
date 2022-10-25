@@ -16,8 +16,8 @@ class Command(BaseCommand):
             .exclude(youtube_queued=None)
             .order_by("youtube_queued")[: options["limit"]]
         ):
-            audiobook.youtube_task = tasks.YouTubeTask.delay(
+            tasks.YouTubeTask.delay(
                 None, audiobook.id, True
             ).task_id
             audiobook.youtube_status = status.WAITING
-            audiobook.save(update_fields=["youtube_task", "youtube_status"])
+            audiobook.save(update_fields=["youtube_status"])

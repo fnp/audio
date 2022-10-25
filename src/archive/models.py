@@ -32,7 +32,10 @@ class Project(models.Model):
     name = models.CharField(max_length=128, unique=True, db_index=True, verbose_name="Nazwa")
     sponsors = models.TextField(blank=True, null=True, verbose_name="Sponsorzy")
     description = models.TextField(blank=True, verbose_name="Opis")
+    private_notes = models.TextField(blank=True, verbose_name="Prywatne notatki")
     config = models.ForeignKey('Config', models.PROTECT)
+    can_sell = models.BooleanField(default=True, verbose_name="Do sprzedaży")
+    required_license = models.ForeignKey('License', models.PROTECT, blank=True, null=True, verbose_name='Wymagana licencja')
     youtube = models.ForeignKey('youtube.YouTube', models.PROTECT)
     icon = models.FileField(upload_to='archive/project', blank=True, null=True)
     info_flac = models.FileField(upload_to='archive/info_flac', blank=True)
@@ -121,26 +124,18 @@ class Audiobook(models.Model):
     translator = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('translator'))
     modified = models.DateTimeField(null=True, editable=False)
     license = models.ForeignKey(License, models.PROTECT, null=True, blank=True, verbose_name=_('license'))
+    license_secondary = models.ForeignKey(License, models.PROTECT, null=True, blank=True, verbose_name=_('license'), related_name='secondary')
 
     # publishing process
     mp3_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
-    mp3_task = models.CharField(max_length=64, null=True, editable=False)
-    mp3_tags = models.TextField(null=True, editable=False)
     mp3_file = models.FileField(null=True, upload_to='archive/final', storage=OverwriteStorage(), editable=False)
-    mp3_published_tags = models.TextField(null=True, editable=False)
     mp3_published = models.DateTimeField(null=True, editable=False)
 
     ogg_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
-    ogg_task = models.CharField(max_length=64, null=True, editable=False)
-    ogg_tags = models.TextField(null=True, editable=False)
     ogg_file = models.FileField(null=True, upload_to='archive/final', storage=OverwriteStorage(), editable=False)
-    ogg_published_tags = models.TextField(null=True, editable=False)
     ogg_published = models.DateTimeField(null=True, editable=False)
 
     youtube_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
-    youtube_task = models.CharField(max_length=64, null=True, editable=False)
-    youtube_tags = models.TextField(null=True, editable=False)
-    youtube_published_tags = models.TextField(null=True, editable=False)
     youtube_published = models.DateTimeField(null=True, editable=False)
     youtube_id = models.CharField(max_length=255, blank=True, default='')
     youtube_queued = models.DateTimeField(null=True, blank=True)
@@ -209,33 +204,15 @@ class Audiobook(models.Model):
         self.youtube_queued = now()
         self.save(update_fields=['youtube_status', 'youtube_queued'])
 
-    def get_mp3_tags(self): return json.loads(self.mp3_tags) if self.mp3_tags else None
-    def get_ogg_tags(self): return json.loads(self.ogg_tags) if self.ogg_tags else None
-    def get_mp3_published_tags(self): return json.loads(self.mp3_published_tags) if self.mp3_published_tags else None
-    def get_ogg_published_tags_tags(self): return json.loads(self.ogg_published_tags) if self.ogg_published_tags else None
-    def set_mp3_tags(self, tags): self.mp3_tags = json.dumps(tags)
-    def set_ogg_tags(self, tags): self.ogg_tags = json.dumps(tags)
-
     def published(self):
         return self.mp3_published and self.ogg_published
 
-    def prepare_for_publish(self):
-        tags = {
-            'name': self.title,
-            'url': self.url,
-            'tags': self.new_publish_tags(),
-        }
-        self.set_mp3_tags(tags)
-        self.set_ogg_tags(tags)
-        self.mp3_status = self.ogg_status = status.WAITING
-        self.save()
-    
     def publish(self, user, publish=True):
         from . import tasks
-        # isn't there a race here?
-        self.mp3_task = tasks.Mp3Task.delay(user.id, self.pk, publish=publish).task_id
-        self.ogg_task = tasks.OggTask.delay(user.id, self.pk, publish=publish).task_id
-        self.save()
+        self.mp3_status = self.ogg_status = status.WAITING
+        self.save(update_fields=['mp3_status', 'ogg_status'])
+        tasks.Mp3Task.delay(user.id, self.pk, publish=publish).task_id
+        tasks.OggTask.delay(user.id, self.pk, publish=publish).task_id
 
     def get_source_sha1(self):
         assert self.pk or self.source_sha1
@@ -282,8 +259,8 @@ class Audiobook(models.Model):
         if self.project.sponsors:
             tags['funded_by'] = self.project.sponsors
 
-        if self.source_sha1:
-            tags['flac_sha1'] = self.source_sha1
+        tags['flac_sha1'] = self.get_source_sha1()
+
         return tags
 
     def prepare_audio(self):
@@ -306,11 +283,9 @@ class Audiobook(models.Model):
         if xml_url is None:
             return None
 
-        return WLDocument(
-                etree.parse(
-                    io.BytesIO(
-                        requests.get(xml_url).content
-                    )
-                    ,parser = parser
-                )
-            )
+        return WLDocument(url=xml_url)
+
+    @property
+    def cover(self):
+        from librarian.cover import LogoWLCover
+        return LogoWLCover(self.document.meta).output_file.get_bytes()

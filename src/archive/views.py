@@ -157,9 +157,7 @@ def move_to_new(request, filename):
 def publish(request, aid, publish=True):
     """ mark file for publishing """
     audiobook = get_object_or_404(models.Audiobook, id=aid)
-    audiobook.prepare_for_publish()
-    if publish:
-        audiobook.publish(request.user)
+    audiobook.publish(request.user, publish=publish)
     return redirect(file_managed, aid)
 
 

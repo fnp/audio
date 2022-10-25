@@ -10,7 +10,7 @@ class YouTubeTask(AudioFormatTask):
     def encode(self, in_paths, out_path):
         self.audiobook.project.youtube.prepare_file(in_paths, out_path)
 
-    def set_tags(self, audiobook, filename):
+    def set_tags(self, tags, filename):
         pass
 
     @classmethod
