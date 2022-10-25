@@ -7,23 +7,35 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-01 14:18+0200\n"
-"PO-Revision-Date: 2020-04-01 14:18+0200\n"
+"POT-Creation-Date: 2022-10-25 13:56+0200\n"
+"PO-Revision-Date: 2022-10-25 13:57+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "Language: pl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && (n"
-"%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && n"
-"%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"X-Generator: Poedit 2.2.4\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
+"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
+"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+"X-Generator: Poedit 3.0.1\n"
 
-#: models.py:23
+#: youtube/models.py:37
+msgid "public"
+msgstr "publiczny"
+
+#: youtube/models.py:38
+msgid "unlisted"
+msgstr "niepubliczny"
+
+#: youtube/models.py:39
+msgid "private"
+msgstr "prywatny"
+
+#: youtube/models.py:44
 msgid "YouTube configuration"
 msgstr "konfiguracja YouTube"
 
-#: models.py:24
+#: youtube/models.py:45
 msgid "YouTube configurations"
 msgstr "konfiguracje YouTube"

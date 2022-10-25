@@ -124,7 +124,7 @@ class Audiobook(models.Model):
     translator = models.CharField(max_length=255, null=True, blank=True, verbose_name=_('translator'))
     modified = models.DateTimeField(null=True, editable=False)
     license = models.ForeignKey(License, models.PROTECT, null=True, blank=True, verbose_name=_('license'))
-    license_secondary = models.ForeignKey(License, models.PROTECT, null=True, blank=True, verbose_name=_('license'), related_name='secondary')
+    license_secondary = models.ForeignKey(License, models.PROTECT, null=True, blank=True, verbose_name=_('secondary license'), related_name='secondary')
 
     # publishing process
     mp3_status = models.SmallIntegerField(null=True, editable=False, choices=status.choices)
