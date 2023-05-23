@@ -1,3 +1,4 @@
+import hashlib
 import os
 import shutil
 import subprocess
@@ -31,7 +32,16 @@ def process_to_file(cmdline, prefix='', suffix='', cache_key=None, output_path=N
         output_path = tmp.name
 
     if cache_key:
-        cache_path = FILE_CACHE + cache_key.replace('/', '__')
+        cache_path = cache_key.replace('/', '__')
+        if len(cache_path) > 255:
+            parts = cache_path.rsplit('.', 1)
+            limit = 255 - 9
+            if len(parts) > 1:
+                limit -= len(parts[1]) + 1
+            cache_path = parts[0][:limit] + '.' + hashlib.sha1(cache_key.encode('utf-8')).hexdigest()[:8]
+            if len(parts) > 1:
+                cache_path += '.' + parts[1]
+        cache_path = FILE_CACHE + cache_path
 
     if cache_key and os.path.exists(cache_path):
         link_or_copy(cache_path, output_path)
