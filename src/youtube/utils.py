@@ -33,9 +33,9 @@ def process_to_file(cmdline, prefix='', suffix='', cache_key=None, output_path=N
 
     if cache_key:
         cache_path = cache_key.replace('/', '__')
-        if len(cache_path) > 255:
+        if len(cache_path) > 200:
             parts = cache_path.rsplit('.', 1)
-            limit = 255 - 9
+            limit = 200 - 9
             if len(parts) > 1:
                 limit -= len(parts[1]) + 1
             cache_path = parts[0][:limit] + '.' + hashlib.sha1(cache_key.encode('utf-8')).hexdigest()[:8]
