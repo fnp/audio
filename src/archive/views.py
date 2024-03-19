@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import permission_required
 from django.contrib.postgres.search import SearchVector
 from django.urls import reverse
 from django.db.models import Q, Max
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
@@ -301,6 +301,23 @@ class BookView(ListView):
             b.subtotal = last_vol_sub.total_for_sub
         return list(qs)
 
+def book_json(request, slug):
+    qs = models.Audiobook.objects.filter(slug=slug).order_by(
+        "index"
+    )
+    return JsonResponse({
+        "items": [
+            {
+                "id": item.id,
+                "part": item.part_name,
+                "mp3_status": item.get_mp3_status_display(),
+                "ogg_status": item.get_ogg_status_display(),
+                "youtube_status": item.get_youtube_status_display(),
+            }
+            for item in qs
+        ]
+    })
+    
 
 @permission_required('archive.change_audiobook')
 def book_youtube_volume(request, aid):

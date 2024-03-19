@@ -9,6 +9,7 @@ urlpatterns = [
     path('move_to_archive/<path:filename>/', views.move_to_archive, name="move_to_archive"),
     path('publishing/', views.list_publishing, name="list_publishing"),
     path('book/<slug:slug>/', views.BookView.as_view(), name="book"),
+    path('book/<slug:slug>.json', views.book_json, name="book_json"),
     path('book-youtube-volume/<int:aid>/', views.book_youtube_volume, name="book_youtube_volume"),
     path('file/<int:id>/', views.file_managed, name="file"),
     path('publish/<int:aid>/', views.publish, name="publish"),
