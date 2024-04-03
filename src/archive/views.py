@@ -315,7 +315,7 @@ def book_json(request, slug):
                 "youtube_status": item.get_youtube_status_display(),
                 "project": {
                     "name": item.project.name,
-                    "can_sell": item.can_sell,
+                    "can_sell": item.project.can_sell,
                 }
             }
             for item in qs
