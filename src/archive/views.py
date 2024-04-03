@@ -313,6 +313,10 @@ def book_json(request, slug):
                 "mp3_status": item.get_mp3_status_display(),
                 "ogg_status": item.get_ogg_status_display(),
                 "youtube_status": item.get_youtube_status_display(),
+                "project": {
+                    "name": item.project.name,
+                    "can_sell": item.can_sell,
+                }
             }
             for item in qs
         ]
